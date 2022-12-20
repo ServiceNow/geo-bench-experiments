@@ -1332,6 +1332,7 @@ class CCBDataset:
             band_stats[band_name] = Stats(**stats_dict)
         return band_stats
 
+    # TODO(allac) save self.band_stats with canonical band names and make a function that returns canonical name from alt name or find a more clever way to do this.
     def rgb_stats(self):
         """Retrieve band statistics for RGB only."""
         try:

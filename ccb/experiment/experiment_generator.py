@@ -14,7 +14,7 @@ import yaml
 from ccb import io
 from ccb.experiment.experiment import Job, get_model_generator
 
-
+# TODO(nils) this code should be largely simplified and should be part of the model generator.
 def define_model_name(config):
     """Define a model name."""
     if config["model"]["model_generator_module_name"] == "ccb.torch_toolbox.model_generators.ssl_moco":
@@ -84,15 +84,18 @@ def experiment_generator(
         experiment_type = config["experiment"]["experiment_type"]
         task_config = copy.deepcopy(config)
 
-        if experiment_type == "sweep":
+        if experiment_type == "sweep": # TODO(nils) sweep and seeded_runs code should be the same with a flag making minor modifications.
 
-            beyond_rgb = False
+            beyond_rgb = False  # TODO(nils) this code is supposed to be generic. it should not depend on the specific beyond_rgb experiment we ran in the paper.
             if task_config["dataset"]["band_names"] == "all":
                 if task_specs.dataset_name not in ["eurosat", "brick_kiln_v1.0", "bigearthnet", "so2sat"]:
                     continue
                 band_names = [band_info.name for band_info in task_specs.bands_info]
                 beyond_rgb = True
-                if "Cloud Probability" in band_names:
+
+                # TODO(nils) why do we need this? This should be handled by the transform function for a specific model, i.e., if a model doesn't want to use all bands, it's free to discard them. 
+                # More generally, the experiment generator should not decide what data we feed to the model. 
+                if "Cloud Probability" in band_names: 
                     band_names.remove("Cloud Probability")
                 if task_specs.dataset_name == "so2sat":  # only sentinel 2 bands for so2sat
                     band_names = [band_info for band_info in band_names if "VH." not in band_info]

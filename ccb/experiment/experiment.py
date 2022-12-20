@@ -147,7 +147,7 @@ class Job:
         config = Job(job_dir).config
 
         # sweep name that will be seen on wandb
-        if model_generator_module_name != "ccb.torch_toolbox.model_generators.py_segmentation_generator":
+        if model_generator_module_name != "ccb.torch_toolbox.model_generators.py_segmentation_generator":  # TODO(Nils), we can't have code that is specific to a model generator here. 
             backbone = config["model"]["backbone"]
             base_yaml["name"] = "_".join(str(job_dir).split("/")[-2:]) + "_" + backbone
         else:
