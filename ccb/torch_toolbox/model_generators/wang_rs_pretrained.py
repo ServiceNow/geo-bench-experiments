@@ -136,6 +136,15 @@ class RSPretrained(ModelGenerator):
 
         return transform
 
+    def generate_model_name(self, config: Dict[str, Any]) -> str:
+        """Generate a model name that can be used throughout to the pipeline.
+        
+        Args:
+            config: config file
+        """
+        return "millionaid_" + config["model"]["backbone"]
+
+
 
 def model_generator() -> RSPretrained:
     """Return RSPretrained model generator.

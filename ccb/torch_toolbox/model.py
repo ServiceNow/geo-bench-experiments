@@ -426,6 +426,14 @@ class ModelGenerator:
         """
         raise NotImplementedError("Necessary to define a transform function.")
 
+    def generate_model_name(self, config: Dict[str, Any]) -> str:
+        """Generate a model name that can be used throughout to the pipeline.
+        
+        Args:
+            config: config file
+        """
+        raise NotImplementedError("Necessary to define a model name.")
+
 
 def head_generator(task_specs: TaskSpecifications, features_shape: List[Tuple[int, ...]], config: Dict[str, Any]):
     """Return an appropriate head based on the task specifications.

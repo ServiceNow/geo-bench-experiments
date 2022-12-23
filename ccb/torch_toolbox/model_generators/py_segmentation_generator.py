@@ -170,6 +170,17 @@ class SegmentationGenerator(ModelGenerator):
 
         return transform
 
+    def generate_model_name(self, config: Dict[str, Any]) -> str:
+        """Generate a model name that can be used throughout to the pipeline.
+        
+        Args:
+            config: config file
+        """
+        model_name = config["model"]["encoder_type"] + "_" + config["model"]["decoder_type"]
+        if config["model"]["pretrained"] is False:
+            model_name = "scratch_" + model_name
+        return model_name
+
 
 def model_generator() -> SegmentationGenerator:
     """Initialize Segmentation Generator.

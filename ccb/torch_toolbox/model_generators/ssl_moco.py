@@ -286,3 +286,12 @@ class SSLMocoGenerator(ModelGenerator):
             return {"input": x, "label": sample.label}
 
         return transform
+
+
+    def generate_model_name(self, config: Dict[str, Any]) -> str:
+        """Generate a model name that can be used throughout to the pipeline.
+        
+        Args:
+            config: config file
+        """
+        return config["model"]["ssl_method"] + "_" + config["model"]["backbone"]

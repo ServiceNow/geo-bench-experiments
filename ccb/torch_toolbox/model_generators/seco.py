@@ -137,6 +137,14 @@ class SeCoGenerator(ModelGenerator):
 
         return transform
 
+    def generate_model_name(self, config: Dict[str, Any]) -> str:
+        """Generate a model name that can be used throughout to the pipeline.
+        
+        Args:
+            config: config file
+        """   
+        return "seco_" + config["model"]["backbone"]
+
 
 def model_generator() -> SeCoGenerator:
     """Return SeCo Generator.

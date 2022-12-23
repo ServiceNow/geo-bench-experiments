@@ -14,33 +14,6 @@ import yaml
 from ccb import io
 from ccb.experiment.experiment import Job, get_model_generator
 
-# TODO(nils) this code should be largely simplified and should be part of the model generator.
-def define_model_name(config):
-    """Define a model name."""
-    if config["model"]["model_generator_module_name"] == "ccb.torch_toolbox.model_generators.ssl_moco":
-        model_name = config["model"]["ssl_method"] + "_" + config["model"]["backbone"]
-        # model_name = "ssl_moco_" + config["model"]["backbone"]
-    elif config["model"]["model_generator_module_name"] == "ccb.torch_toolbox.model_generators.timm_generator":
-        if config["model"]["pretrained"]:
-            model_name = config["model"]["backbone"]
-        else:
-            model_name = "scratch_" + config["model"]["backbone"]
-    elif config["model"]["model_generator_module_name"] == "ccb.torch_toolbox.model_generators.conv4":
-        model_name = config["model"]["backbone"]
-    elif config["model"]["model_generator_module_name"] == "ccb.torch_toolbox.model_generators.wang_rs_pretrained":
-        model_name = "millionaid_" + config["model"]["backbone"]
-    elif config["model"]["model_generator_module_name"] == "ccb.torch_toolbox.model_generators.seco":
-        model_name = "seco_" + config["model"]["backbone"]
-    elif config["model"]["model_generator_module_name"] == "ccb.torch_toolbox.model_generators.swin_segmentation":
-        model_name = config["model"]["model"] + "_segmentation"
-    else:
-        if config["model"]["pretrained"] is False:
-            model_name = "scratch_" + config["model"]["encoder_type"] + "_" + config["model"]["decoder_type"]
-        else:
-            model_name = config["model"]["encoder_type"] + "_" + config["model"]["decoder_type"]
-    return model_name
-
-
 def experiment_generator(
     config_filepath: str,
 ) -> Path:
@@ -66,8 +39,6 @@ def experiment_generator(
         raise FileNotFoundError(f"Config file at path {config_file_path} does not exist.")
 
     benchmark_dir = config["experiment"]["benchmark_dir"]
-
-    model_name = define_model_name(config)
 
     experiment_prefix = f"{config['experiment']['experiment_name'] or 'experiment'}_{os.path.basename(benchmark_dir)}_{datetime.now().strftime('%m-%d-%Y_%H:%M:%S')}_{model_name}"
     if config["experiment"]["experiment_name"] is not None:
@@ -113,13 +84,15 @@ def experiment_generator(
             # continue with hyperparameters from initialized model
             task_config = model.config
 
-            task_config["model"]["model_name"] = model_name
+            task_config["model"]["model_name"] = model.generate_model_name(config)
 
-            task_config["model"]["batch_size"] = batch_size_dict[model_name][task_specs.dataset_name]
+            task_config["model"]["batch_size"] = batch_size_dict[task_config['model']['model_name']][task_specs.dataset_name]
 
             if beyond_rgb:
                 task_config["model"]["batch_size"] = int(task_config["model"]["batch_size"] / 2)
 
+            # append model name to experiment dir
+            experiment_dir = Path(str(experiment_dir + f"_{config['model']['model_name']}")) 
             # create and fill experiment directory
             job_dir = experiment_dir / task_specs.dataset_name
             job = Job(job_dir)
@@ -127,7 +100,7 @@ def experiment_generator(
             job.save_task_specs(task_specs)
 
             # sweep name that will be seen on wandb
-            wandb_name = "_".join(str(job_dir).split("/")[-2:]) + "_" + model_name
+            wandb_name = "_".join(str(job_dir).split("/")[-2:]) + "_" + task_config["model"]["model_name"]
 
             job.write_wandb_sweep_cl_script(
                 task_config["model"]["model_generator_module_name"],
@@ -142,6 +115,13 @@ def experiment_generator(
                 seed_run_dict = json.load(f)
 
             part_name = task_config["experiment"]["partition_name"].split("_partition.json")[0]
+
+            model_generator = get_model_generator(config["model"]["model_generator_module_name"])
+
+            # use wandb sweep for hyperparameter search
+            model = model_generator.generate_model(task_specs, task_config)
+
+            model_name = model.generate_model_name(task_config)
 
             ds_dict = seed_run_dict[model_name][part_name]
 
@@ -168,34 +148,6 @@ def experiment_generator(
                 job.save_config(best_config)
                 job.save_task_specs(task_specs)
                 job.write_script(job_dir=str(job_dir))
-
-        else:
-            # single run of a model
-            model_generator_module_name = config["model"]["model_generator_module_name"]
-            model_generator = get_model_generator(model_generator_module_name)
-
-            model = model_generator.generate_model(task_specs, config)
-            config = model.config
-
-            config["experiment"]["dataset_name"] = task_specs.dataset_name
-            config["experiment"]["benchmark_name"] = os.path.basename(config["experiment"]["benchmark_dir"])
-
-            if model_generator_module_name != "ccb.torch_toolbox.model_generators.py_segmentation_generator":
-                config["experiment"][
-                    "name"
-                ] = f"{experiment_prefix}/{task_specs.dataset_name}/{config['model']['backbone']}"
-            else:
-                config["experiment"][
-                    "name"
-                ] = f"{experiment_prefix}/{task_specs.dataset_name}/{config['model']['encoder_type']}/{config['model']['decoder_type']}"
-
-            # create and fill experiment directory
-            job_dir = experiment_dir / task_specs.dataset_name
-            job = Job(job_dir)
-            job.save_config(config)
-            job.save_task_specs(task_specs)
-            print(job_dir)
-            job.write_script(job_dir=str(job_dir))
 
     return experiment_dir
 
