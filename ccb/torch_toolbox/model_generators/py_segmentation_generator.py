@@ -97,18 +97,7 @@ class SegmentationGenerator(ModelGenerator):
         eval_metrics = eval_metrics_generator(task_specs, config)
         test_metrics = test_metrics_generator(task_specs, config)
         return Model(backbone, head, loss, config, train_metrics, eval_metrics, test_metrics)
-
-    def get_collate_fn(self, task_specs: TaskSpecifications, config: dict):
-        """Define a collate function to batch input tensors.
-
-        Args:
-            task_specs: task specs to retrieve dataset
-            hparams: model hyperparameters
-
-        Returns:
-            collate function
-        """
-        return default_collate
+        
 
     def get_transform(
         self,

@@ -10,6 +10,7 @@ from ruamel.yaml import YAML
 from ccb.experiment.experiment import Job, get_model_generator
 from ccb.torch_toolbox.dataset import DataModule
 
+from torch.utils.data.dataloader import default_collate
 
 def train(job_dir: str) -> None:
     """Train a model from the model generator on datamodule.
@@ -74,7 +75,7 @@ def train(job_dir: str) -> None:
             num_workers=config["dataloader"]["num_workers"],
             train_transform=model_gen.get_transform(task_specs=task_specs, config=config, train=True),
             eval_transform=model_gen.get_transform(task_specs=task_specs, config=config, train=False),
-            collate_fn=model_gen.get_collate_fn(task_specs, config["model"]),
+            collate_fn=default_collate,
             band_names=config["dataset"]["band_names"],
             format=config["dataset"]["format"],
         )

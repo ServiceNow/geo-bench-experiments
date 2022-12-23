@@ -77,10 +77,6 @@ class TestGenerator:
         with pytest.raises(NotImplementedError, match="Necessary to"):
             model_gen.generate_model(task_specs=self.task_specs, config=self.config)
 
-    def test_get_collate_fn_present(self, model_gen: ModelGenerator) -> None:
-        with pytest.raises(NotImplementedError, match="Necessary to"):
-            model_gen.get_collate_fn(task_specs=self.task_specs, config=self.config)
-
     def test_get_transform_present(self, model_gen: ModelGenerator) -> None:
         with pytest.raises(NotImplementedError, match="Necessary to"):
             model_gen.get_transform(task_specs=self.task_specs, config=self.config, train=True)

@@ -16,7 +16,7 @@ from albumentations.pytorch import ToTensorV2
 from pl_bolts.metrics import precision_at_k
 from pytorch_lightning import LightningModule
 from torch import nn, optim
-from torch.utils.data.dataloader import default_collate
+
 from torchvision import transforms as tt
 
 from ccb import io
@@ -83,18 +83,6 @@ class SeCoGenerator(ModelGenerator):
             eval_metrics=eval_metrics,
             test_metrics=test_metrics,
         )
-
-    def get_collate_fn(self, task_specs: TaskSpecifications, config: dict):
-        """Define a collate function to batch input tensors.
-
-        Args:
-            task_specs: task specs to retrieve dataset
-            config: model hyperparameters
-
-        Returns:
-            collate function
-        """
-        return default_collate
 
     def get_transform(self, task_specs, config: Dict[str, Any], train=True) -> Callable[[io.Sample], Dict[str, Any]]:
         """Define data transformations specific to the models generated.
