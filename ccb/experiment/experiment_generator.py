@@ -46,10 +46,6 @@ def experiment_generator(
     else:
         experiment_dir: Path = Path(config["experiment"]["generate_experiment_dir"])  # type: ignore[no-redef]
 
-    # find the batch size for the model/dataset combination
-    with open(str(Path(__file__).parent.parent / "torch_toolbox/wandb/batch_sizes.json"), "r") as f:
-        batch_size_dict = json.load(f)
-
     for task_specs in io.task_iterator(benchmark_dir=benchmark_dir):
         print(task_specs.dataset_name)
         experiment_type = config["experiment"]["experiment_type"]
@@ -85,8 +81,6 @@ def experiment_generator(
             task_config = model.config
 
             task_config["model"]["model_name"] = model.generate_model_name(config)
-
-            task_config["model"]["batch_size"] = batch_size_dict[task_config['model']['model_name']][task_specs.dataset_name]
 
             if beyond_rgb:
                 task_config["model"]["batch_size"] = int(task_config["model"]["batch_size"] / 2)
@@ -135,9 +129,6 @@ def experiment_generator(
                 best_config = yaml.safe_load(f)
 
             best_config["wandb"]["wandb_group"] = task_specs.dataset_name + "/" + model_name + "/" + experiment_prefix
-
-            print(best_config["model"]["batch_size"])
-            print(exp_dir)
 
             for i in range(config["experiment"]["num_seeds"]):
                 # set seed to be used in experiment
