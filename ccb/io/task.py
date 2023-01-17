@@ -54,7 +54,8 @@ class TaskSpecifications:
         self.eval_metrics = eval_metrics
         self.spatial_resolution = spatial_resolution
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return strin representation of class."""
         shape = "x".join([str(sz) for sz in self.patch_size])
         lines = [
             f"{self.benchmark_name}/{self.dataset_name}",
@@ -145,7 +146,7 @@ class TaskSpecifications:
             return None
 
 
-def task_iterator(benchmark_dir: str) -> Generator[TaskSpecifications, None, None]:
+def task_iterator(benchmark_dir: str, task_filter: List[str] = None) -> Generator[TaskSpecifications, None, None]:
     """Iterate over all tasks present in a benchmark.
 
     Args:
@@ -159,6 +160,10 @@ def task_iterator(benchmark_dir: str) -> Generator[TaskSpecifications, None, Non
     for dataset_dir in benchmark_dir_path.iterdir():
         if not dataset_dir.is_dir() or dataset_dir.name.startswith("_") or dataset_dir.name.startswith("."):
             continue
+
+        if task_filter is not None:
+            if str(dataset_dir) not in task_filter:
+                continue
 
         yield load_task_specs(dataset_dir)
 
