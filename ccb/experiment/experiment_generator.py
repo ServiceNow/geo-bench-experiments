@@ -54,10 +54,7 @@ def experiment_generator(
         experiment_type = config["experiment"]["experiment_type"]
         task_config = copy.deepcopy(config)
 
-        if (
-            experiment_type == "sweep"
-        ):  # TODO(nils) sweep and seeded_runs code should be the same with a flag making minor modifications.
-
+        if experiment_type == "sweep":
             print(len(task_config["dataset"]["band_names"]))
             model_generator = get_model_generator(config["model"]["model_generator_module_name"])
 
