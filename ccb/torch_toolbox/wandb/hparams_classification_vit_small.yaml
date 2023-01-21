@@ -17,6 +17,6 @@ parameters:
   optimizer:
     value: sgd
   batch_size:
-    64
+    value: 64
 
 

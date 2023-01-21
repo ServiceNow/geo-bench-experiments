@@ -67,11 +67,10 @@ def experiment_generator(
             # there might be other params added during the generate process,
             # continue with hyperparameters from initialized model
             task_config = model.config
-
-            task_config["model"]["model_name"] = model.generate_model_name(config)
+            task_config["model"]["model_name"] = model_generator.generate_model_name(config)
 
             # append model name to experiment dir
-            experiment_dir = Path(str(experiment_dir + f"_{config['model']['model_name']}"))
+            experiment_dir = Path(str(experiment_dir) + f"_{task_config['model']['model_name']}")
             # create and fill experiment directory
             job_dir = experiment_dir / task_specs.dataset_name
             job = Job(job_dir)

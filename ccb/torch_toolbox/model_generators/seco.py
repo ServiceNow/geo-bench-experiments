@@ -65,8 +65,8 @@ class SeCoGenerator(ModelGenerator):
         backbone = timm.create_model(
             config["model"]["backbone"], pretrained=config["model"]["pretrained"], features_only=False
         )
+        backbone.load_state_dict(torch.load(ckpt_path), strict=False)
         setattr(backbone, backbone.default_cfg["classifier"], torch.nn.Identity())
-        backbone.load_state_dict(torch.load(ckpt_path))
 
         test_input_for_feature_dim = (len(config["dataset"]["band_names"]), 224, 224)
 

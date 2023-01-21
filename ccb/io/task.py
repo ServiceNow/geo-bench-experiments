@@ -158,11 +158,11 @@ def task_iterator(benchmark_dir: str, task_filter: List[str] = None) -> Generato
     benchmark_dir_path = Path(benchmark_dir)
 
     for dataset_dir in benchmark_dir_path.iterdir():
-        if not dataset_dir.is_dir() or dataset_dir.name.startswith("_") or dataset_dir.name.startswith("."):
+        if not dataset_dir.is_dir():
             continue
 
         if task_filter is not None:
-            if str(dataset_dir) not in task_filter:
+            if dataset_dir.name not in task_filter:
                 continue
 
         yield load_task_specs(dataset_dir)

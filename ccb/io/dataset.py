@@ -238,7 +238,7 @@ class SegmentationClasses(BandInfo, LabelType):
     """Segmentation classes."""
 
     def __init__(self, name: str, spatial_resolution: float, n_classes: int, class_names: List[str] = None) -> None:
-        """Initialize new instance of CloudProbability.
+        """Initialize new instance of Segmentation Classes.
 
         Args:
             name: The main name of the band. This name is used for sorting the band and providing an order.
