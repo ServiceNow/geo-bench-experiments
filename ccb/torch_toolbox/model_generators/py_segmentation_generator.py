@@ -97,18 +97,7 @@ class SegmentationGenerator(ModelGenerator):
         eval_metrics = eval_metrics_generator(task_specs, config)
         test_metrics = test_metrics_generator(task_specs, config)
         return Model(backbone, head, loss, config, train_metrics, eval_metrics, test_metrics)
-
-    def get_collate_fn(self, task_specs: TaskSpecifications, config: dict):
-        """Define a collate function to batch input tensors.
-
-        Args:
-            task_specs: task specs to retrieve dataset
-            hparams: model hyperparameters
-
-        Returns:
-            collate function
-        """
-        return default_collate
+        
 
     def get_transform(
         self,
@@ -169,6 +158,17 @@ class SegmentationGenerator(ModelGenerator):
             return {"input": transformed["image"], "label": transformed["mask"].squeeze(-1).long()}
 
         return transform
+
+    def generate_model_name(self, config: Dict[str, Any]) -> str:
+        """Generate a model name that can be used throughout to the pipeline.
+        
+        Args:
+            config: config file
+        """
+        model_name = config["model"]["encoder_type"] + "_" + config["model"]["decoder_type"]
+        if config["model"]["pretrained"] is False:
+            model_name = "scratch_" + model_name
+        return model_name
 
 
 def model_generator() -> SegmentationGenerator:

@@ -234,18 +234,6 @@ class SSLMocoGenerator(ModelGenerator):
             test_metrics=test_metrics,
         )
 
-    def get_collate_fn(self, task_specs: TaskSpecifications, config: dict):
-        """Define a collate function to batch input tensors.
-
-        Args:
-            task_specs: task specs to retrieve dataset
-            config: model hyperparameters
-
-        Returns:
-            collate function
-        """
-        return default_collate
-
     def get_transform(self, task_specs, config: Dict[str, Any], train=True) -> Callable[[io.Sample], Dict[str, Any]]:
         """Define data transformations specific to the models generated.
 
@@ -286,3 +274,12 @@ class SSLMocoGenerator(ModelGenerator):
             return {"input": x, "label": sample.label}
 
         return transform
+
+
+    def generate_model_name(self, config: Dict[str, Any]) -> str:
+        """Generate a model name that can be used throughout to the pipeline.
+        
+        Args:
+            config: config file
+        """
+        return config["model"]["ssl_method"] + "_" + config["model"]["backbone"]

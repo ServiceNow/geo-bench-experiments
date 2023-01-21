@@ -16,4 +16,5 @@ parameters:
     min: 1.0e-5
   optimizer:
     value: adamw
-
+  batch_size:
+    128

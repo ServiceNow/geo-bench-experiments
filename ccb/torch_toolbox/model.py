@@ -393,25 +393,6 @@ class ModelGenerator:
 
         return trainer
 
-    def get_collate_fn(self, task_specs: TaskSpecifications, config: Dict[str, Any]):
-        """Generate the collate functions for stacking the mini-batch.
-
-        Args:
-            task_specs: an object describing the task to be performed
-            config: dictionary containing hyperparameters of the experiment
-
-        Returns:
-            A callable mapping a list of Sample to a tuple containing stacked inputs and labels. The stacked inputs
-            will be fed to the model.
-
-        Raises:
-            NotImplementedError
-
-        Example:
-            return ccb.torch_toolbox.model.collate_rgb
-        """
-        raise NotImplementedError("Necessary to define collate function.")
-
     def get_transform(self, task_specs: TaskSpecifications, config: Dict[str, Any], train: bool = True):
         """Generate the collate functions for stacking the mini-batch.
 
@@ -425,6 +406,14 @@ class ModelGenerator:
             A callable taking an object of type Sample as input. The return will be fed to the collate_fn
         """
         raise NotImplementedError("Necessary to define a transform function.")
+
+    def generate_model_name(self, config: Dict[str, Any]) -> str:
+        """Generate a model name that can be used throughout to the pipeline.
+        
+        Args:
+            config: config file
+        """
+        raise NotImplementedError("Necessary to define a model name.")
 
 
 def head_generator(task_specs: TaskSpecifications, features_shape: List[Tuple[int, ...]], config: Dict[str, Any]):

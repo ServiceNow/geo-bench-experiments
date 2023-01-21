@@ -203,18 +203,6 @@ class TIMMGenerator(ModelGenerator):
             test_metrics=test_metrics,
         )
 
-    def get_collate_fn(self, task_specs: TaskSpecifications, config: dict):
-        """Define a collate function to batch input tensors.
-
-        Args:
-            task_specs: task specs to retrieve dataset
-            config: model hyperparameters
-
-        Returns:
-            collate function
-        """
-        return default_collate
-
     def get_transform(
         self, task_specs, config: Dict[str, Any], train=True, scale=None, ratio=None
     ) -> Callable[[io.Sample], Dict[str, Any]]:
@@ -262,6 +250,17 @@ class TIMMGenerator(ModelGenerator):
             return {"input": x, "label": sample.label}
 
         return transform
+
+    def generate_model_name(self, config: Dict[str, Any]) -> str:
+        """Generate a model name that can be used throughout to the pipeline.
+        
+        Args:
+            config: config file
+        """
+        model_name = config["model"]["backbone"]
+        if not config["model"]["pretrained"]:
+            model_name = "scratch_" + model_name
+        return model_name
 
 
 def model_generator() -> TIMMGenerator:
