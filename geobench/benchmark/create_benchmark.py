@@ -252,8 +252,16 @@ def resample_from_stats(
 
 
 def max_shape_center_crop(max_shape):
-    """Ensure that the largest band has `max_shape` or less. If not, all bands will be center-cropped proportionnally
-    e.g., a band that is half the size of the max band will have a crop that is half the size of max_shape"""
+    """Get the max shape from a center crop.
+
+    Ensure that the largest band has `max_shape` or less.
+    If not, all bands will be center-cropped proportionnally
+    e.g., a band that is half the size of the max band will
+    have a crop that is half the size of max_shape
+
+    Args:
+        max_shape:
+    """
     max_shape = np.array(max_shape)
 
     def sample_converter(sample: io.Sample) -> io.Sample:

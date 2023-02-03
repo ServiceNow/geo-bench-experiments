@@ -476,7 +476,13 @@ class Band:
 
         return file_path
 
-    def crop_from_ratio(self, start_ratio: Union[tuple, np.ndarray], size_ratio: Union[tuple, np.ndarray]):
+    def crop_from_ratio(self, start_ratio: Union[tuple, np.ndarray], size_ratio: Union[tuple, np.ndarray]) -> None:
+        """Crop from ratio.
+
+        Args:
+            start_ratio:
+            size_ratio:
+        """
         shape = np.array(self.data.shape[:2])
         start = np.round(shape * np.array(start_ratio)).astype(np.int)
         size = np.round(shape * np.array(size_ratio)).astype(np.int)
@@ -603,7 +609,7 @@ class Sample(object):
         return len(self.dates) > 1
 
     def largest_shape(self):
-        """Return the height and width of the largest band, including label"""
+        """Return the height and width of the largest band, including label."""
         bands: List[Any] = self.bands
         if isinstance(self.label, Band):
             bands.append(self.label)

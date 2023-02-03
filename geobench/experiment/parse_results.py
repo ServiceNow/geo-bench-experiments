@@ -119,6 +119,7 @@ def plot_bootstrap_aggregate(df, metric, model_order, model_colors, repeat=100, 
 
 
 def plot_bootstrap_aggregate_growing(df, metric, model_order, model_colors, repeat=50, fig_size=None, n_legend_rows=2):
+    """Plot growing bootstrap aggregate."""
     df = df[["dataset", "partition name", "model", metric]].copy()
     sharey = True
     print(f"bootstrapping with repeat={repeat}.")
@@ -455,16 +456,26 @@ def extract_best_point(log_dir, filt_size=5, lower_is_better=False):
 
 
 class ExpResult:
+    """Experiment Results."""
+
     def __init__(self, log_dir) -> None:
+        """Initialize a new instance of ExpResault.
+
+        Args:
+            log_dir:
+        """
         self.log_dir = Path(log_dir)
 
     def get_traces(self):
+        """Get traces from model runs."""
         return collect_trace_info(self.log_dir)
 
     def get_best_point(self, filt_size=5):
+        """Get the best point from a trace."""
         return extract_best_point(self.log_dir, filt_size=filt_size)
 
     def get_hparams(self):
+        """Retrieve the hyperparameters of the experiment."""
         return get_hparams(self.log_dir)
 
     def get_config(self):
@@ -478,12 +489,15 @@ class ExpResult:
 
     @property
     def exp_dir(self):
+        """Return the experiment directory."""
         return self.log_dir.parent.parent
 
     def get_task_specs(self):
+        """Retrieve the task specifications."""
         return load_task_specs(self.exp_dir, rename_benchmark=False)
 
     def get_combined_info(self, rename_cols=True):
+        """Get combined info."""
         task = self.get_task_specs()
         config = self.get_config()
         best_point = self.get_best_point()
@@ -705,6 +719,14 @@ def plot_all_datasets(df, model, plot_fn=make_plot_sweep(legend=True), fig_size=
 
 
 def plot_discriminative_metric(df, metric="test metric", n_largest=3, fig_size=None):
+    """Create plot for the discriminative metric.
+
+    Args:
+        df:
+        metric:
+        n_largest:
+        fig_size:
+    """
     df["train ratio"] = [get_train_ratio(part_name) for part_name in df["partition name"]]
 
     models = df["model"].unique()
@@ -761,6 +783,11 @@ def plot_discriminative_metric(df, metric="test metric", n_largest=3, fig_size=N
 
 
 def count_exp(df):
+    """Count experiments per model and dataset.
+
+    Args:
+        df:
+    """
     partition_name = "partition_name"
     if partition_name not in df.columns:
         partition_name = "partition name"
@@ -768,7 +795,14 @@ def count_exp(df):
 
 
 def plot_speed_results(pkl_file, df, model_order, time_metric="best step"):
+    """Create plot for speed of experiments.
 
+    Args:
+        pkl_file:
+        df:
+        model_order:
+        time_metric:
+    """
     with open(pkl_file, "rb") as f:
         speed_df = pickle.load(f)
 
