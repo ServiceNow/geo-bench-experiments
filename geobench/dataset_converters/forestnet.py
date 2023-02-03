@@ -11,9 +11,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import rasterio
-from ccb import io
 from PIL import Image, ImageDraw
 from tqdm import tqdm
+
+from geobench import io
 
 DATASET_NAME = "forestnet_v1.0"
 SRC_DATASET_DIR = io.CCB_DIR / "source" / DATASET_NAME  # type: ignore

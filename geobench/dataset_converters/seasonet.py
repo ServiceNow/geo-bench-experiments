@@ -6,8 +6,9 @@ from typing import Any, List
 import numpy as np
 import pandas as pd
 import rasterio
-from ccb import io
 from tqdm import tqdm
+
+from geobench import io
 
 # change dimensions to be H, W, C
 # Paths

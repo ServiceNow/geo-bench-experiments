@@ -5,9 +5,10 @@ import os
 from pathlib import Path
 
 import numpy as np
-from ccb import io
 from torchgeo.datasets import EuroSAT
 from tqdm import tqdm
+
+from geobench import io
 
 DATASET_NAME = "eurosat"
 SRC_DATASET_DIR = Path(io.src_datasets_dir, DATASET_NAME)  # type: ignore

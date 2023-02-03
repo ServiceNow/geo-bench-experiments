@@ -21,9 +21,10 @@ from typing import Any, Dict
 
 import numpy as np
 import rasterio
-from ccb import io
 from torchgeo.datasets import XView2
 from tqdm import tqdm
+
+from geobench import io
 
 DATASET_NAME = "xview2"
 SRC_DATASET_DIR = Path(io.src_datasets_dir, DATASET_NAME)  # type: ignore

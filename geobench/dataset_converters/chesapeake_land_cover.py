@@ -5,9 +5,10 @@
 from pathlib import Path
 
 import numpy as np
-from ccb import io
 from torchgeo.datamodules import ChesapeakeCVPRDataModule
 from tqdm import tqdm
+
+from geobench import io
 
 # Note: both of the following datasets need to be downloaded manually
 # into the same directory. It will not download successfully using

@@ -16,9 +16,10 @@ import numpy as np
 import pandas as pd
 import rasterio
 import tifffile
-from ccb import io
 from PIL import Image
 from tqdm import tqdm
+
+from geobench import io
 
 DATASET_NAME = "geolifeclef-2022"
 SPATIAL_RESOLUTION = 1

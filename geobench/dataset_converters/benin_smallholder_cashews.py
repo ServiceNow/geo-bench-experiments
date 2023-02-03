@@ -15,9 +15,10 @@ from pathlib import Path
 from typing import Any, List
 
 import numpy as np
-from ccb import io
 from torchgeo.datasets import BeninSmallHolderCashews
 from tqdm import tqdm
+
+from geobench import io
 
 # Classification labels
 LABELS = (

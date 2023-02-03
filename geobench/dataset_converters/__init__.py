@@ -1,1 +1,1 @@
-"""CCBDataset converter init."""
+"""GeoBenchDataset converter init."""

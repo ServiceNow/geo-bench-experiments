@@ -20,9 +20,10 @@ from warnings import warn
 import numpy as np
 import rasterio
 import xmltodict
-from ccb import io
-from ccb.benchmark.rasterize_detection import rasterize_box
 from tqdm import tqdm
+
+from geobench import io
+from geobench.benchmark.rasterize_detection import rasterize_box
 
 SEGMENTATION = True
 

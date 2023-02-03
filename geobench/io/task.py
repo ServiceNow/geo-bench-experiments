@@ -10,7 +10,7 @@ from typing import Any, Dict, Generator, List, Sequence, Tuple, Union
 import numpy as np
 
 from geobench import io
-from geobench.io.dataset import BandInfo, CCBDataset, Landsat8, Sentinel1, Sentinel2, SpectralBand
+from geobench.io.dataset import BandInfo, GeobenchDataset, Landsat8, Sentinel1, Sentinel2, SpectralBand
 from geobench.io.label import Classification
 
 
@@ -27,21 +27,19 @@ class TaskSpecifications:
         n_time_steps: int = None,
         bands_stats=None,
         label_type=None,
-        eval_loss=None,
-        eval_metrics=None,
     ) -> None:
         """Initialize a new instance of TaskSpecifications.
 
         Args:
             dataset_name: The name of the dataset.
+            bands_info: band info
+            spatial_resolution: physical distance between pixels in meters.
             benchmark_name: The name of the benchmark used. Defaults to "converted".
             patch_size: maximum image patch size across bands (width, height).
             n_time_steps: integer specifying the number of time steps for each sample.
                 This should be 1 for most dataset unless it's time series.
             bands_info: list of object of type BandInfo descrbing the type of each band.
             label_type: The type of the label e.g. Classification, SegmentationClasses, Regression.
-            eval_loss: Object of type Loss, e.g. Accuracy, SegmentationAccuracy.
-            spatial_resolution: physical distance between pixels in meters.
         """
         self.dataset_name = dataset_name
         self.benchmark_name = benchmark_name
@@ -50,8 +48,6 @@ class TaskSpecifications:
         self.bands_info = bands_info
         self.bands_stats = bands_stats
         self.label_type = label_type
-        self.eval_loss = eval_loss
-        self.eval_metrics = eval_metrics
         self.spatial_resolution = spatial_resolution
 
     def __str__(self) -> str:
@@ -87,7 +83,7 @@ class TaskSpecifications:
         transform=None,
         band_names: Sequence[str] = ("red", "green", "blue"),
         format: str = "hdf5",
-    ) -> CCBDataset:
+    ) -> GeobenchDataset:
         """Retrieve dataset for a given split and partition with chosen transform, format and bands.
 
         Args:
@@ -98,7 +94,7 @@ class TaskSpecifications:
             file_format: 'hdf5' or 'tif'
             band_names: band names to select from dataset
         """
-        return CCBDataset(
+        return GeobenchDataset(
             dataset_dir=self.get_dataset_dir(benchmark_dir),
             split=split,
             partition_name=partition_name,

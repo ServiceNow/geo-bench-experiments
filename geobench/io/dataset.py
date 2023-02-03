@@ -1,4 +1,4 @@
-"""CCBDataset."""
+"""GeobenchDataset."""
 from __future__ import annotations
 
 import ast
@@ -1119,7 +1119,7 @@ class Partition:
         """Save partition.
 
         If as_default is True, create symlink named default_partition.json -> {partition_name}_partition.json
-        This will be loaded as the default partition by class CCBDataset
+        This will be loaded as the default partition by class GeobenchDataset
 
         Args:
             directory: path to directory where partition is stored
@@ -1155,8 +1155,8 @@ class GeneratorWithLength(object):
         return self.generator
 
 
-class CCBDataset:
-    """CCBDataset."""
+class GeobenchDataset:
+    """GeobenchDataset."""
 
     def __init__(
         self,
@@ -1167,9 +1167,9 @@ class CCBDataset:
         transform: Callable[[Sample], Sample] = None,
         format="hdf5",
     ) -> None:
-        """Initialize new CCB dataset.
+        """Initialize new Geobench dataset.
 
-        CCB datasets can have different split partitions (e.g. for few-shot learning).
+        Geobench datasets can have different split partitions (e.g. for few-shot learning).
         The default partition is
 
         Args:
@@ -1460,7 +1460,7 @@ class CCBDataset:
 
     def __repr__(self):
         """Return representation of dataset."""
-        return f"CCBDataset(dataset_dir={ self.dataset_dir}, split={self.split}, active_partition={self.active_partition_name}, n_samples={len(self)})"
+        return f"GeobenchDataset(dataset_dir={ self.dataset_dir}, split={self.split}, active_partition={self.active_partition_name}, n_samples={len(self)})"
 
 
 class Stats:
@@ -1540,7 +1540,7 @@ def compute_stats(values) -> Stats:
 
 
 def compute_dataset_statistics(
-    dataset: CCBDataset, n_value_per_image: int = 1000, n_samples: int = None
+    dataset: GeobenchDataset, n_value_per_image: int = 1000, n_samples: int = None
 ) -> Tuple[Dict[str, "np.typing.NDArray[np.float_]"], Dict[str, Stats]]:
     """Compute statistics over an entire dataset.
 
@@ -1629,7 +1629,7 @@ def _date_from_str(date_str):
 
 
 def check_dataset_integrity(
-    dataset: CCBDataset, samples: List[Sample], max_count: int = None, assert_dense: bool = True
+    dataset: GeobenchDataset, samples: List[Sample], max_count: int = None, assert_dense: bool = True
 ) -> None:
     """Verify the intergrity, coherence and consistancy of a list of a dataset.
 

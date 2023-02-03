@@ -1,5 +1,5 @@
-"""CCB io."""
+"""Geo-Bench io."""
 
-from ccb.io.dataset import *
-from ccb.io.label import *
-from ccb.io.task import *
+from geobench.io.dataset import *
+from geobench.io.label import *
+from geobench.io.task import *

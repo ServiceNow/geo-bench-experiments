@@ -4,9 +4,10 @@ from pathlib import Path
 from typing import Any, List
 
 import numpy as np
-from ccb import io
 from torchgeo.datasets import cv4a_kenya_crop_type
 from tqdm import tqdm
+
+from geobench import io
 
 # Deprecated:
 # we need to re-write this scripts so that it can properly splits into train / test

@@ -15,10 +15,11 @@ from typing import List, Union
 import numpy as np
 import pandas as pd
 import rasterio
-from ccb import io
-from ccb.io.dataset import Band, Sample
 from PIL import Image
 from tqdm import tqdm
+
+from geobench import io
+from geobench.io.dataset import Band, Sample
 
 sys.path.append(str(Path.cwd()))
 

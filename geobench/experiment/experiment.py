@@ -121,7 +121,7 @@ class Job:
         with open(script_path, "w") as fd:
             fd.write("#!/bin/bash\n")
             fd.write("# Usage: sh run.sh path/to/model_generator.py\n\n")
-            fd.write(f"ccb-trainer --job_dir {job_dir}")
+            fd.write(f"geobench-trainer --job_dir {job_dir}")
         script_path.chmod(script_path.stat().st_mode | stat.S_IEXEC)
 
     def write_wandb_sweep_cl_script(
@@ -148,7 +148,7 @@ class Job:
 
         # sweep name that will be seen on wandb
         if (
-            model_generator_module_name != "ccb.torch_toolbox.model_generators.py_segmentation_generator"
+            model_generator_module_name != "geobench.torch_toolbox.model_generators.py_segmentation_generator"
         ):  # TODO(Nils), we can't have code that is specific to a model generator here.
             backbone = config["model"]["backbone"]
             base_yaml["name"] = "_".join(str(job_dir).split("/")[-2:]) + "_" + backbone

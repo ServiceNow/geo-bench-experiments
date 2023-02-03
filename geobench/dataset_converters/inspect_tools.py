@@ -8,9 +8,6 @@ from warnings import warn
 import ipyplot
 import numpy as np
 import pandas as pd
-from ccb import io
-from ccb.io import dataset as io_ds
-from ccb.io.dataset import Band, CCBDataset, HyperSpectralBands, Sample, SegmentationClasses, compute_dataset_statistics
 from ipyleaflet import Map, Marker, Rectangle
 from matplotlib import cm
 from matplotlib import pyplot as plt
@@ -18,6 +15,17 @@ from PIL import Image, ImageDraw
 from rasterio import warp
 from rasterio.crs import CRS
 from tqdm.auto import tqdm
+
+from geobench import io
+from geobench.io import dataset as io_ds
+from geobench.io.dataset import (
+    Band,
+    GeobenchDataset,
+    HyperSpectralBands,
+    Sample,
+    SegmentationClasses,
+    compute_dataset_statistics,
+)
 
 
 def compare(a, b, name, src_a, src_b) -> None:
@@ -549,7 +557,7 @@ def benchmark_data_frame(benchmark_name):
     return df
 
 
-def extract_classification_samples(dataset: io.CCBDataset, num_samples=8, rng=np.random):
+def extract_classification_samples(dataset: io.GeobenchDataset, num_samples=8, rng=np.random):
     """Extract `num_samples` for each class in `dataset`."""
     label_map = dataset.task_specs.get_label_map()
     n_classes = len(label_map)

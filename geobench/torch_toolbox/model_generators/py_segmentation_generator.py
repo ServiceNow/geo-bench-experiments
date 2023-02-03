@@ -8,10 +8,14 @@ import segmentation_models_pytorch as smp
 import torch
 import torchvision.transforms.functional as TF
 from albumentations.pytorch.transforms import ToTensorV2
-from ccb import io
-from ccb.io.dataset import Band
-from ccb.io.task import TaskSpecifications
-from ccb.torch_toolbox.model import (
+from torch import Tensor
+from torch.utils.data.dataloader import default_collate
+from torchvision import transforms as tt
+
+from geobench import io
+from geobench.io.dataset import Band
+from geobench.io.task import TaskSpecifications
+from geobench.torch_toolbox.model import (
     Model,
     ModelGenerator,
     eval_metrics_generator,
@@ -19,10 +23,7 @@ from ccb.torch_toolbox.model import (
     train_loss_generator,
     train_metrics_generator,
 )
-from ccb.torch_toolbox.modules import ClassificationHead
-from torch import Tensor
-from torch.utils.data.dataloader import default_collate
-from torchvision import transforms as tt
+from geobench.torch_toolbox.modules import ClassificationHead
 
 
 class SegmentationGenerator(ModelGenerator):

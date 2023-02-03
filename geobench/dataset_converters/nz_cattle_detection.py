@@ -12,10 +12,11 @@ from typing import List, Union
 
 import numpy as np
 import rasterio
-from ccb import io
-from ccb.benchmark.rasterize_detection import point_to_boxes, rasterize_box
 from PIL import Image
 from tqdm import tqdm
+
+from geobench import io
+from geobench.benchmark.rasterize_detection import point_to_boxes, rasterize_box
 
 SEGMENTATION = True
 

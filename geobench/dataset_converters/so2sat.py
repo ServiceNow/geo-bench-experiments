@@ -5,11 +5,12 @@ import os
 from pathlib import Path
 
 import numpy as np
-from ccb import io
-from ccb.io.dataset import Sample
-from ccb.io.task import TaskSpecifications
 from torchgeo.datasets import So2Sat
 from tqdm import tqdm
+
+from geobench import io
+from geobench.io.dataset import Sample
+from geobench.io.task import TaskSpecifications
 
 DATASET_NAME = "so2sat"
 SRC_DATASET_DIR = io.CCB_DIR / "source" / DATASET_NAME  # type: ignore

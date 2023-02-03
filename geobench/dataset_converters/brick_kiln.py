@@ -11,8 +11,9 @@ from pathlib import Path
 import h5py
 import numpy as np
 import rasterio
-from ccb import io
 from tqdm import tqdm
+
+from geobench import io
 
 DATASET_NAME = "brick_kiln_v1.0"
 SRC_DATASET_DIR = Path(io.src_datasets_dir, DATASET_NAME)  # type: ignore

@@ -10,14 +10,15 @@ import pytorch_lightning as pl
 import torch
 import torch.nn.functional as F
 import torchmetrics
-from ccb import io
-from ccb.io.task import TaskSpecifications
-from ccb.torch_toolbox.modules import ClassificationHead
 from pytorch_lightning import LightningModule
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pytorch_lightning.profiler import SimpleProfiler
 from torch import Tensor
+
+from geobench import io
+from geobench.io.task import TaskSpecifications
+from geobench.torch_toolbox.modules import ClassificationHead
 
 
 class Model(LightningModule):
@@ -464,12 +465,12 @@ def train_metrics_generator(
         metric collection used during training
     """
     metrics: List[torchmetrics.MetricCollection] = {
-        io.Classification: torchmetrics.MetricCollection([torchmetrics.Accuracy(dist_sync_on_step=True, top_k=1)]),  # type: ignore
+        io.Classification: torchmetrics.MetricCollection([torchmetrics.Accuracy(task="multiclass", num_classes=task_specs.label_type.n_classes, dist_sync_on_step=True, top_k=1)]),  # type: ignore
         io.MultiLabelClassification: torchmetrics.MetricCollection(
-            [torchmetrics.F1Score(task_specs.label_type.n_classes)]
+            [torchmetrics.F1Score(task="multilabel", num_labels=task_specs.label_type.n_classes)]
         ),
         io.SegmentationClasses: torchmetrics.MetricCollection(
-            [torchmetrics.JaccardIndex(task_specs.label_type.n_classes)]
+            [torchmetrics.JaccardIndex(task="multiclass", num_classes=task_specs.label_type.n_classes)]
         ),
     }[task_specs.label_type.__class__]
 
@@ -489,15 +490,19 @@ def eval_metrics_generator(
         metric collection used during evaluation
     """
     metrics: List[torchmetrics.MetricCollection] = {  # type: ignore
-        io.Classification: torchmetrics.MetricCollection([torchmetrics.Accuracy()]),
+        io.Classification: torchmetrics.MetricCollection(
+            [torchmetrics.Accuracy(task="multiclass", num_classes=task_specs.label_type.n_classes)]
+        ),
         io.SegmentationClasses: torchmetrics.MetricCollection(
             [
-                torchmetrics.JaccardIndex(task_specs.label_type.n_classes),
-                torchmetrics.FBetaScore(task_specs.label_type.n_classes, beta=2, mdmc_average="samplewise"),
+                torchmetrics.JaccardIndex(task="multiclass", num_classes=task_specs.label_type.n_classes),
+                torchmetrics.FBetaScore(
+                    task="multiclass", num_classes=task_specs.label_type.n_classes, beta=2.0, mdmc_average="samplewise"
+                ),
             ]
         ),
         io.MultiLabelClassification: torchmetrics.MetricCollection(
-            [torchmetrics.F1Score(task_specs.label_type.n_classes)]
+            [torchmetrics.F1Score(task="multilabel", num_labels=task_specs.label_type.n_classes)]
         ),
     }[task_specs.label_type.__class__]
 
@@ -514,16 +519,24 @@ def test_metrics_generator(task_specs: TaskSpecifications, config: Dict[str, Any
     Returns:
         metric collection used during evaluation
     """
-    metrics = {
-        io.Classification: [torchmetrics.Accuracy()],
-        io.SegmentationClasses: [
-            torchmetrics.JaccardIndex(task_specs.label_type.n_classes),
-            torchmetrics.FBetaScore(task_specs.label_type.n_classes, beta=2, mdmc_average="samplewise"),
-        ],
-        io.MultiLabelClassification: [torchmetrics.F1Score(task_specs.label_type.n_classes)],
+    metrics: List[torchmetrics.MetricCollection] = {  # type: ignore
+        io.Classification: torchmetrics.MetricCollection(
+            [torchmetrics.Accuracy(task="multiclass", num_classes=task_specs.label_type.n_classes)]
+        ),
+        io.SegmentationClasses: torchmetrics.MetricCollection(
+            [
+                torchmetrics.JaccardIndex(task="multiclass", num_classes=task_specs.label_type.n_classes),
+                torchmetrics.FBetaScore(
+                    task="multiclass", num_classes=task_specs.label_type.n_classes, beta=2.0, mdmc_average="samplewise"
+                ),
+            ]
+        ),
+        io.MultiLabelClassification: torchmetrics.MetricCollection(
+            [torchmetrics.F1Score(task="multilabel", num_labels=task_specs.label_type.n_classes)]
+        ),
     }[task_specs.label_type.__class__]
 
-    return torchmetrics.MetricCollection(metrics)
+    return metrics
 
 
 def _balanced_binary_cross_entropy_with_logits(outputs: Tensor, targets: Tensor) -> Tensor:

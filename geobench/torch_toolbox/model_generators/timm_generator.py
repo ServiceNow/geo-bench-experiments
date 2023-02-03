@@ -8,9 +8,13 @@ import numpy as np
 import timm
 import torch
 from albumentations.pytorch import ToTensorV2
-from ccb import io
-from ccb.io.task import TaskSpecifications
-from ccb.torch_toolbox.model import (
+from torch.utils.data.dataloader import default_collate
+from torchgeo.models import get_weight
+from torchvision import transforms as tt
+
+from geobench import io
+from geobench.io.task import TaskSpecifications
+from geobench.torch_toolbox.model import (
     BackBone,
     Model,
     ModelGenerator,
@@ -20,8 +24,6 @@ from ccb.torch_toolbox.model import (
     train_loss_generator,
     train_metrics_generator,
 )
-from torch.utils.data.dataloader import default_collate
-from torchvision import transforms as tt
 
 
 def modify_beyond_rgb_layer(new_in_channels, current_layer, task_specs, config):
@@ -156,7 +158,7 @@ class TIMMGenerator(ModelGenerator):
         super().__init__()
 
     def generate_model(self, task_specs: TaskSpecifications, config: dict) -> Model:
-        """Return a ccb.torch_toolbox.model.Model instance from task specs and hparams.
+        """Return a geobench.torch_toolbox.model.Model instance from task specs and hparams.
 
         Args:
             task_specs: object with task specs
@@ -169,10 +171,15 @@ class TIMMGenerator(ModelGenerator):
         backbone = timm.create_model(
             config["model"]["backbone"], pretrained=config["model"]["pretrained"], features_only=False
         )
+        weight_name = config["model"].get("weights", None)
+        if weight_name is not None:
+            weights = get_weight(weight_name)
+            backbone.load_state_dict(weights.get_state_dict(progress=True), strict=False)
+
         setattr(backbone, backbone.default_cfg["classifier"], torch.nn.Identity())
         config["model"]["default_input_size"] = backbone.default_cfg["input_size"]
 
-        beyond_rgb(backbone, task_specs, config)
+        # beyond_rgb(backbone, task_specs, config)
 
         test_input_for_feature_dim = (
             len(config["dataset"]["band_names"]),
