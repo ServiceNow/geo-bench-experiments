@@ -2,11 +2,11 @@ experiment:
   generate_experiment_dir: climate-change-benchmark/experiments
   experiment_name: testing # prefix
   experiment_type: standard # standard, seeded_runs, sweep
-  benchmark_dir: tests/data/ccb-test-classification
+  benchmark_dir: tests/data/geobench-test-classification
   partition_name: default
   loggers: ["csv"]
 model:
-  model_generator_module_name: ccb.torch_toolbox.model_generators.timm_generator
+  model_generator_module_name: geobench.torch_toolbox.model_generators.timm_generator
   head_type: linear # classification
   loss_type: crossentropy
   new_channel_init_method: random

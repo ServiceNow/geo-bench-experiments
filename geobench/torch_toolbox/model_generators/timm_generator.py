@@ -3,11 +3,10 @@
 import random
 from typing import Any, Callable, Dict
 
-import albumentations as A
+import kornia.augmentations as K
 import numpy as np
 import timm
 import torch
-from albumentations.pytorch import ToTensorV2
 from torch.utils.data.dataloader import default_collate
 from torchgeo.models import get_weight
 from torchvision import transforms as tt
@@ -236,25 +235,26 @@ class TIMMGenerator(ModelGenerator):
 
         desired_input_size = config["model"]["default_input_size"][1]
 
-        t = []
         if train:
-            t.append(A.RandomRotate90(0.5))
-            t.append(A.HorizontalFlip(0.5))
-            t.append(A.VerticalFlip(0.5))
-            t.append(A.Transpose(0.5))
-
-        t.append(A.Resize(desired_input_size, desired_input_size))
-
-        # max_pixel_value = 1 is essential for us
-        t.append(A.Normalize(mean=mean, std=std, max_pixel_value=1))
-        t.append(ToTensorV2())
-        transform_comp = A.Compose(t)
+            t = AugmentationSequential(
+                K.Normalize(mean=mean, std=std), 
+                K.RandomHorizontalFlip(p=0.5),
+                K.RandomVerticalFlip(p=0.5),
+                K.Resize((desired_input_size, desired_input_size)),
+                data_keys=["image"]
+            )
+        else:
+            t = AugmentationSequential(
+                K.Normalize(mean=mean, std=std), 
+                K.Resize((desired_input_size, desired_input_size)),
+                data_keys=["image"]
+            )
 
         def transform(sample: io.Sample):
             x: "np.typing.NDArray[np.float_]" = sample.pack_to_3d(band_names=config["dataset"]["band_names"])[0].astype(
                 "float32"
             )
-            x = transform_comp(image=x)["image"]
+            x = t({"image": x})
             return {"input": x, "label": sample.label}
 
         return transform

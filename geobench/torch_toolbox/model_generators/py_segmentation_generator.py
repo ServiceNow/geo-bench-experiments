@@ -129,30 +129,27 @@ class SegmentationGenerator(ModelGenerator):
         ).rgb_stats()
         band_names = config["dataset"]["band_names"]
 
-        t = []
-        if h < patch_h:
-            t.append(A.SmallestMaxSize(max_size=h))
-        if patch_h < h32:
-            t.append(A.Resize(h32, w32))
-
-        t.append(A.RandomCrop(h32, w32))
         if train:
-            t.append(A.RandomRotate90(0.5))
-            t.append(A.HorizontalFlip(0.5))
-            t.append(A.VerticalFlip(0.5))
-            t.append(A.Transpose(0.5))
+            t = AugmentationSequential(
+                K.Normalize(mean=mean, std=std), 
+                K.RandomHorizontalFlip(p=0.5),
+                K.RandomVerticalFlip(p=0.5),
+                K.Resize((h32, w32)),
+                data_keys=["image"]
+            )
+        else:
+            t = AugmentationSequential(
+                K.Normalize(mean=mean, std=std), 
+                K.Resize((h32, w32)),
+                data_keys=["image"]
+            )
 
-        # max_pixel_value = 1 is essential for us
-        t.append(A.Normalize(mean=mean, std=std, max_pixel_value=1))
-        t.append(ToTensorV2())
-        t_comp = A.Compose(t)
-
-        def transform(sample: io.Sample):
+         def transform(sample: io.Sample):
             x = sample.pack_to_3d(band_names=band_names)[0].astype("float32")
 
             if isinstance(sample.label, Band):
                 x, y = x, sample.label.data.astype("float32")
-                transformed = t_comp(image=x, mask=y)
+                transformed = t({"image":x, "mask":y})
 
             return {"input": transformed["image"], "label": transformed["mask"].squeeze(-1).long()}
 
