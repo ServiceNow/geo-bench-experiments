@@ -113,7 +113,7 @@ class Job:
 
     def write_script(self, job_dir: str) -> None:
         """Write bash scrip that can be executed to run job.
-
+to 
         Args:
             job_dir: job directory from which to run job
         """
@@ -146,16 +146,7 @@ class Job:
         ]
         config = Job(job_dir).config
 
-        # sweep name that will be seen on wandb
-        if (
-            model_generator_module_name != "geobench.torch_toolbox.model_generators.py_segmentation_generator"
-        ):  # TODO(Nils), we can't have code that is specific to a model generator here.
-            backbone = config["model"]["backbone"]
-            base_yaml["name"] = "_".join(str(job_dir).split("/")[-2:]) + "_" + backbone
-        else:
-            encoder = config["model"]["encoder_type"]
-            decoder = config["model"]["decoder_type"]
-            base_yaml["name"] = "_".join(str(job_dir).split("/")[-2:]) + "_" + encoder + "_" + decoder
+        base_yaml["name"] = config["model"]["model_name"]
 
         save_path = os.path.join(job_dir, "sweep_config.yaml")
         yaml.indent(sequence=4, offset=2)

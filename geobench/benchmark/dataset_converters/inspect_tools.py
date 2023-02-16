@@ -16,16 +16,9 @@ from rasterio import warp
 from rasterio.crs import CRS
 from tqdm.auto import tqdm
 
-from geobench import io
-from geobench.io import dataset as io_ds
-from geobench.io.dataset import (
-    Band,
-    GeobenchDataset,
-    HyperSpectralBands,
-    Sample,
-    SegmentationClasses,
-    compute_dataset_statistics,
-)
+from ccb import io
+from ccb.io import dataset as io_ds
+from ccb.io.dataset import Band, CCBDataset, HyperSpectralBands, Sample, SegmentationClasses, compute_dataset_statistics
 
 
 def compare(a, b, name, src_a, src_b) -> None:
@@ -305,25 +298,25 @@ def extract_bands(samples, band_groups=None, draw_label=False, label_patch_size=
 def center_coord(band):
     """Find center coordinates."""
     center = np.array(band.data.shape[:2]) / 2.0
-    center = transform_to_4326(band, center)
+    center = transform_to_4326(band.transform, band.crs, center)
     return tuple(center[::-1])
 
 
-def transform_to_4326(band, coord):
+def transform_to_4326(transform, crs, coord):
     """Transform `coord` from band.crs to EPSG4326."""
-    coord = band.transform * coord
-    if band.crs != CRS.from_epsg(4326):
+    coord = transform * coord
+    if crs != CRS.from_epsg(4326):
         xs = np.array([coord[0]])
         ys = np.array([coord[1]])
-        xs, ys = warp.transform(src_crs=band.crs, dst_crs=CRS.from_epsg(4326), xs=xs, ys=ys)
+        xs, ys = warp.transform(src_crs=crs, dst_crs=CRS.from_epsg(4326), xs=xs, ys=ys)
         coord = (xs[0], ys[0])
     return coord
 
 
 def get_rect(band):
     """Obtain a georeferenced rectangle ready to display in ipyleaflet."""
-    sw = transform_to_4326(band, (0, 0))
-    ne = transform_to_4326(band, band.data.shape[:2])
+    sw = transform_to_4326(band.transform, band.crs, (0, 0))
+    ne = transform_to_4326(band.transform, band.crs, band.data.shape[:2])
     return Rectangle(bounds=(sw[::-1], ne[::-1]))
 
 
@@ -487,6 +480,13 @@ def collect_task_info(task, fix_task_shape=False):
         n_train = len(partition["train"])
         n_valid = len(partition["valid"])
         n_test = len(partition["test"])
+        n_geoinfo = 0
+        for band in dataset[0].bands:
+            
+            if band.transform != None:
+                n_geoinfo += 1
+        
+
     except Exception as e:
         print(e)
         n_train, n_valid, n_test = -1, -1, -1
@@ -516,6 +516,7 @@ def collect_task_info(task, fix_task_shape=False):
         "Val Size": n_valid,
         "Test Size": n_test,
         "Sensors": SENSORS.get(task.dataset_name, None),
+        "n_geoinfo": n_geoinfo,
     }
     task_dict.update(summarize_band_info(task.bands_info))
     return task_dict, dataset
@@ -551,13 +552,14 @@ def benchmark_data_frame(benchmark_name):
         "HS res",
         "Elevation res",
         "Sensors",
+        "n_geoinfo",
     )
     df = pd.DataFrame.from_records(task_dicts, columns=column_order)
     pd.set_option("max_colwidth", 300)
     return df
 
 
-def extract_classification_samples(dataset: io.GeobenchDataset, num_samples=8, rng=np.random):
+def extract_classification_samples(dataset: io.CCBDataset, num_samples=8, rng=np.random):
     """Extract `num_samples` for each class in `dataset`."""
     label_map = dataset.task_specs.get_label_map()
     n_classes = len(label_map)
