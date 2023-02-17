@@ -3,7 +3,9 @@
 import random
 from typing import Any, Callable, Dict
 
-import kornia.augmentations as K
+import kornia.augmentation as K
+from kornia.augmentation import ImageSequential
+
 import numpy as np
 import timm
 import torch
@@ -236,25 +238,23 @@ class TIMMGenerator(ModelGenerator):
         desired_input_size = config["model"]["default_input_size"][1]
 
         if train:
-            t = AugmentationSequential(
-                K.Normalize(mean=mean, std=std), 
+            t = ImageSequential(
+                K.Normalize(mean=torch.Tensor(mean), std=torch.Tensor(std)), 
                 K.RandomHorizontalFlip(p=0.5),
                 K.RandomVerticalFlip(p=0.5),
                 K.Resize((desired_input_size, desired_input_size)),
-                data_keys=["image"]
             )
         else:
-            t = AugmentationSequential(
-                K.Normalize(mean=mean, std=std), 
+            t = ImageSequential(
+                K.Normalize(mean=torch.Tensor(mean), std=torch.Tensor(std)), 
                 K.Resize((desired_input_size, desired_input_size)),
-                data_keys=["image"]
             )
 
         def transform(sample: io.Sample):
             x: "np.typing.NDArray[np.float_]" = sample.pack_to_3d(band_names=config["dataset"]["band_names"])[0].astype(
                 "float32"
             )
-            x = t({"image": x})
+            x = t(torch.from_numpy(x).permute(2, 0, 1)).squeeze(0)
             return {"input": x, "label": sample.label}
 
         return transform

@@ -2,7 +2,8 @@
 
 from typing import Any, Dict
 
-import albumentations as A
+from kornia.augmentation import AugmentationSequential
+import kornia.augmentation as K
 import cv2
 import segmentation_models_pytorch as smp
 import torch
@@ -131,24 +132,24 @@ class SegmentationGenerator(ModelGenerator):
 
         if train:
             t = AugmentationSequential(
-                K.Normalize(mean=mean, std=std), 
+                K.Normalize(mean=torch.Tensor(mean), std=torch.Tensor(std)), 
                 K.RandomHorizontalFlip(p=0.5),
                 K.RandomVerticalFlip(p=0.5),
                 K.Resize((h32, w32)),
-                data_keys=["image"]
+                data_keys=["image", "mask"]
             )
         else:
             t = AugmentationSequential(
-                K.Normalize(mean=mean, std=std), 
+                K.Normalize(mean=torch.Tensor(mean), std=torch.Tensor(std)), 
                 K.Resize((h32, w32)),
-                data_keys=["image"]
+                data_keys=["image", "mask"]
             )
 
          def transform(sample: io.Sample):
             x = sample.pack_to_3d(band_names=band_names)[0].astype("float32")
 
             if isinstance(sample.label, Band):
-                x, y = x, sample.label.data.astype("float32")
+                x, y = torch.from_numpy(x), torch.from_numpy(sample.label.data.astype("float32"))
                 transformed = t({"image":x, "mask":y})
 
             return {"input": transformed["image"], "label": transformed["mask"].squeeze(-1).long()}
