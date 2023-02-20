@@ -449,34 +449,6 @@ def head_generator(task_specs: TaskSpecifications, features_shape: List[Tuple[in
 METRIC_MAP: Dict[str, Any] = {}
 
 
-def train_metrics_generator(
-    task_specs: TaskSpecifications, config: Dict[str, Any]
-) -> List[torchmetrics.MetricCollection]:
-    """Return the appropriate loss function depending on the task_specs.
-
-    We should implement basic loss and we can leverage the
-    following attributes: task_specs.task_type and task_specs.eval_loss
-
-    Args:
-        task_specs: an object describing the task to be performed
-        config: dictionary containing hyperparameters of the experiment
-
-    Returns:
-        metric collection used during training
-    """
-    metrics: List[torchmetrics.MetricCollection] = {
-        io.Classification: torchmetrics.MetricCollection([torchmetrics.Accuracy(task="multiclass", num_classes=task_specs.label_type.n_classes, dist_sync_on_step=True, top_k=1)]),  # type: ignore
-        io.MultiLabelClassification: torchmetrics.MetricCollection(
-            [torchmetrics.F1Score(task="multilabel", num_labels=task_specs.label_type.n_classes)]
-        ),
-        io.SegmentationClasses: torchmetrics.MetricCollection(
-            [torchmetrics.JaccardIndex(task="multiclass", num_classes=task_specs.label_type.n_classes)]
-        ),
-    }[task_specs.label_type.__class__]
-
-    return metrics
-
-
 def eval_metrics_generator(
     task_specs: TaskSpecifications, config: Dict[str, Any]
 ) -> List[torchmetrics.MetricCollection]:
@@ -491,48 +463,18 @@ def eval_metrics_generator(
     """
     metrics: List[torchmetrics.MetricCollection] = {  # type: ignore
         io.Classification: torchmetrics.MetricCollection(
-            [torchmetrics.Accuracy(task="multiclass", num_classes=task_specs.label_type.n_classes)]
+            {"Accuracy": torchmetrics.Accuracy(task="multiclass", num_classes=task_specs.label_type.n_classes)}
         ),
         io.SegmentationClasses: torchmetrics.MetricCollection(
-            [
-                torchmetrics.JaccardIndex(task="multiclass", num_classes=task_specs.label_type.n_classes),
-                torchmetrics.FBetaScore(
+            {
+                "Jaccard": torchmetrics.JaccardIndex(task="multiclass", num_classes=task_specs.label_type.n_classes),
+                "FBeta": torchmetrics.FBetaScore(
                     task="multiclass", num_classes=task_specs.label_type.n_classes, beta=2.0, mdmc_average="samplewise"
                 ),
-            ]
+            }
         ),
         io.MultiLabelClassification: torchmetrics.MetricCollection(
-            [torchmetrics.F1Score(task="multilabel", num_labels=task_specs.label_type.n_classes)]
-        ),
-    }[task_specs.label_type.__class__]
-
-    return metrics
-
-
-def test_metrics_generator(task_specs: TaskSpecifications, config: Dict[str, Any]) -> torchmetrics.MetricCollection:
-    """Return the appropriate eval function depending on the task_specs.
-
-    Args:
-        task_specs: an object describing the task to be performed
-        hyperparams: dictionary containing hyperparameters of the experiment
-
-    Returns:
-        metric collection used during evaluation
-    """
-    metrics: List[torchmetrics.MetricCollection] = {  # type: ignore
-        io.Classification: torchmetrics.MetricCollection(
-            [torchmetrics.Accuracy(task="multiclass", num_classes=task_specs.label_type.n_classes)]
-        ),
-        io.SegmentationClasses: torchmetrics.MetricCollection(
-            [
-                torchmetrics.JaccardIndex(task="multiclass", num_classes=task_specs.label_type.n_classes),
-                torchmetrics.FBetaScore(
-                    task="multiclass", num_classes=task_specs.label_type.n_classes, beta=2.0, mdmc_average="samplewise"
-                ),
-            ]
-        ),
-        io.MultiLabelClassification: torchmetrics.MetricCollection(
-            [torchmetrics.F1Score(task="multilabel", num_labels=task_specs.label_type.n_classes)]
+            {"F1Score": torchmetrics.F1Score(task="multilabel", num_labels=task_specs.label_type.n_classes)}
         ),
     }[task_specs.label_type.__class__]
 

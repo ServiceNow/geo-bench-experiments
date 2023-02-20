@@ -4,11 +4,10 @@ import random
 from typing import Any, Callable, Dict
 
 import kornia.augmentation as K
-from kornia.augmentation import ImageSequential
-
 import numpy as np
 import timm
 import torch
+from kornia.augmentation import ImageSequential
 from torch.utils.data.dataloader import default_collate
 from torchgeo.models import get_weight
 from torchvision import transforms as tt
@@ -21,9 +20,7 @@ from geobench.torch_toolbox.model import (
     ModelGenerator,
     eval_metrics_generator,
     head_generator,
-    test_metrics_generator,
     train_loss_generator,
-    train_metrics_generator,
 )
 
 
@@ -198,18 +195,15 @@ class TIMMGenerator(ModelGenerator):
 
         head = head_generator(task_specs, shapes, config)
         loss = train_loss_generator(task_specs, config)
-        train_metrics = train_metrics_generator(task_specs, config)
-        eval_metrics = eval_metrics_generator(task_specs, config)
-        test_metrics = test_metrics_generator(task_specs, config)
 
         return Model(
             backbone=backbone,
             head=head,
             loss_function=loss,
             config=config,
-            train_metrics=train_metrics,
-            eval_metrics=eval_metrics,
-            test_metrics=test_metrics,
+            train_metrics=eval_metrics_generator(task_specs, config),
+            eval_metrics=eval_metrics_generator(task_specs, config),
+            test_metrics=eval_metrics_generator(task_specs, config),
         )
 
     def get_transform(
@@ -239,14 +233,14 @@ class TIMMGenerator(ModelGenerator):
 
         if train:
             t = ImageSequential(
-                K.Normalize(mean=torch.Tensor(mean), std=torch.Tensor(std)), 
+                K.Normalize(mean=torch.Tensor(mean), std=torch.Tensor(std)),
                 K.RandomHorizontalFlip(p=0.5),
                 K.RandomVerticalFlip(p=0.5),
                 K.Resize((desired_input_size, desired_input_size)),
             )
         else:
             t = ImageSequential(
-                K.Normalize(mean=torch.Tensor(mean), std=torch.Tensor(std)), 
+                K.Normalize(mean=torch.Tensor(mean), std=torch.Tensor(std)),
                 K.Resize((desired_input_size, desired_input_size)),
             )
 

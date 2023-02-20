@@ -2,13 +2,13 @@
 
 from typing import Any, Dict
 
-from kornia.augmentation import AugmentationSequential
-import kornia.augmentation as K
 import cv2
+import kornia.augmentation as K
 import segmentation_models_pytorch as smp
 import torch
 import torchvision.transforms.functional as TF
 from albumentations.pytorch.transforms import ToTensorV2
+from kornia.augmentation import AugmentationSequential
 from torch import Tensor
 from torch.utils.data.dataloader import default_collate
 from torchvision import transforms as tt
@@ -16,14 +16,7 @@ from torchvision import transforms as tt
 from geobench import io
 from geobench.io.dataset import Band
 from geobench.io.task import TaskSpecifications
-from geobench.torch_toolbox.model import (
-    Model,
-    ModelGenerator,
-    eval_metrics_generator,
-    test_metrics_generator,
-    train_loss_generator,
-    train_metrics_generator,
-)
+from geobench.torch_toolbox.model import Model, ModelGenerator, eval_metrics_generator, train_loss_generator
 from geobench.torch_toolbox.modules import ClassificationHead
 
 
@@ -94,10 +87,8 @@ class SegmentationGenerator(ModelGenerator):
         )  # pytorch image models already adds a classifier on top of the UNETs
         # head = head_generator(task_specs, shapes, hparams)
         loss = train_loss_generator(task_specs, config)
-        train_metrics = train_metrics_generator(task_specs, config)
-        eval_metrics = eval_metrics_generator(task_specs, config)
-        test_metrics = test_metrics_generator(task_specs, config)
-        return Model(backbone, head, loss, config, train_metrics, eval_metrics, test_metrics)
+       
+        return Model(backbone, head, loss, config, test_metrics_generator(task_specs, config), test_metrics_generator(task_specs, config), test_metrics_generator(task_specs, config))
 
     def get_transform(
         self,
