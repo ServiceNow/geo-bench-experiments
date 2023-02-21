@@ -18,6 +18,7 @@ from geobench import io
 DATASET_NAME = "brick_kiln_v1.0"
 SRC_DATASET_DIR = Path(io.src_datasets_dir, DATASET_NAME)  # type: ignore
 DATASET_DIR = Path(io.datasets_dir, DATASET_NAME)  # type: ignore
+LABELS = ["not brick kiln", "brick kiln"]
 
 
 def load_examples_bloc(file_path):
@@ -125,7 +126,6 @@ def convert(max_count=None, dataset_dir=DATASET_DIR) -> None:
         bands_info=io.sentinel2_13_bands,
         bands_stats=None,  # Will be automatically written with the inspect script
         label_type=io.Classification(2, ["not brick kiln", "brick kiln"]),
-        eval_loss=io.Accuracy,
         spatial_resolution=10,
     )
     task_specs.save(dataset_dir, overwrite=True)

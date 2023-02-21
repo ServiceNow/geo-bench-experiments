@@ -113,9 +113,9 @@ class Job:
 
     def write_script(self, job_dir: str) -> None:
         """Write bash scrip that can be executed to run job.
-to 
-        Args:
-            job_dir: job directory from which to run job
+        to
+                Args:
+                    job_dir: job directory from which to run job
         """
         script_path = self.dir / "run.sh"
         with open(script_path, "w") as fd:

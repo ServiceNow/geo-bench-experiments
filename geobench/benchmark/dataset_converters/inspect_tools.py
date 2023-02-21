@@ -8,6 +8,9 @@ from warnings import warn
 import ipyplot
 import numpy as np
 import pandas as pd
+from geobench import io
+from geobench.io import dataset as io_ds
+from geobench.io.dataset import Band, CCBDataset, HyperSpectralBands, Sample, SegmentationClasses, compute_dataset_statistics
 from ipyleaflet import Map, Marker, Rectangle
 from matplotlib import cm
 from matplotlib import pyplot as plt
@@ -15,10 +18,6 @@ from PIL import Image, ImageDraw
 from rasterio import warp
 from rasterio.crs import CRS
 from tqdm.auto import tqdm
-
-from ccb import io
-from ccb.io import dataset as io_ds
-from ccb.io.dataset import Band, CCBDataset, HyperSpectralBands, Sample, SegmentationClasses, compute_dataset_statistics
 
 
 def compare(a, b, name, src_a, src_b) -> None:
@@ -482,7 +481,6 @@ def collect_task_info(task, fix_task_shape=False):
         n_test = len(partition["test"])
         n_geoinfo = 0
         for band in dataset[0].bands:
-            
             if band.transform != None:
                 n_geoinfo += 1
         

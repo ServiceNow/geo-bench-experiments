@@ -66,8 +66,6 @@ def experiment_generator(
             task_config = model.config
             task_config["model"]["model_name"] = model_generator.generate_model_name(config)
 
-            # append model name to experiment dir
-            experiment_dir = Path(str(experiment_dir) + f"_{task_config['model']['model_name']}")
             # create and fill experiment directory
             job_dir = experiment_dir / task_specs.dataset_name
             job = Job(job_dir)
@@ -75,7 +73,7 @@ def experiment_generator(
             job.save_task_specs(task_specs)
 
             # sweep name that will be seen on wandb
-            wandb_name = "_".join(str(job_dir).split("/")[-2:]) + "_" + task_config["model"]["model_name"]
+            wandb_name = "_".join(str(job_dir).split("/")[-2:])
 
             job.write_wandb_sweep_cl_script(
                 task_config["model"]["model_generator_module_name"],

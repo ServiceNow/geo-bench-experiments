@@ -13,8 +13,8 @@ import pandas as pd
 from PIL import Image, ImageDraw
 from tqdm import tqdm
 
-from ccb import io
-from ccb.benchmark.dataset_converters import util
+from geobench import io
+from geobench.benchmark.dataset_converters import util
 
 DATASET_NAME = "forestnet_v1.0"
 SRC_DATASET_DIR = io.CCB_DIR / "source" / DATASET_NAME  # type: ignore
@@ -219,8 +219,6 @@ def convert(max_count=None, dataset_dir=DATASET_DIR) -> None:
         bands_info=bands_info,
         bands_stats=None,  # Will be automatically written with inspect script
         label_type=io.Classification(len(LABELS), LABELS),
-        eval_loss=io.Accuracy,  # TODO probably not the final
-        # loss eval loss. To be discussed.
         spatial_resolution=SPATIAL_RESOLUTION,
     )
     task_specs.save(dataset_dir, overwrite=True)

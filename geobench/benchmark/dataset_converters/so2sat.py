@@ -3,12 +3,12 @@
 
 import os
 from pathlib import Path
+from typing import Callable, Dict, Optional, Sequence
 
-import numpy as np
-from typing import Dict, Optional, Callable, Sequence
-from torch import Tensor
-import torch
 import h5py
+import numpy as np
+import torch
+from torch import Tensor
 from torchgeo.datasets import So2Sat
 from tqdm import tqdm
 
@@ -19,6 +19,7 @@ from geobench.io.task import TaskSpecifications
 DATASET_NAME = "so2sat"
 SRC_DATASET_DIR = io.CCB_DIR / "source" / DATASET_NAME  # type: ignore
 DATASET_DIR = io.CCB_DIR / "converted" / DATASET_NAME  # type: ignore
+
 
 class GeoSo2Sat(So2Sat):
 
@@ -82,8 +83,6 @@ class GeoSo2Sat(So2Sat):
             data and label at that index
         """
         with h5py.File(self.fn, "r") as f:
-            import pdb
-            pdb.set_trace()
             s1 = f["sen1"][index].astype(np.float64)  # convert from <f8 to float64
             s1 = np.take(s1, indices=self.s1_band_indices, axis=2)
             s2 = f["sen2"][index].astype(np.float64)  # convert from <f8 to float64
@@ -166,7 +165,7 @@ def convert(max_count: int = None, dataset_dir: Path = DATASET_DIR) -> None:
     task_specs.save(str(dataset_dir), overwrite=True)
     n_samples = 0
     for split_name in ["train", "validation", "test"]:
-        so2sat_dataset = GeoSo2Sat(root=SRC_DATASET_DIR, split=split_name, transforms=None, checksum=False)
+        so2sat_dataset = So2Sat(root=SRC_DATASET_DIR, split=split_name, transforms=None, checksum=False)
         for tg_sample in tqdm(so2sat_dataset):
             sample_name = f"id_{n_samples:04d}"
 

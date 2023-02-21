@@ -3,14 +3,14 @@
 
 import os
 from pathlib import Path
+from typing import Callable, Dict, Optional, Sequence, Tuple
 
 import numpy as np
-from typing import Dict, Optional, Callable, Sequence, Tuple
-from torch import Tensor
-import torch
 import rasterio
-from torchvision.datasets import ImageFolder
+import torch
+from torch import Tensor
 from torchgeo.datasets import EuroSAT
+from torchvision.datasets import ImageFolder
 from tqdm import tqdm
 
 from geobench import io
@@ -43,6 +43,7 @@ class GeoEuroSAT(EuroSAT):
     BAND_SETS = {"all": all_band_names, "rgb": rgb_bands}
 
     """Wrapper to extract geo information."""
+
     def __init__(
         self,
         root: str = "data",
@@ -160,7 +161,9 @@ def convert(max_count=None, dataset_dir=DATASET_DIR) -> None:
 
     sample_id = 0
     for split_name in ["train", "val", "test"]:
-        eurosat_dataset = GeoEuroSAT(root=SRC_DATASET_DIR, split=split_name, transforms=None, download=True, checksum=False)
+        eurosat_dataset = GeoEuroSAT(
+            root=SRC_DATASET_DIR, split=split_name, transforms=None, download=True, checksum=False
+        )
         for tg_sample in tqdm(eurosat_dataset):
             sample_name = f"id_{sample_id:04d}"
 

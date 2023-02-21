@@ -18,9 +18,9 @@ import rasterio
 from PIL import Image
 from tqdm import tqdm
 
-from ccb import io
-from ccb.io.dataset import Band, Sample
-from ccb.benchmark.dataset_converters.util import center_to_transform
+from geobench import io
+from geobench.benchmark.dataset_converters.util import center_to_transform
+from geobench.io.dataset import Band, Sample
 
 sys.path.append(str(Path.cwd()))
 
@@ -140,12 +140,8 @@ def convert(max_count: int = None, dataset_dir: Path = DATASET_DIR, classificati
     """
     if classification:
         label_type = io.Classification(2, LABELS)  # type: ignore
-        eval_loss = io.Accuracy  # type: ignore
-        # dataset_dir = CLS_DATASET_DIR
     else:
         label_type = SEG_LABEL_BAND  # type: ignore
-        eval_loss = io.SegmentationAccuracy  # type: ignore # TODO probably not the final
-        # eval loss. To be discussed.
         dataset_dir = dataset_dir.with_name(f"{DATASET_NAME}_segmentation")
 
     dataset_dir.mkdir(exist_ok=True, parents=True)
@@ -157,7 +153,6 @@ def convert(max_count: int = None, dataset_dir: Path = DATASET_DIR, classificati
         bands_info=BANDS_INFO,
         bands_stats=None,  # Will be automatically written with inspect script
         label_type=label_type,
-        eval_loss=eval_loss,
         spatial_resolution=SPATIAL_RESOLUTION,
     )
     task_specs.save(str(dataset_dir), overwrite=True)
@@ -206,4 +201,3 @@ def convert(max_count: int = None, dataset_dir: Path = DATASET_DIR, classificati
 if __name__ == "__main__":
     convert(classification=True)
     # convert(classification=False)
-

@@ -431,9 +431,6 @@ def head_generator(task_specs: TaskSpecifications, features_shape: List[Tuple[in
         hyperparams: dict of hyperparameters.
 
     """
-    assert (
-        config["model"]["head_type"] == "linear"
-    ), f"Currently only support linear head type, but got {config['model']['head_type']}."
     if isinstance(task_specs.label_type, io.Classification):
         in_ch, *other_dims = features_shape[-1]
         out_ch = task_specs.label_type.n_classes

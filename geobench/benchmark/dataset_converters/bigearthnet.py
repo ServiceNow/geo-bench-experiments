@@ -1,14 +1,15 @@
 """Big Earth Net dataset."""
+import os
 from pathlib import Path
-from typing import Optional, Callable, Dict
-from torch import Tensor
+from typing import Callable, Dict, Optional
 
 import numpy as np
 import rasterio
-from torchgeo.datasets import BigEarthNet
-from rasterio.enums import Resampling
-from tqdm import tqdm
 import torch
+from rasterio.enums import Resampling
+from torch import Tensor
+from torchgeo.datasets import BigEarthNet
+from tqdm import tqdm
 
 from geobench import io
 
@@ -16,8 +17,10 @@ DATASET_NAME = "bigearthnet"
 SRC_DATASET_DIR = Path(io.src_datasets_dir, "bigearthnet")  # type: ignore
 DATASET_DIR = Path(io.datasets_dir, DATASET_NAME)  # type: ignore
 
+
 class GeoBigEarthNet(BigEarthNet):
     """Overwrite BigEarthNet to get geo information."""
+
     def __init__(
         self,
         root: str = "data",
@@ -156,9 +159,6 @@ def convert(max_count=None, dataset_dir=DATASET_DIR) -> None:
 
         for i, tg_sample in enumerate(tqdm(bigearthnet_dataset)):
             sample_name = f"id_{n_samples:04d}"
-            
-            import pdb
-            pdb.set_trace()
             images = np.array(tg_sample["image"])
             label = np.array(tg_sample["label"])
 
