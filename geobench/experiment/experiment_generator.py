@@ -8,11 +8,23 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
+from typing import Dict, Any
 
 import yaml
 
 from geobench import io
 from geobench.experiment.experiment import Job, get_model_generator
+
+
+def get_band_names(config: Dict[str, Any], task_specs) -> Dict[str, Any]:
+    """Get the appropriate band names for experiments."""
+    if config["dataset"]["band_names"] == "all":
+        config["model"]["in_chans"] = len(task_specs.bands_info)
+        config["dataset"]["band_names"] = [band_info.name for band_info in task_specs.bands_info]
+    else:
+        config["model"]["in_chans"] = len(config["dataset"]["band_names"])
+
+    return config
 
 
 def experiment_generator(
@@ -54,8 +66,9 @@ def experiment_generator(
         experiment_type = config["experiment"]["experiment_type"]
         task_config = copy.deepcopy(config)
 
+        task_config = get_band_names(task_config, task_specs)
+
         if experiment_type == "sweep":
-            print(len(task_config["dataset"]["band_names"]))
             model_generator = get_model_generator(config["model"]["model_generator_module_name"])
 
             # use wandb sweep for hyperparameter search
@@ -74,6 +87,8 @@ def experiment_generator(
 
             # sweep name that will be seen on wandb
             wandb_name = "_".join(str(job_dir).split("/")[-2:])
+
+            print(task_config["model"]["in_chans"])
 
             job.write_wandb_sweep_cl_script(
                 task_config["model"]["model_generator_module_name"],

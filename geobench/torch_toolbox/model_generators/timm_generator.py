@@ -10,6 +10,8 @@ import torch
 from kornia.augmentation import ImageSequential
 from torch.utils.data.dataloader import default_collate
 from torchgeo.models import get_weight
+from torchgeo.trainers.utils import load_state_dict
+
 from torchvision import transforms as tt
 
 from geobench import io
@@ -167,12 +169,16 @@ class TIMMGenerator(ModelGenerator):
             configured model
         """
         backbone = timm.create_model(
-            config["model"]["backbone"], pretrained=config["model"]["pretrained"], features_only=False
+            config["model"]["backbone"], pretrained=config["model"]["pretrained"], features_only=False, in_chans = config["model"]["in_chans"]
         )
         weight_name = config["model"].get("weights", None)
         if weight_name is not None:
             weights = get_weight(weight_name)
-            backbone.load_state_dict(weights.get_state_dict(progress=True), strict=False)
+            state_dict = weights.get_state_dict(progress=True)
+        else:
+            state_dict = backbone.state_dict()
+
+        backbone = load_state_dict(backbone, state_dict)
 
         setattr(backbone, backbone.default_cfg["classifier"], torch.nn.Identity())
         config["model"]["default_input_size"] = backbone.default_cfg["input_size"]
@@ -180,7 +186,7 @@ class TIMMGenerator(ModelGenerator):
         # beyond_rgb(backbone, task_specs, config)
 
         test_input_for_feature_dim = (
-            len(config["dataset"]["band_names"]),
+            config["model"]["in_chans"],
             256 if config["model"]["backbone"] == "swinv2_tiny_window16_256" else 224,
             256 if config["model"]["backbone"] == "swinv2_tiny_window16_256" else 224,
         )
