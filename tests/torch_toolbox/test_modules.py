@@ -1,6 +1,5 @@
 import pytest
 import torch
-
 from ccb.torch_toolbox.modules import ClassificationHead
 
 BATCH_SIZE = 2

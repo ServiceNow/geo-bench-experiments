@@ -3,7 +3,6 @@ from email.policy import default
 from typing import Dict, List
 
 import numpy as np
-
 from ccb import io
 from ccb.benchmark.create_benchmark import resample, resample_from_stats
 

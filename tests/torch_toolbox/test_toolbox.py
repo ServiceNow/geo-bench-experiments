@@ -3,11 +3,10 @@ import pickle
 import tempfile
 
 import pytest
-from ruamel.yaml import YAML
-
 from ccb import io
 from ccb.experiment.experiment import Job
 from ccb.torch_toolbox import trainer
+from ruamel.yaml import YAML
 
 
 def train_job_on_task(config, task_specs, threshold, check_logs=True, metric_name="Accuracy", **kwargs):

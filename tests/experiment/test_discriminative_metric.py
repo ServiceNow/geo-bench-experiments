@@ -1,7 +1,6 @@
 import numpy as np
-from scipy.stats import entropy
-
 from ccb.experiment.discriminative_metric import pairwise_entropy, prob_higher, rank_entropy
+from scipy.stats import entropy
 
 
 def test_p_higher():

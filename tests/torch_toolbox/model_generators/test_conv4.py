@@ -3,9 +3,8 @@ import pickle
 
 import pytest
 import torch
-from ruamel.yaml import YAML
-
 from ccb.torch_toolbox.model_generators.conv4 import Conv4, Conv4Generator
+from ruamel.yaml import YAML
 
 
 class TestConv4:

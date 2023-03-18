@@ -8,9 +8,8 @@ from pathlib import Path
 from subprocess import PIPE
 
 import pytest
-from ruamel.yaml import YAML
-
 from ccb.experiment.experiment import Job
+from ruamel.yaml import YAML
 
 
 @pytest.mark.skip(reason="have to come up with a better way of testing the sweep")

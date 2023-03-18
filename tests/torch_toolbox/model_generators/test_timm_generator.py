@@ -4,9 +4,8 @@ import os
 import pickle
 
 import pytest
-from ruamel.yaml import YAML
-
 from ccb.torch_toolbox.model_generators.timm_generator import TIMMGenerator
+from ruamel.yaml import YAML
 
 
 @pytest.mark.parametrize("backbone", ["resnet18", "convnext_base", "vit_tiny_patch16_224"])

@@ -4,7 +4,6 @@ from pathlib import Path
 from tempfile import mkdtemp
 
 import numpy as np
-
 from ccb import io
 
 

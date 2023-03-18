@@ -2,7 +2,6 @@ import tempfile
 
 import numpy as np
 import pytest
-
 from ccb import io
 from ccb.io.bandstats import produce_band_stats
 

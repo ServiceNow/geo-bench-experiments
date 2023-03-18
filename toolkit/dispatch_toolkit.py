@@ -208,7 +208,7 @@ def start():
 
     parser.add_argument(
         "--code-dir",
-        help="The directory that contains the ccb package (default='.').",
+        help="The directory that contains the geobench package (default='.').",
         default=".",
     )
 

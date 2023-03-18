@@ -5,9 +5,8 @@ import os
 import pickle
 
 import pandas as pd
-import yaml
-
 import wandb
+import yaml
 
 
 def create_overview(args):

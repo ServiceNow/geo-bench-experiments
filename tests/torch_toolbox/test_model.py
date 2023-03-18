@@ -7,12 +7,11 @@ import pickle
 
 import pytest
 import torch
-from ruamel.yaml import YAML
-
 from ccb import io
 from ccb.torch_toolbox.model import Model, ModelGenerator, _balanced_binary_cross_entropy_with_logits, head_generator
 from ccb.torch_toolbox.model_generators.timm_generator import TIMMGenerator
 from ccb.torch_toolbox.modules import ClassificationHead
+from ruamel.yaml import YAML
 
 
 class TestModel:

@@ -5,13 +5,16 @@
 # Please don't commit the changes related to your personnal experiments
 
 import os
+import pdb
 from pathlib import Path
 
-from ccb.experiment.experiment_generator import experiment_generator
+from geobench_exp.experiment.experiment_generator import experiment_generator
 from toolkit import dispatch_toolkit
 
+pdb.set_trace
 experiment_dir = experiment_generator(
-    config_filepath=str(Path(__file__).parent.parent / "ccb/configs/classification_config.yaml"),
+    # config_filepath=str(Path(__file__).parent.parent / "geobench/configs/classification_config.yaml"),
+    config_filepath="/mnt/home/geo-bench-experiments/geobench/configs/classification_config.yaml"
 )
 
 dispatch_toolkit.push_code(Path(__file__).parent.parent)

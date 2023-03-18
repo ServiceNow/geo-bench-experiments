@@ -4,12 +4,11 @@ import sys
 import tempfile
 from pathlib import Path
 
-import pytest
-from ruamel.yaml import YAML
-
 import ccb
+import pytest
 from ccb.experiment.experiment import Job, get_model_generator
 from ccb.experiment.sequential_dispatcher import sequential_dispatcher
+from ruamel.yaml import YAML
 
 
 def test_load_model():

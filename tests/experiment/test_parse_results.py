@@ -1,5 +1,6 @@
-from ccb.experiment.parse_results import ExpResult
 from pathlib import Path
+
+from ccb.experiment.parse_results import ExpResult
 
 
 def test_exp_result():

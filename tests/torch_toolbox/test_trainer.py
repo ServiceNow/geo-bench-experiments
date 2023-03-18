@@ -7,10 +7,9 @@ import sys
 import tempfile
 from pathlib import Path
 
-from ruamel.yaml import YAML
-
 import ccb
 from ccb.experiment.experiment import Job
+from ruamel.yaml import YAML
 
 
 def test_trainer_start():
