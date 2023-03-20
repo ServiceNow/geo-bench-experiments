@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import yaml
-from geobench.dataset_converters import inspect_tools
+from geobench_exp.benchmark.dataset_converters import inspect_tools
 from matplotlib import pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
 from pandas.errors import EmptyDataError

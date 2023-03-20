@@ -2,11 +2,11 @@ experiment:
   generate_experiment_dir: climate-change-benchmark/experiments
   experiment_name: testing # prefix
   experiment_type: standard # standard, seeded_runs, sweep
-  benchmark_dir: tests/data/geobench-test-classification
+  benchmark_dir: tests/data/geobench_exp-test-classification
   partition_name: default
   loggers: ["csv"]
 model:
-  model_generator_module_name: geobench.torch_toolbox.model_generators.timm_generator
+  model_generator_module_name: geobench_exp.torch_toolbox.model_generators.timm_generator
   head_type: linear # classification
   loss_type: crossentropy
   new_channel_init_method: random
@@ -24,7 +24,7 @@ dataset:
 dataloader:
   num_workers: 0
 wandb:
-  project: ccb # wandb project name
+  project: geobench_exp # wandb project name
   entity: climate-benchmark # user or team entity that hosts a project
   mode: offline
   sweep:

@@ -7,17 +7,17 @@ import pickle
 
 import pytest
 import torch
-from ccb import io
-from ccb.torch_toolbox.model import Model, ModelGenerator, _balanced_binary_cross_entropy_with_logits, head_generator
-from ccb.torch_toolbox.model_generators.timm_generator import TIMMGenerator
-from ccb.torch_toolbox.modules import ClassificationHead
+from geobench_exp import io
+from geobench_exp.torch_toolbox.model import Model, ModelGenerator, _balanced_binary_cross_entropy_with_logits, head_generator
+from geobench_exp.torch_toolbox.model_generators.timm_generator import TIMMGenerator
+from geobench_exp.torch_toolbox.modules import ClassificationHead
 from ruamel.yaml import YAML
 
 
 class TestModel:
     @pytest.fixture
     def model(self):
-        path = os.path.abspath("tests/data/ccb-test-classification/brick_kiln_v1.0/task_specs.pkl")
+        path = os.path.abspath("tests/data/geobench-test-classification/brick_kiln_v1.0/task_specs.pkl")
         with open(path, "rb") as f:
             task_specs = pickle.load(f)
 
@@ -56,7 +56,7 @@ class TestModel:
 
 
 class TestGenerator:
-    path = os.path.abspath("tests/data/ccb-test-classification/brick_kiln_v1.0/task_specs.pkl")
+    path = os.path.abspath("tests/data/geobench-test-classification/brick_kiln_v1.0/task_specs.pkl")
     with open(path, "rb") as f:
         task_specs = pickle.load(f)
 
@@ -82,7 +82,7 @@ class TestGenerator:
 
 
 class TestHeadGenerator:
-    path = os.path.abspath("tests/data/ccb-test-classification/brick_kiln_v1.0/task_specs.pkl")
+    path = os.path.abspath("tests/data/geobench-test-classification/brick_kiln_v1.0/task_specs.pkl")
     with open(path, "rb") as f:
         task_specs = pickle.load(f)
 

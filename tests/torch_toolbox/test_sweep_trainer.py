@@ -8,7 +8,7 @@ from pathlib import Path
 from subprocess import PIPE
 
 import pytest
-from ccb.experiment.experiment import Job
+from geobench_exp.experiment.experiment import Job
 from ruamel.yaml import YAML
 
 
@@ -16,7 +16,7 @@ from ruamel.yaml import YAML
 def test_sweep():
 
     with open(
-        os.path.join("tests", "data", "ccb-test-classification", "brick_kiln_v1.0", "task_specs.pkl"), "rb"
+        os.path.join("tests", "data", "geobench_exp-test-classification", "brick_kiln_v1.0", "task_specs.pkl"), "rb"
     ) as fd:
         task_specs = pickle.load(fd)
 

@@ -2,8 +2,8 @@ import tempfile
 
 import numpy as np
 import pytest
-from ccb import io
-from ccb.io.bandstats import produce_band_stats
+from geobench_exp import io
+from geobench_exp.io.bandstats import produce_band_stats
 
 
 def random_band(shape=(16, 16), band_name="test_band", alt_band_names=("alt_name",)):
@@ -94,7 +94,7 @@ def test_write_read():
         partition = io.Partition()
         partition.add("train", sample.sample_name)
         partition.save(directory=dataset_dir, partition_name="default")
-        ds = io.CCBDataset(dataset_dir, band_names=band_names, partition_name="default")
+        ds = io.geobenchDataset(dataset_dir, band_names=band_names, partition_name="default")
         sample_ = list(ds.iter_dataset(1))[0]
 
     assert len(sample.bands) == len(sample_.bands)
@@ -156,7 +156,7 @@ def test_dataset_partition():
         partition.save(directory=dataset_dir, partition_name="funky")
 
         # Test 1: load partition default, no split
-        ds = io.CCBDataset(dataset_dir, band_names=band_names, partition_name="default")
+        ds = io.geobenchDataset(dataset_dir, band_names=band_names, partition_name="default")
         assert set(ds.list_partitions()) == set(["funky", "default"])
         assert ds.active_partition_name == "default"  # use default normally
         assert set(ds.list_splits()) == set(["train", "valid", "test"])
@@ -190,7 +190,7 @@ def test_dataset_partition():
         with pytest.raises(IndexError):  # default:test is empty
             ds[0]
 
-        ds = io.CCBDataset(dataset_dir, band_names=band_names, partition_name="funky")
+        ds = io.geobenchDataset(dataset_dir, band_names=band_names, partition_name="funky")
         assert set(ds.list_partitions()) == set(["funky", "default"])
         assert ds.active_partition_name == "funky"  # use default normally
         assert set(ds.list_splits()) == set(["train", "valid", "test"])
@@ -228,7 +228,7 @@ def test_dataset_withnopartition():
         band_names = [band.band_info.name for band in sample1.bands]
 
         with pytest.raises(ValueError):  # raise ValueError because not partition exists
-            _ = io.CCBDataset(dataset_dir, band_names=band_names, partition_name="default")
+            _ = io.geobenchDataset(dataset_dir, band_names=band_names, partition_name="default")
 
 
 def custom_band(value, shape=(4, 4), band_name="test_band"):
@@ -286,13 +286,13 @@ def test_dataset_statistics():
 
         # Compute statistics : this will create all_bandstats.json
         produce_band_stats(
-            io.CCBDataset(dataset_dir, band_names=band_names, partition_name="default"),
+            io.geobenchDataset(dataset_dir, band_names=band_names, partition_name="default"),
             values_per_image=None,
             samples=None,
         )
 
         # Reload dataset with statistics
-        ds2 = io.CCBDataset(dataset_dir, band_names=band_names, partition_name="default")
+        ds2 = io.geobenchDataset(dataset_dir, band_names=band_names, partition_name="default")
 
         statistics = ds2.band_stats
 
@@ -320,8 +320,8 @@ def test_dataset_statistics():
 
 
 def test_class_id():
-    from ccb import io
-    from ccb.io import dataset
+    from geobench_exp import io
+    from geobench_exp.io import dataset
 
     assert isinstance(dataset.sentinel2_13_bands[0], io.SpectralBand)
     assert isinstance(io.sentinel2_13_bands[0], dataset.SpectralBand)

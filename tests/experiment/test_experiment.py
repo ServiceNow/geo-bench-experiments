@@ -4,22 +4,22 @@ import sys
 import tempfile
 from pathlib import Path
 
-import ccb
+import geobench_exp
 import pytest
-from ccb.experiment.experiment import Job, get_model_generator
-from ccb.experiment.sequential_dispatcher import sequential_dispatcher
+from geobench_exp.experiment.experiment import Job, get_model_generator
+from geobench_exp.experiment.sequential_dispatcher import sequential_dispatcher
 from ruamel.yaml import YAML
 
 
 def test_load_model():
     """Test loading an existing model generator from a user-specified path."""
-    model_generator = get_model_generator("ccb.torch_toolbox.model_generators.conv4")
+    model_generator = get_model_generator("geobench_exp.torch_toolbox.model_generators.conv4")
     assert hasattr(model_generator, "generate_model")
 
 
 def test_load_trainer():
     """Test loading an existing model generator from a user-specified path."""
-    model_generator = get_model_generator("ccb.torch_toolbox.model_generators.conv4")
+    model_generator = get_model_generator("geobench_exp.torch_toolbox.model_generators.conv4")
     assert hasattr(model_generator, "generate_trainer")
 
 
@@ -29,7 +29,7 @@ def test_unexisting_path():
 
     """
     try:
-        get_model_generator("ccb.torch_toolbox.model_generators.foobar")
+        get_model_generator("geobench_exp.torch_toolbox.model_generators.foobar")
     except Exception as e:
         assert isinstance(e, ModuleNotFoundError)
 
@@ -44,7 +44,7 @@ def test_unexisting_path():
 )
 def test_experiment_generator_on_benchmark(config_filepath):
 
-    experiment_generator_dir = Path(ccb.experiment.__file__).absolute().parent
+    experiment_generator_dir = Path(geobench_exp.experiment.__file__).absolute().parent
 
     with tempfile.TemporaryDirectory(prefix="test") as generate_experiment_dir:
         # change experiment dir to tmp path

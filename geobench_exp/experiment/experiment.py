@@ -121,7 +121,7 @@ class Job:
         with open(script_path, "w") as fd:
             fd.write("#!/bin/bash\n")
             fd.write("# Usage: sh run.sh path/to/model_generator.py\n\n")
-            fd.write(f"geobench-trainer --job_dir {job_dir}")
+            fd.write(f"geobench_exp-trainer --job_dir {job_dir}")
         script_path.chmod(script_path.stat().st_mode | stat.S_IEXEC)
 
     def write_wandb_sweep_cl_script(

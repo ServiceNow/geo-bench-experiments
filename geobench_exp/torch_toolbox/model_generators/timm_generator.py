@@ -157,7 +157,7 @@ class TIMMGenerator(ModelGenerator):
         super().__init__()
 
     def generate_model(self, task_specs: TaskSpecifications, config: dict) -> Model:
-        """Return a geobench.torch_toolbox.model.Model instance from task specs and hparams.
+        """Return a geobench_exp.torch_toolbox.model.Model instance from task specs and hparams.
 
         Args:
             task_specs: object with task specs

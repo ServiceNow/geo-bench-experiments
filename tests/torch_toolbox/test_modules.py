@@ -1,6 +1,6 @@
 import pytest
 import torch
-from ccb.torch_toolbox.modules import ClassificationHead
+from geobench_exp.torch_toolbox.modules import ClassificationHead
 
 BATCH_SIZE = 2
 NUM_CLASSES = 4

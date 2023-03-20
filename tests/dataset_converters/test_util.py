@@ -1,6 +1,6 @@
 """Test dataset-converter utils."""
 import numpy as np
-from ccb.benchmark.dataset_converters import util
+from geobench_exp.benchmark.dataset_converters import util
 
 
 def transform_to_center(transform, img_shape):

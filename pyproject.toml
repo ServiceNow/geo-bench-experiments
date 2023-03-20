@@ -4,7 +4,7 @@ version = "0.0.1"
 description = ""
 authors = ["ATG Vision <atg-vision@servicenow.com>"]
 packages = [
-    { include = "geobench" }
+    { include = "geobench_exp" }
 ]
 
 [tool.poetry.dependencies]
@@ -69,7 +69,7 @@ filterwarnings = [
 ]
 
 [tool.poetry.scripts]
-geobench-expgen = "geobench.experiment.experiment_generator:start"
-geobench-trainer = "geobench.torch_toolbox.trainer:start"
-geobench-sweep-trainer = "geobench.torch_toolbox.sweep_trainer:start"
-geobench-toolkit = "toolkit.dispatch_toolkit:start"
+geobench_exp-expgen = "geobench_exp.experiment.experiment_generator:start"
+geobench_exp-trainer = "geobench_exp.torch_toolbox.trainer:start"
+geobench_exp-sweep-trainer = "geobench_exp.torch_toolbox.sweep_trainer:start"
+geobench_exp-toolkit = "toolkit.dispatch_toolkit:start"

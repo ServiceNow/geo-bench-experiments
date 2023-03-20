@@ -3,13 +3,13 @@ import pickle
 
 import pytest
 import torch
-from ccb.torch_toolbox.model_generators.conv4 import Conv4, Conv4Generator
+from geobench_exp.torch_toolbox.model_generators.conv4 import Conv4, Conv4Generator
 from ruamel.yaml import YAML
 
 
 class TestConv4:
     def test_in_channels(self) -> None:
-        path = os.path.abspath("tests/data/ccb-test-classification/brick_kiln_v1.0/task_specs.pkl")
+        path = os.path.abspath("tests/data/geobench_exp-test-classification/brick_kiln_v1.0/task_specs.pkl")
         with open(path, "rb") as f:
             task_specs = pickle.load(f)
 
@@ -39,7 +39,7 @@ class TestConv4:
 
 
 def test_generate_conv4_models():
-    path = os.path.abspath("tests/data/ccb-test-classification/brick_kiln_v1.0/task_specs.pkl")
+    path = os.path.abspath("tests/data/geobench_exp-test-classification/brick_kiln_v1.0/task_specs.pkl")
     with open(path, "rb") as f:
         task_specs = pickle.load(f)
 

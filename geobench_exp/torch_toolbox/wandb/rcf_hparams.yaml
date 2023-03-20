@@ -1,6 +1,6 @@
-program: ccb-trainer
+program: geobench_exp-trainer
 entity: climate-benchmark
-project: ccb
+project: geobench_exp
 method: random
 metric:
   goal: minimize

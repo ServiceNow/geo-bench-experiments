@@ -98,7 +98,7 @@ def make_sample(image_A, image_B, mask, sample_name):
         sample_name str: Sample name; 'id_{:04d}'
 
     Returns:
-        sample io.Sample: CCBDataset sample
+        sample io.Sample: GeobenchDataset sample
     """
     # Todo: Convert images and mask into uint16.
     for j, image in enumerate([image_A, image_B]):
@@ -136,7 +136,7 @@ def convert(max_count=None, dataset_dir=DATASET_DIR) -> None:
 
     Args:
         max_count int: Maximum number of images to be converted
-        dataset_dir string: CCBDataset directory
+        dataset_dir string: GeobenchDataset directory
     """
     dataset_dir.mkdir(exist_ok=True, parents=True)  # Creates path to converted data
     partition = io.Partition()  # Creates dictionary to store train, val, test filenames

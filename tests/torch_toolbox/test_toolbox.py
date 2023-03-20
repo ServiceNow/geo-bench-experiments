@@ -3,9 +3,9 @@ import pickle
 import tempfile
 
 import pytest
-from ccb import io
-from ccb.experiment.experiment import Job
-from ccb.torch_toolbox import trainer
+from geobench_exp import io
+from geobench_exp.experiment.experiment import Job
+from geobench_exp.torch_toolbox import trainer
 from ruamel.yaml import YAML
 
 
@@ -42,7 +42,7 @@ def train_job_on_task(config, task_specs, threshold, check_logs=True, metric_nam
 
 def test_toolbox_segmentation():
     with open(
-        os.path.join("tests", "data", "ccb-test-segmentation", "cvpr_chesapeake_landcover", "task_specs.pkl"), "rb"
+        os.path.join("tests", "data", "geobench_exp-test-segmentation", "cvpr_chesapeake_landcover", "task_specs.pkl"), "rb"
     ) as fd:
         task_specs = pickle.load(fd)
 
@@ -56,13 +56,13 @@ def test_toolbox_segmentation():
 @pytest.mark.parametrize(
     "backbone, model_generator_module_name",
     [
-        ("resnet18", "ccb.torch_toolbox.model_generators.timm_generator"),
-        ("conv4", "ccb.torch_toolbox.model_generators.conv4"),
+        ("resnet18", "geobench_exp.torch_toolbox.model_generators.timm_generator"),
+        ("conv4", "geobench_exp.torch_toolbox.model_generators.conv4"),
     ],
 )
 def test_toolbox_classification(backbone, model_generator_module_name):
     with open(
-        os.path.join("tests", "data", "ccb-test-classification", "brick_kiln_v1.0", "task_specs.pkl"), "rb"
+        os.path.join("tests", "data", "geobench_exp-test-classification", "brick_kiln_v1.0", "task_specs.pkl"), "rb"
     ) as fd:
         task_specs = pickle.load(fd)
 
@@ -77,7 +77,7 @@ def test_toolbox_classification(backbone, model_generator_module_name):
 
 
 def test_toolbox_getitem():
-    benchmarks = ["ccb-test-classification", "ccb-test-segmentation"]
+    benchmarks = ["geobench_exp-test-classification", "geobench_exp-test-segmentation"]
     test_dirs = [os.path.join("tests", "data", benchmark) for benchmark in benchmarks]
     for benchmark_dir in test_dirs:
         for task in io.task_iterator(benchmark_dir):

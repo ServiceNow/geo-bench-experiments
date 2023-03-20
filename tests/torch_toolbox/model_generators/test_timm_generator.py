@@ -4,13 +4,13 @@ import os
 import pickle
 
 import pytest
-from ccb.torch_toolbox.model_generators.timm_generator import TIMMGenerator
+from geobench_exp.torch_toolbox.model_generators.timm_generator import TIMMGenerator
 from ruamel.yaml import YAML
 
 
 @pytest.mark.parametrize("backbone", ["resnet18", "convnext_base", "vit_tiny_patch16_224"])
 def test_generate_timm_models(backbone):
-    path = os.path.abspath("tests/data/ccb-test-classification/brick_kiln_v1.0/task_specs.pkl")
+    path = os.path.abspath("tests/data/geobench_exp-test-classification/brick_kiln_v1.0/task_specs.pkl")
     with open(path, "rb") as f:
         task_specs = pickle.load(f)
 
@@ -28,7 +28,7 @@ def test_generate_timm_models(backbone):
 @pytest.mark.parametrize("init_method", ["random", "clone_random_rgb_channel"])
 @pytest.mark.parametrize("backbone", ["resnet18", "convnext_base", "vit_tiny_patch16_224"])
 def test_new_channel_init(init_method, backbone):
-    path = os.path.abspath("tests/data/ccb-test-classification/brick_kiln_v1.0/task_specs.pkl")
+    path = os.path.abspath("tests/data/geobench_exp-test-classification/brick_kiln_v1.0/task_specs.pkl")
     with open(path, "rb") as f:
         task_specs = pickle.load(f)
 

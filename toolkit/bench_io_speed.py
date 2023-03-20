@@ -4,7 +4,7 @@ from pathlib import Path
 from tempfile import mkdtemp
 
 import numpy as np
-from ccb import io
+from geobench_exp import io
 
 
 def random_sentinel2_sample(sample_name, max_shape):

@@ -152,7 +152,7 @@ def write_all_label_map(
         compute_band_stats: whether or not to compute band statistics
         task_filter: filter out some tasks
     """
-    benchmark_dir = str(io.CCB_DIR / benchmark_name / "geobench")
+    benchmark_dir = str(io.CCB_DIR / benchmark_name / "geobench_exp")
     for task in io.task.task_iterator(benchmark_dir=benchmark_dir):
 
         if task_filter is not None and not task_filter(task):

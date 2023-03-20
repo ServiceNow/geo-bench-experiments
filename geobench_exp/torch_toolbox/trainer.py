@@ -5,7 +5,6 @@ import argparse
 import os
 
 import pytorch_lightning as pl
-import wandb
 from ruamel.yaml import YAML
 from torch.utils.data.dataloader import default_collate
 
@@ -63,8 +62,6 @@ def train(job_dir: str) -> None:
     yaml = YAML()
     with open(os.path.join(trainer.loggers[0].save_dir, "config.yaml"), "w") as fd:
         yaml.dump(config, fd)
-
-    wandb.finish()
 
 
 def start() -> None:

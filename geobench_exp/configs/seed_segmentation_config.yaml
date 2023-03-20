@@ -4,13 +4,13 @@ experiment:
   experiment_type: seeded_runs # standard, seeded_runs, sweew
   partition_name: 0.10x_train
   benchmark_dir: /mnt/data/cc_benchmark/segmentation_v0.2
-  best_hparam_config: /mnt/home/geo-bench-experiments/ccb/configs/best_hparams_segmentation.json
+  best_hparam_config: /mnt/home/geo-bench-experiments/geobench_exp/configs/best_hparams_segmentation.json
   num_seeds: 12
 model:
-  model_generator_module_name: ccb.torch_toolbox.model_generators.py_segmentation_generator
+  model_generator_module_name: geobench_exp.torch_toolbox.model_generators.py_segmentation_generator
   encoder_type: resnet18 # resnet18,
   pretrained: False
   decoder_type: Unet
 wandb:
-  project: ccb # wandb project name
+  project: geobench_exp # wandb project name
   entity: climate-benchmark # user or team entity that hosts a project

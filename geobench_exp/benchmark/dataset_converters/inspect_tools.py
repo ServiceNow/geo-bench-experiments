@@ -20,7 +20,7 @@ from geobench_exp import io
 from geobench_exp.io import dataset as io_ds
 from geobench_exp.io.dataset import (
     Band,
-    CCBDataset,
+    GeobenchDataset,
     HyperSpectralBands,
     Sample,
     SegmentationClasses,
@@ -351,7 +351,7 @@ def load_and_verify_samples(
     dataset_dir, n_samples, n_hist_bins=100, check_integrity=True, split=None, n_value_per_image=1000
 ):
     """High level function. Loads samples, perform some statistics and plot histograms."""
-    dataset = CCBDataset(dataset_dir, split=split)
+    dataset = GeobenchDataset(dataset_dir, split=split)
     samples = list(tqdm(dataset.iter_dataset(n_samples), desc="Loading Samples"))
     if check_integrity:
         io.check_dataset_integrity(dataset, samples=samples)
@@ -564,7 +564,7 @@ def benchmark_data_frame(benchmark_name):
     return df
 
 
-def extract_classification_samples(dataset: io.CCBDataset, num_samples=8, rng=np.random):
+def extract_classification_samples(dataset: io.GeobenchDataset, num_samples=8, rng=np.random):
     """Extract `num_samples` for each class in `dataset`."""
     label_map = dataset.task_specs.get_label_map()
     n_classes = len(label_map)

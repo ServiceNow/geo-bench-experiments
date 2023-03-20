@@ -18,7 +18,7 @@ export CCB_DIR=/path/to/the/benchmark_dir
 ```
 
 ```python
-from ccb import io
+from geobench_exp import io
 
 def my_transform(sample):
     data, _ = sample.pack_to_3d(band_names=("red", "green", "blue"))
@@ -41,4 +41,4 @@ Quick jump to [launching experiments](https://github.com/ElementAI/climate-chang
 
 ### Downloading and Converting Datasets
 
-Read these [instructions](https://github.com/ElementAI/climate-change-benchmark/tree/main/ccb/dataset_converters#readme) for adding a new dataset or downloading & processing an existing dataset.
+Read these [instructions](https://github.com/ElementAI/climate-change-benchmark/tree/main/geobench_exp/dataset_converters#readme) for adding a new dataset or downloading & processing an existing dataset.

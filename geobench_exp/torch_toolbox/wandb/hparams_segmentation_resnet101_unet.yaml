@@ -1,6 +1,6 @@
-program: geobench-sweep-trainer
+program: geobench_exp-sweep-trainer
 entity: climate-benchmark
-project: geobench
+project: geobench_exp
 method: random
 metric:
   goal: minimize
