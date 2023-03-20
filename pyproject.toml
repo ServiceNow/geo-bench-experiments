@@ -8,7 +8,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8.0,<4"
+python = ">=3.9.0,<4"
 segmentation-models-pytorch = { git = "https://github.com/ElementAI/segmentation_models.pytorch.git", rev = "903115cb156e7bd6d28148e7db66584b3b81b4a8" }
 timm = "0.6.12"
 torchgeo = "0.4.0"
@@ -20,6 +20,9 @@ h5py = "3.8.0"
 wandb = "0.13.10"
 pre-commit = "^3.0.4"
 pandas = "^1.5.3"
+seaborn = "^0.12.2"
+ipyplot = "^1.1.1"
+ipyleaflet = "^0.17.2"
 
 
 [tool.poetry.dev-dependencies]
