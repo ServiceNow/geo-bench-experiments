@@ -7,6 +7,7 @@ from pathlib import Path
 from textwrap import wrap
 from typing import Dict, List
 from warnings import warn
+import json
 
 import numpy as np
 import pandas as pd
@@ -17,6 +18,7 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
 from pandas.errors import EmptyDataError
 from scipy.stats import trim_mean
+from geobench import io
 
 from geobench_exp.experiment.discriminative_metric import boostrap_pw_entropy
 from geobench_exp.io.task import load_task_specs
@@ -36,6 +38,13 @@ def make_normalizer(data_frame, metrics=("test metric",)):
 
     return Normalizer(range_dict)
 
+
+def load_normalizer(benchmark_name):
+    """Load normalizer from json file."""
+    with open(io.CCB_DIR / benchmark_name / "normalizer.json", "r") as f:
+        range_dict = json.load(f)
+    return Normalizer(range_dict)
+    
 
 class Normalizer:
     """Class used to normalize results beween min and max for each dataset."""
@@ -62,6 +71,11 @@ class Normalizer:
         for metric in metrics:
             new_metric = f"normalized {metric}"
             df[new_metric] = df.apply(lambda row: self.__call__(row["dataset"], row[metric]), axis=1)
+
+    def save(self, benchmark_name):
+        """Save normalizer to json file."""
+        with open(io.CCB_DIR / benchmark_name / "normalizer.json", "w") as f:
+            json.dump(self.range_dict, f, indent=2)
 
 
 def biqm(scores):
