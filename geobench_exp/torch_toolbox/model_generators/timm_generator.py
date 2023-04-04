@@ -24,122 +24,121 @@ from geobench_exp.torch_toolbox.model import (
     train_loss_generator,
 )
 
+# def modify_beyond_rgb_layer(new_in_channels, current_layer, task_specs, config):
+#     """Modify input layer for Timm Models to work beyond RGB."""
+#     # Creating new Conv2d layer
+#     new_layer = torch.nn.Conv2d(
+#         in_channels=new_in_channels,
+#         out_channels=current_layer.out_channels,
+#         kernel_size=current_layer.kernel_size,
+#         stride=current_layer.stride,
+#         padding=current_layer.padding,
+#     )
 
-def modify_beyond_rgb_layer(new_in_channels, current_layer, task_specs, config):
-    """Modify input layer for Timm Models to work beyond RGB."""
-    # Creating new Conv2d layer
-    new_layer = torch.nn.Conv2d(
-        in_channels=new_in_channels,
-        out_channels=current_layer.out_channels,
-        kernel_size=current_layer.kernel_size,
-        stride=current_layer.stride,
-        padding=current_layer.padding,
-    )
+#     # new_layer.bias.data = current_layer.bias  # type: ignore
 
-    # new_layer.bias.data = current_layer.bias  # type: ignore
-
-    return _initialize_additional_in_channels(
-        current_layer=current_layer, new_layer=new_layer, task_specs=task_specs, config=config
-    )
-
-
-def beyond_rgb(backbone, task_specs, config):
-    """Modify the 1st layer to accept all the new bands instead of just RGB if required."""
-    new_in_channels = len(config["dataset"]["band_names"])
-
-    if new_in_channels == 3:
-        return
-
-    if new_in_channels < 3:
-        raise ValueError(f"Expecting 3 bands or more, got: {new_in_channels}")
-
-    # if we go beyond RGB channels need to initialize other layers, otherwise keep the same
-    if config["model"]["backbone"] in ["resnet18", "resnet50"]:
-        backbone.conv1 = modify_beyond_rgb_layer(new_in_channels, backbone.conv1, task_specs=task_specs, config=config)
-
-    elif config["model"]["backbone"] in ["convnext_base"]:
-        backbone.stem[0] = modify_beyond_rgb_layer(
-            new_in_channels, backbone.stem[0], task_specs=task_specs, config=config
-        )
-
-    elif config["model"]["backbone"] in [
-        "vit_tiny_patch16_224",
-        "vit_small_patch16_224",
-        "swinv2_tiny_window16_256",
-    ]:
-
-        backbone.patch_embed.proj = modify_beyond_rgb_layer(
-            new_in_channels, backbone.patch_embed.proj, task_specs=task_specs, config=config
-        )
+#     return _initialize_additional_in_channels(
+#         current_layer=current_layer, new_layer=new_layer, task_specs=task_specs, config=config
+#     )
 
 
-def _initialize_additional_in_channels(
-    current_layer: torch.nn.Conv2d,
-    new_layer: torch.nn.Conv2d,
-    task_specs: TaskSpecifications,
-    config: Dict[str, Any],
-) -> torch.nn.Conv2d:
-    """Initialize new additional input channels.
+# def beyond_rgb(backbone, task_specs, config):
+#     """Modify the 1st layer to accept all the new bands instead of just RGB if required."""
+#     new_in_channels = len(config["dataset"]["band_names"])
 
-    By default RGB channels are copied and new input channels randomly initialized
+#     if new_in_channels == 3:
+#         return
 
-    Args:
-        current_layer: current Conv2d backbone layer
-        new_layer: newly initialized layer to which to copy weights
-        task_specs: task specs to retrieve dataset
-        config: config file for dataset specifics
+#     if new_in_channels < 3:
+#         raise ValueError(f"Expecting 3 bands or more, got: {new_in_channels}")
 
-    Returns:
-        newly initialized input Conv2d layer
-    """
-    method = config["model"]["new_channel_init_method"]
+#     # if we go beyond RGB channels need to initialize other layers, otherwise keep the same
+#     if config["model"]["backbone"] in ["resnet18", "resnet50"]:
+#         backbone.conv1 = modify_beyond_rgb_layer(new_in_channels, backbone.conv1, task_specs=task_specs, config=config)
 
-    dataset = task_specs.get_dataset(
-        split="train",
-        band_names=config["dataset"]["band_names"],
-        format=config["dataset"]["format"],
-        benchmark_dir=config["experiment"]["benchmark_dir"],
-        partition_name=config["experiment"]["partition_name"],
-    )
-    alt_band_names = dataset.alt_band_names
-    band_names = dataset.band_names
+#     elif config["model"]["backbone"] in ["convnext_base"]:
+#         backbone.stem[0] = modify_beyond_rgb_layer(
+#             new_in_channels, backbone.stem[0], task_specs=task_specs, config=config
+#         )
 
-    # find index of the rgb bands
-    new_rgb_indices = []
-    full_rgb_names = []
-    for rgb_name in ["red", "green", "blue"]:
-        rgb_full_name = alt_band_names[rgb_name]
-        new_rgb_indices.append(band_names.index(rgb_full_name))
-        full_rgb_names.append(rgb_full_name)
+#     elif config["model"]["backbone"] in [
+#         "vit_tiny_patch16_224",
+#         "vit_small_patch16_224",
+#         "swinv2_tiny_window16_256",
+#     ]:
 
-    non_rgb_names = list(set(band_names) - set(full_rgb_names))
-    non_rgb_indices = [band_names.index(band) for band in non_rgb_names]
+#         backbone.patch_embed.proj = modify_beyond_rgb_layer(
+#             new_in_channels, backbone.patch_embed.proj, task_specs=task_specs, config=config
+#         )
 
-    # how rgb is ordered in current layer
-    current_rgb_indices = [0, 1, 2]
-    # need to check that this order matches with how the data of all bands is retrieved
-    for new_idx, old_idx in zip(new_rgb_indices, current_rgb_indices):
-        with torch.no_grad():
-            new_layer.weight[:, new_idx : new_idx + 1, :, :] = current_layer.weight[:, old_idx : old_idx + 1, :, :]
 
-    ## can define different approaches here about how to initialize other channels
-    if method == "clone_random_rgb_channel":
-        # Copying the weights of the `copy_weights` channel of the old layer to the extra channels of the new layer
-        for channel in non_rgb_indices:
-            # index of existing channel weights
-            # Here will initialize the weights in new channel by randomly cloning one pretrained channel and adding gaussian noise
-            rand_rgb_idx = random.randint(0, 2)
-            # find respective location of rgb pands in old and new
-            current_rgb_idx = current_rgb_indices.index(rand_rgb_idx)
+# def _initialize_additional_in_channels(
+#     current_layer: torch.nn.Conv2d,
+#     new_layer: torch.nn.Conv2d,
+#     task_specs: TaskSpecifications,
+#     config: Dict[str, Any],
+# ) -> torch.nn.Conv2d:
+#     """Initialize new additional input channels.
 
-            with torch.no_grad():
-                new_layer.weight[:, channel : channel + 1, :, :] = current_layer.weight[
-                    :, current_rgb_idx : current_rgb_idx + 1, ::
-                ].clone() + random.gauss(0, 1 / new_layer.in_channels)
+#     By default RGB channels are copied and new input channels randomly initialized
 
-            new_layer.weight = torch.nn.Parameter(new_layer.weight)
+#     Args:
+#         current_layer: current Conv2d backbone layer
+#         new_layer: newly initialized layer to which to copy weights
+#         task_specs: task specs to retrieve dataset
+#         config: config file for dataset specifics
 
-    return new_layer
+#     Returns:
+#         newly initialized input Conv2d layer
+#     """
+#     method = config["model"]["new_channel_init_method"]
+
+#     dataset = task_specs.get_dataset(
+#         split="train",
+#         band_names=config["dataset"]["band_names"],
+#         format=config["dataset"]["format"],
+#         benchmark_dir=config["experiment"]["benchmark_dir"],
+#         partition_name=config["experiment"]["partition_name"],
+#     )
+#     alt_band_names = dataset.alt_band_names
+#     band_names = dataset.band_names
+
+#     # find index of the rgb bands
+#     new_rgb_indices = []
+#     full_rgb_names = []
+#     for rgb_name in ["red", "green", "blue"]:
+#         rgb_full_name = alt_band_names[rgb_name]
+#         new_rgb_indices.append(band_names.index(rgb_full_name))
+#         full_rgb_names.append(rgb_full_name)
+
+#     non_rgb_names = list(set(band_names) - set(full_rgb_names))
+#     non_rgb_indices = [band_names.index(band) for band in non_rgb_names]
+
+#     # how rgb is ordered in current layer
+#     current_rgb_indices = [0, 1, 2]
+#     # need to check that this order matches with how the data of all bands is retrieved
+#     for new_idx, old_idx in zip(new_rgb_indices, current_rgb_indices):
+#         with torch.no_grad():
+#             new_layer.weight[:, new_idx : new_idx + 1, :, :] = current_layer.weight[:, old_idx : old_idx + 1, :, :]
+
+#     ## can define different approaches here about how to initialize other channels
+#     if method == "clone_random_rgb_channel":
+#         # Copying the weights of the `copy_weights` channel of the old layer to the extra channels of the new layer
+#         for channel in non_rgb_indices:
+#             # index of existing channel weights
+#             # Here will initialize the weights in new channel by randomly cloning one pretrained channel and adding gaussian noise
+#             rand_rgb_idx = random.randint(0, 2)
+#             # find respective location of rgb pands in old and new
+#             current_rgb_idx = current_rgb_indices.index(rand_rgb_idx)
+
+#             with torch.no_grad():
+#                 new_layer.weight[:, channel : channel + 1, :, :] = current_layer.weight[
+#                     :, current_rgb_idx : current_rgb_idx + 1, ::
+#                 ].clone() + random.gauss(0, 1 / new_layer.in_channels)
+
+#             new_layer.weight = torch.nn.Parameter(new_layer.weight)
+
+#     return new_layer
 
 
 class TIMMGenerator(ModelGenerator):
@@ -185,8 +184,6 @@ class TIMMGenerator(ModelGenerator):
         setattr(backbone, backbone.default_cfg["classifier"], torch.nn.Identity())
         config["model"]["default_input_size"] = backbone.default_cfg["input_size"]
 
-        # beyond_rgb(backbone, task_specs, config)
-
         test_input_for_feature_dim = (
             config["model"]["in_chans"],
             256 if config["model"]["backbone"] == "swinv2_tiny_window16_256" else 224,
@@ -201,7 +198,7 @@ class TIMMGenerator(ModelGenerator):
 
         config["model"]["n_backbone_features"] = shapes[0][0]
 
-        head = head_generator(task_specs, shapes, config)
+        head = head_generator(task_specs, shapes)
         loss = train_loss_generator(task_specs, config)
 
         return Model(

@@ -7,17 +7,23 @@ import pickle
 
 import pytest
 import torch
+from ruamel.yaml import YAML
+
 from geobench_exp import io
-from geobench_exp.torch_toolbox.model import Model, ModelGenerator, _balanced_binary_cross_entropy_with_logits, head_generator
+from geobench_exp.torch_toolbox.model import (
+    Model,
+    ModelGenerator,
+    _balanced_binary_cross_entropy_with_logits,
+    head_generator,
+)
 from geobench_exp.torch_toolbox.model_generators.timm_generator import TIMMGenerator
 from geobench_exp.torch_toolbox.modules import ClassificationHead
-from ruamel.yaml import YAML
 
 
 class TestModel:
     @pytest.fixture
     def model(self):
-        path = os.path.abspath("tests/data/geobench-test-classification/brick_kiln_v1.0/task_specs.pkl")
+        path = os.path.abspath("tests/data/geobench-classification-test/eurosat/task_specs.pkl")
         with open(path, "rb") as f:
             task_specs = pickle.load(f)
 
@@ -56,7 +62,7 @@ class TestModel:
 
 
 class TestGenerator:
-    path = os.path.abspath("tests/data/geobench-test-classification/brick_kiln_v1.0/task_specs.pkl")
+    path = os.path.abspath("tests/data/geobench-classification-test/eurosat/task_specs.pkl")
     with open(path, "rb") as f:
         task_specs = pickle.load(f)
 
@@ -82,7 +88,7 @@ class TestGenerator:
 
 
 class TestHeadGenerator:
-    path = os.path.abspath("tests/data/geobench-test-classification/brick_kiln_v1.0/task_specs.pkl")
+    path = os.path.abspath("tests/data/geobench-classification-test/eurosat/task_specs.pkl")
     with open(path, "rb") as f:
         task_specs = pickle.load(f)
 
@@ -93,26 +99,20 @@ class TestHeadGenerator:
     def test_valid_head_generator(self):
         test_config = json.loads(json.dumps(self.config))
         test_config["model"]["head_type"] = "linear"
-        head = head_generator(task_specs=self.task_specs, features_shape=[(3, 10, 10)], config=test_config)
+        head = head_generator(task_specs=self.task_specs, features_shape=[(3, 10, 10)])
         assert isinstance(head, ClassificationHead)
-
-    def test_invalid_head_generator(self):
-        test_config = json.loads(json.dumps(self.config))
-        test_config["model"]["head_type"] = "foo"
-        with pytest.raises(AssertionError):
-            head_generator(task_specs=self.task_specs, features_shape=[(3, 10, 10)], config=test_config)
 
     def test_multilabel_task(self):
         task_specs = copy.copy(self.task_specs)
         setattr(task_specs, "label_type", io.MultiLabelClassification(n_classes=2, class_names=["foo", "bar"]))
-        head = head_generator(task_specs=task_specs, features_shape=[(3, 10, 10)], config=self.config)
+        head = head_generator(task_specs=task_specs, features_shape=[(3, 10, 10)])
         assert isinstance(head, ClassificationHead)
 
     def test_invalid_task(self):
         task_specs = copy.copy(self.task_specs)
         setattr(task_specs, "label_type", torch.nn.Module)
         with pytest.raises(ValueError, match="Unrecognized task"):
-            head_generator(task_specs=task_specs, features_shape=[(3, 10, 10)], config=self.config)
+            head_generator(task_specs=task_specs, features_shape=[(3, 10, 10)])
 
 
 def test_balanced_binary_cross_entropy():

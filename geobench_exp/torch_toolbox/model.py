@@ -416,7 +416,7 @@ class ModelGenerator:
         raise NotImplementedError("Necessary to define a model name.")
 
 
-def head_generator(task_specs: TaskSpecifications, features_shape: List[Tuple[int, ...]], config: Dict[str, Any]):
+def head_generator(task_specs: TaskSpecifications, features_shape: List[Tuple[int, ...]]):
     """Return an appropriate head based on the task specifications.
 
     We can use task_specs.task_type as follow:

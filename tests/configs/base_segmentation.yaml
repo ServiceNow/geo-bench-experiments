@@ -1,8 +1,8 @@
 experiment:
-  generate_experiment_dir: climate-change-benchmark/experiments
+  generate_experiment_dir: test/experiments
   experiment_name: testing # prefix
   experiment_type: standard # standard, seeded_runs, sweep
-  benchmark_dir: tests/data/geobench_exp-test-segmentation
+  benchmark_dir: tests/data/geobench-segmentation-test
   partition_name: default
   loggers: ["csv"]
 model:

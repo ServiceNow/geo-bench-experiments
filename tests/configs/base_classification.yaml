@@ -1,8 +1,8 @@
 experiment:
-  generate_experiment_dir: climate-change-benchmark/experiments
+  generate_experiment_dir: test/experiments
   experiment_name: testing # prefix
   experiment_type: standard # standard, seeded_runs, sweep
-  benchmark_dir: tests/data/geobench_exp-test-classification
+  benchmark_dir: tests/data/geobench-classification-test
   partition_name: default
   loggers: ["csv"]
 model:
@@ -11,6 +11,7 @@ model:
   loss_type: crossentropy
   new_channel_init_method: random
   pretrained: True
+  in_chans: 3
   desired_input_size: 224 # desired image input dimension to model
   backbone: resnet18  # resnet18, convnext_base, vit_tiny_patch16_224, vit_small_patch16_224. swinv2_tiny_window16_256
   lr_backbone: 1.0e-3

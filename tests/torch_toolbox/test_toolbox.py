@@ -3,10 +3,11 @@ import pickle
 import tempfile
 
 import pytest
+from ruamel.yaml import YAML
+
 from geobench_exp import io
 from geobench_exp.experiment.experiment import Job
 from geobench_exp.torch_toolbox import trainer
-from ruamel.yaml import YAML
 
 
 def train_job_on_task(config, task_specs, threshold, check_logs=True, metric_name="Accuracy", **kwargs):
@@ -42,7 +43,7 @@ def train_job_on_task(config, task_specs, threshold, check_logs=True, metric_nam
 
 def test_toolbox_segmentation():
     with open(
-        os.path.join("tests", "data", "geobench_exp-test-segmentation", "cvpr_chesapeake_landcover", "task_specs.pkl"), "rb"
+        os.path.join("tests", "data", "geobench-segmentation-test", "southAfricaCropType", "task_specs.pkl"), "rb"
     ) as fd:
         task_specs = pickle.load(fd)
 
@@ -57,13 +58,10 @@ def test_toolbox_segmentation():
     "backbone, model_generator_module_name",
     [
         ("resnet18", "geobench_exp.torch_toolbox.model_generators.timm_generator"),
-        ("conv4", "geobench_exp.torch_toolbox.model_generators.conv4"),
     ],
 )
 def test_toolbox_classification(backbone, model_generator_module_name):
-    with open(
-        os.path.join("tests", "data", "geobench_exp-test-classification", "brick_kiln_v1.0", "task_specs.pkl"), "rb"
-    ) as fd:
+    with open(os.path.join("tests", "data", "geobench-classification-test", "eurosat", "task_specs.pkl"), "rb") as fd:
         task_specs = pickle.load(fd)
 
     yaml = YAML()
@@ -77,7 +75,7 @@ def test_toolbox_classification(backbone, model_generator_module_name):
 
 
 def test_toolbox_getitem():
-    benchmarks = ["geobench_exp-test-classification", "geobench_exp-test-segmentation"]
+    benchmarks = ["geobench-classification-test", "geobench-segmentation-test"]
     test_dirs = [os.path.join("tests", "data", benchmark) for benchmark in benchmarks]
     for benchmark_dir in test_dirs:
         for task in io.task_iterator(benchmark_dir):

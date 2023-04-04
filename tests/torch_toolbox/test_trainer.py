@@ -7,14 +7,15 @@ import sys
 import tempfile
 from pathlib import Path
 
+from ruamel.yaml import YAML
+
 import geobench_exp
 from geobench_exp.experiment.experiment import Job
-from ruamel.yaml import YAML
 
 
 def test_trainer_start():
     with open(
-        os.path.join("tests", "data", "geobench_exp-test-segmentation", "cvpr_chesapeake_landcover", "task_specs.pkl"), "rb"
+        os.path.join("tests", "data", "geobench-segmentation-test", "southAfricaCropType", "task_specs.pkl"), "rb"
     ) as fd:
         task_specs = pickle.load(fd)
 

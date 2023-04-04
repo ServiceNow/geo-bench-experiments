@@ -1,5 +1,6 @@
 """Parse results."""
 
+import json
 import pickle
 from collections import defaultdict
 from functools import cache
@@ -7,19 +8,18 @@ from pathlib import Path
 from textwrap import wrap
 from typing import Dict, List
 from warnings import warn
-import json
 
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import yaml
-from geobench_exp.benchmark.dataset_converters import inspect_tools
 from matplotlib import pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
 from pandas.errors import EmptyDataError
 from scipy.stats import trim_mean
-from geobench import io
 
+from geobench_exp import io
+from geobench_exp.benchmark.dataset_converters import inspect_tools
 from geobench_exp.experiment.discriminative_metric import boostrap_pw_entropy
 from geobench_exp.io.task import load_task_specs
 
@@ -44,7 +44,7 @@ def load_normalizer(benchmark_name):
     with open(io.CCB_DIR / benchmark_name / "normalizer.json", "r") as f:
         range_dict = json.load(f)
     return Normalizer(range_dict)
-    
+
 
 class Normalizer:
     """Class used to normalize results beween min and max for each dataset."""
@@ -550,7 +550,7 @@ def extract_best_points(log_dirs, filt_size=5, lower_is_better=False):
         best_point = extract_best_point(log_dir, filt_size, lower_is_better)
         try:
             best_point["best_config"] = False
-        except:
+        except KeyError:
             import pdb
 
             pdb.set_trace()
@@ -755,7 +755,6 @@ def plot_discriminative_metric(df, metric="test metric", n_largest=3, fig_size=N
     for i, dataset in enumerate(datasets):
 
         print(dataset)
-        discr_val = []
         colors = sns.color_palette("colorblind")
         for k, train_ratio in enumerate(train_ratios):
 
