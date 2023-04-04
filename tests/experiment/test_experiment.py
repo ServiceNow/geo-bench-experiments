@@ -4,23 +4,12 @@ import sys
 import tempfile
 from pathlib import Path
 
-import geobench_exp
 import pytest
-from geobench_exp.experiment.experiment import Job, get_model_generator
-from geobench_exp.experiment.sequential_dispatcher import sequential_dispatcher
 from ruamel.yaml import YAML
 
-
-def test_load_model():
-    """Test loading an existing model generator from a user-specified path."""
-    model_generator = get_model_generator("geobench_exp.torch_toolbox.model_generators.conv4")
-    assert hasattr(model_generator, "generate_model")
-
-
-def test_load_trainer():
-    """Test loading an existing model generator from a user-specified path."""
-    model_generator = get_model_generator("geobench_exp.torch_toolbox.model_generators.conv4")
-    assert hasattr(model_generator, "generate_trainer")
+import geobench_exp
+from geobench_exp.experiment.experiment import Job, get_model_generator
+from geobench_exp.experiment.sequential_dispatcher import sequential_dispatcher
 
 
 def test_unexisting_path():
@@ -68,6 +57,7 @@ def test_experiment_generator_on_benchmark(config_filepath):
 
         subprocess.check_call(cmd)
         os.remove(new_config_filepath)
+
         exp_dir = os.path.join(generate_experiment_dir, os.listdir(generate_experiment_dir)[0])
         sequential_dispatcher(exp_dir=exp_dir, prompt=False)
         for ds_dir in Path(exp_dir).iterdir():

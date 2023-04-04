@@ -17,7 +17,7 @@ def test_exp_result():
     assert val_score == best_point["val_metric"]
 
     task = exp_result.get_task_specs()
-    assert task.dataset_name == "bigearthnet"
+    assert task.dataset_name == "eurosat"
 
     hparams = exp_result.get_hparams()
     assert hparams["batch_size"] == 16

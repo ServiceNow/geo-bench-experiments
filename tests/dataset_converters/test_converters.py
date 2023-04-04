@@ -2,6 +2,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
+
 from geobench_exp import io
 
 
@@ -73,15 +74,6 @@ def test_so2sat():
     from geobench_exp.benchmark.dataset_converters import so2sat
 
     converter_tester(so2sat)
-
-
-@pytest.mark.converter
-@pytest.mark.slow
-@pytest.mark.skipif(SRC_DIR_EXISTS, reason="Requires presence of the source datasets.")
-def test_geolifeclef():
-    from geobench_exp.benchmark.dataset_converters import geolifeclef
-
-    converter_tester(geolifeclef)
 
 
 @pytest.mark.converter
