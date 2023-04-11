@@ -1,7 +1,7 @@
 experiment:
   generate_experiment_dir: test/experiments
   experiment_name: testing # prefix
-  experiment_type: standard # standard, seeded_runs, sweep
+  experiment_type: sweep # standard, seeded_runs, sweep
   benchmark_dir: tests/data/geobench-classification-test
   partition_name: default
   loggers: ["csv"]

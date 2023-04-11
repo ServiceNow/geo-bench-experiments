@@ -1,7 +1,7 @@
 experiment:
   generate_experiment_dir: test/experiments
   experiment_name: testing # prefix
-  experiment_type: standard # standard, seeded_runs, sweep
+  experiment_type: sweep # standard, seeded_runs, sweep
   benchmark_dir: tests/data/geobench-segmentation-test
   partition_name: default
   loggers: ["csv"]
@@ -10,7 +10,6 @@ model:
   head_type: linear # classification
   loss_type: crossentropy
   new_channel_init_method: random
-  seed: 1
   encoder_type: resnet18  # resnet18, convnext_base
   decoder_type: Unet
   encoder_weights: imagenet
@@ -31,7 +30,7 @@ wandb:
   entity: climate-benchmark # user or team entity that hosts a project
   mode: offline
   sweep:
-    sweep_config_path: path # or maybe define the entire sweep here?
+    sweep_config_path: tests/configs/sweep_config.yaml # or maybe define the entire sweep here?
     num_agents: 4 # how many agents participate in sweep, one agent usually corresponds to one gpu
     num_trials_per_agent: 5 # how many hparam trials each agent should execute, num_agents x num_trials_per_agent corresponds to total number of trials executed by sweep
 pl: # all flags for pytorch lightning Trainer module, see https://pytorch-lightning.readthedocs.io/en/stable/common/trainer.html
