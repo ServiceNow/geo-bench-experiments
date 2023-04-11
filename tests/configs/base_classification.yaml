@@ -19,6 +19,7 @@ model:
   optimizer: sgd
   hidden_size: 512
   batch_size: 2
+  early_stopping_metric: train_loss
 dataset:
   band_names: ["red", "green", "blue"]
   format: hdf5

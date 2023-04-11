@@ -6,6 +6,12 @@
     "ref_south_africa_crops_competition_v1_train_labels_0001_3",
     "ref_south_africa_crops_competition_v1_train_labels_0001_4"
   ],
-  "valid": [],
+  "valid": [
+    "ref_south_africa_crops_competition_v1_train_labels_0001_0",
+    "ref_south_africa_crops_competition_v1_train_labels_0001_1",
+    "ref_south_africa_crops_competition_v1_train_labels_0001_2",
+    "ref_south_africa_crops_competition_v1_train_labels_0001_3",
+    "ref_south_africa_crops_competition_v1_train_labels_0001_4"
+  ],
   "test": []
 }

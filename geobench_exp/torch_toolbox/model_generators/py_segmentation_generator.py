@@ -6,8 +6,8 @@ import kornia.augmentation as K
 import segmentation_models_pytorch as smp
 import torch
 import torchvision.transforms.functional as TF
-from kornia.augmentation import AugmentationSequential
 from torch.utils.data.dataloader import default_collate
+from torchgeo.transforms import AugmentationSequential
 
 from geobench_exp import io
 from geobench_exp.io.dataset import Band
@@ -144,10 +144,16 @@ class SegmentationGenerator(ModelGenerator):
             x = sample.pack_to_3d(band_names=band_names)[0].astype("float32")
 
             if isinstance(sample.label, Band):
-                x, y = torch.from_numpy(x), torch.from_numpy(sample.label.data.astype("float32"))
+                # kornia expects channel first and label to have a channel
+                x, y = torch.from_numpy(x).permute(2, 0, 1), torch.from_numpy(
+                    sample.label.data.astype("float32")
+                ).unsqueeze(0)
                 transformed = t({"image": x, "mask": y})
 
-            return {"input": transformed["image"], "label": transformed["mask"].squeeze(-1).long()}
+            return {
+                "input": transformed["image"].squeeze(0),
+                "label": transformed["mask"].squeeze(0).to(dtype=torch.long),
+            }
 
         return transform
 

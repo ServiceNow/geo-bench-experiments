@@ -1376,6 +1376,7 @@ class GeobenchDataset:
             sample_name_list = self._sample_name_list
         else:
             sample_name_list = self.active_partition.partition_dict[self.split]
+
         return self.get_sample(sample_name_list[idx])
 
     def get_sample(self, sample_name: str) -> Sample:
@@ -1392,6 +1393,7 @@ class GeobenchDataset:
         else:
             sample_name_ = sample_name
         sample = load_sample(Path(self.dataset_dir, sample_name_), band_names=self.band_names, format=self.format)
+
         if self.transform is not None:
             return self.transform(sample)
         else:

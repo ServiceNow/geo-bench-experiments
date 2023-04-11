@@ -358,8 +358,9 @@ class ModelGenerator:
         ]:
             track_metric = "val_JaccardIndex"
             mode = "max"
-        else:
-            track_metric = config["model"].get("early_stopping_metric", "val_loss")
+
+        if "early_stopping_metric" in config["model"]:
+            track_metric = config["model"]["early_stopping_metric"]
             mode = "min"
 
         checkpoint_callback = ModelCheckpoint(
