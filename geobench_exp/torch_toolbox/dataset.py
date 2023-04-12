@@ -3,13 +3,13 @@
 from pathlib import Path
 from typing import Sequence
 
-import pytorch_lightning as pl
+from lightning import LightningDataModule
 from torch.utils.data import DataLoader
 
 from geobench_exp import io
 
 
-class DataModule(pl.LightningDataModule):
+class DataModule(LightningDataModule):
     """Data Module.
 
     Define a

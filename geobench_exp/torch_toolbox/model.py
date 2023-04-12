@@ -6,14 +6,13 @@ import string
 import time
 from typing import Any, Callable, Dict, List, Tuple
 
-import pytorch_lightning as pl
 import torch
 import torch.nn.functional as F
 import torchmetrics
-from pytorch_lightning import LightningModule
-from pytorch_lightning.callbacks import ModelCheckpoint
-from pytorch_lightning.callbacks.early_stopping import EarlyStopping
-from pytorch_lightning.profiler import SimpleProfiler
+from lightning import LightningModule, Trainer
+from lightning.pytorch.callbacks import ModelCheckpoint
+from lightning.pytorch.callbacks.early_stopping import EarlyStopping
+from lightning.pytorch.loggers import CSVLogger, WandbLogger
 from torch import Tensor
 
 from geobench_exp import io
@@ -301,7 +300,7 @@ class ModelGenerator:
         """
         raise NotImplementedError("Necessary to specify this function that returns model.")
 
-    def generate_trainer(self, config: dict, job) -> pl.Trainer:
+    def generate_trainer(self, config: dict, job) -> Trainer:
         """Configure a pytroch lightning Trainer.
 
         Args:
@@ -315,8 +314,8 @@ class ModelGenerator:
         config["wandb"]["wandb_run_id"] = run_id
 
         loggers = [
-            pl.loggers.CSVLogger(str(job.dir), name="csv_logs"),
-            pl.loggers.WandbLogger(
+            CSVLogger(str(job.dir), name="csv_logs"),
+            WandbLogger(
                 save_dir=str(job.dir),
                 project=config["wandb"]["project"],
                 entity=config["wandb"]["entity"],
@@ -375,13 +374,7 @@ class ModelGenerator:
             min_delta=1e-5,
         )
 
-        profiler_flag = config["experiment"].get("profiler", False)
-        if profiler_flag:
-            profiler = SimpleProfiler(dirpath=job.dir, filename="profiler")
-        else:
-            profiler = None
-
-        trainer = pl.Trainer(
+        trainer = Trainer(
             **config["pl"],
             default_root_dir=job.dir,
             callbacks=[
@@ -389,7 +382,6 @@ class ModelGenerator:
                 checkpoint_callback,
             ],
             logger=loggers,
-            profiler=profiler,
         )
 
         return trainer

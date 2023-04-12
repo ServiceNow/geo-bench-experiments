@@ -13,7 +13,8 @@ segmentation-models-pytorch = { git = "https://github.com/ElementAI/segmentation
 pandas = "^1.5.3"
 geo-bench = { git = "https://github.com/ServiceNow/geo-bench.git" }
 timm = "0.6.12"
-torchgeo = "0.4.0"
+fastapi = ">=0.80"
+torchgeo = { git = "https://github.com/microsoft/torchgeo.git" }
 torchvision = "0.13.0"
 torchmetrics = "0.11.1"
 torch = ">=1.12.0"

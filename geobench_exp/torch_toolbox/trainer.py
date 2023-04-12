@@ -4,7 +4,7 @@
 import argparse
 import os
 
-import pytorch_lightning as pl
+from lightning.pytorch import seed_everything
 from ruamel.yaml import YAML
 from torch.utils.data.dataloader import default_collate
 
@@ -23,7 +23,7 @@ def train(job_dir: str) -> None:
     task_specs = job.task_specs
     seed = config["model"].get("seed", None)
     if seed is not None:
-        pl.seed_everything(seed, workers=True)
+        seed_everything(seed, workers=True)
 
     if config["dataset"]["band_names"] == "all":
         config["dataset"]["band_names"] = [band_info.name for band_info in task_specs.bands_info]
