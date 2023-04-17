@@ -13,15 +13,15 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import yaml
+from geobench import io
+from geobench.benchmark.dataset_converters import inspect_tools
+from geobench.io.task import load_task_specs
 from matplotlib import pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
 from pandas.errors import EmptyDataError
 from scipy.stats import trim_mean
 
-from geobench import io
-from geobench_exp.benchmark.dataset_converters import inspect_tools
 from geobench_exp.experiment.discriminative_metric import boostrap_pw_entropy
-from geobench.io.task import load_task_specs
 
 
 def make_normalizer(data_frame, metrics=("test metric",)):
