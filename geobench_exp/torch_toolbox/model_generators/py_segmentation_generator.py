@@ -6,12 +6,12 @@ import kornia.augmentation as K
 import segmentation_models_pytorch as smp
 import torch
 import torchvision.transforms.functional as TF
+from geobench import io
+from geobench.io.dataset import Band
+from geobench.io.task import TaskSpecifications
 from torch.utils.data.dataloader import default_collate
 from torchgeo.transforms import AugmentationSequential
 
-from geobench_exp import io
-from geobench_exp.io.dataset import Band
-from geobench_exp.io.task import TaskSpecifications
 from geobench_exp.torch_toolbox.model import Model, ModelGenerator, eval_metrics_generator, train_loss_generator
 from geobench_exp.torch_toolbox.modules import ClassificationHead
 

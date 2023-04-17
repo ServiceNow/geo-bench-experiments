@@ -7,9 +7,9 @@ import pickle
 
 import pytest
 import torch
+from geobench import io
 from ruamel.yaml import YAML
 
-from geobench_exp import io
 from geobench_exp.torch_toolbox.model import (
     Model,
     ModelGenerator,

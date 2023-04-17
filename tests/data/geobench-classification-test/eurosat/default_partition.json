@@ -1,1 +1,23 @@
-/mnt/home/geo-bench-experiments/tests/data/geobench-classification-test/eurosat/original_partition.json
+{
+    "train": [
+        "id_0000",
+        "id_0001",
+        "id_0002",
+        "id_0003",
+        "id_0004"
+    ],
+    "valid": [
+        "id_0000",
+        "id_0001",
+        "id_0002",
+        "id_0003",
+        "id_0004"
+    ],
+    "test": [
+        "id_0000",
+        "id_0001",
+        "id_0002",
+        "id_0003",
+        "id_0004"
+    ]
+  }

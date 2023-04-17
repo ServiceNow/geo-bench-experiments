@@ -3,9 +3,9 @@ import pickle
 import tempfile
 
 import pytest
+from geobench import io
 from ruamel.yaml import YAML
 
-from geobench_exp import io
 from geobench_exp.experiment.experiment import Job
 from geobench_exp.torch_toolbox import trainer
 

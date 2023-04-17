@@ -7,14 +7,14 @@ import kornia.augmentation as K
 import numpy as np
 import timm
 import torch
+from geobench import io
+from geobench.io.task import TaskSpecifications
 from kornia.augmentation import ImageSequential
 from torch.utils.data.dataloader import default_collate
 from torchgeo.models import get_weight
 from torchgeo.trainers.utils import load_state_dict
 from torchvision import transforms as tt
 
-from geobench_exp import io
-from geobench_exp.io.task import TaskSpecifications
 from geobench_exp.torch_toolbox.model import (
     BackBone,
     Model,

@@ -14,7 +14,7 @@ from toolkit import dispatch_toolkit
 pdb.set_trace
 experiment_dir = experiment_generator(
     # config_filepath=str(Path(__file__).parent.parent / "geobench/configs/classification_config.yaml"),
-    config_filepath="/mnt/home/geo-bench-experiments/geobench/configs/classification_config.yaml"
+    config_filepath="/mnt/home/geo-bench-experiments/geobench_exp/configs/classification_config.yaml"
 )
 
 dispatch_toolkit.push_code(Path(__file__).parent.parent)

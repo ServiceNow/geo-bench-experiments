@@ -9,14 +9,16 @@ from typing import Any, Callable, Dict, List, Tuple
 import torch
 import torch.nn.functional as F
 import torchmetrics
+from geobench import io
+from geobench.io.dataset import SegmentationClasses
+from geobench.io.label import Classification, MultiLabelClassification
+from geobench.io.task import TaskSpecifications
 from lightning import LightningModule, Trainer
 from lightning.pytorch.callbacks import ModelCheckpoint
 from lightning.pytorch.callbacks.early_stopping import EarlyStopping
 from lightning.pytorch.loggers import CSVLogger, WandbLogger
 from torch import Tensor
 
-from geobench_exp import io
-from geobench_exp.io.task import TaskSpecifications
 from geobench_exp.torch_toolbox.modules import ClassificationHead
 
 
@@ -424,11 +426,11 @@ def head_generator(task_specs: TaskSpecifications, features_shape: List[Tuple[in
         hyperparams: dict of hyperparameters.
 
     """
-    if isinstance(task_specs.label_type, io.Classification):
+    if isinstance(task_specs.label_type, Classification):
         in_ch, *other_dims = features_shape[-1]
         out_ch = task_specs.label_type.n_classes
         return ClassificationHead(in_ch, out_ch)
-    elif isinstance(task_specs.label_type, io.MultiLabelClassification):
+    elif isinstance(task_specs.label_type, MultiLabelClassification):
         in_ch, *other_dims = features_shape[-1]
         out_ch = task_specs.label_type.n_classes
         return ClassificationHead(in_ch, out_ch)
@@ -452,10 +454,10 @@ def eval_metrics_generator(
         metric collection used during evaluation
     """
     metrics: List[torchmetrics.MetricCollection] = {  # type: ignore
-        io.Classification: torchmetrics.MetricCollection(
+        Classification: torchmetrics.MetricCollection(
             {"Accuracy": torchmetrics.Accuracy(task="multiclass", num_classes=task_specs.label_type.n_classes)}
         ),
-        io.SegmentationClasses: torchmetrics.MetricCollection(
+        SegmentationClasses: torchmetrics.MetricCollection(
             {
                 "Jaccard": torchmetrics.JaccardIndex(task="multiclass", num_classes=task_specs.label_type.n_classes),
                 "FBeta": torchmetrics.FBetaScore(
@@ -463,7 +465,7 @@ def eval_metrics_generator(
                 ),
             }
         ),
-        io.MultiLabelClassification: torchmetrics.MetricCollection(
+        MultiLabelClassification: torchmetrics.MetricCollection(
             {"F1Score": torchmetrics.F1Score(task="multilabel", num_labels=task_specs.label_type.n_classes)}
         ),
     }[task_specs.label_type.__class__]
@@ -497,9 +499,9 @@ def train_loss_generator(task_specs: TaskSpecifications, config: Dict[str, Any])
         available loss functions for training
     """
     loss = {
-        io.Classification: F.cross_entropy,
-        io.MultiLabelClassification: _balanced_binary_cross_entropy_with_logits,
-        io.SegmentationClasses: F.cross_entropy,
+        Classification: F.cross_entropy,
+        MultiLabelClassification: _balanced_binary_cross_entropy_with_logits,
+        SegmentationClasses: F.cross_entropy,
     }[task_specs.label_type.__class__]
 
     return loss  # type: ignore
