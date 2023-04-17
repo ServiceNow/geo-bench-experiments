@@ -18,7 +18,7 @@ export CCB_DIR=/path/to/the/benchmark_dir
 ```
 
 ```python
-from geobench_exp import io
+from geobench import io
 
 def my_transform(sample):
     data, _ = sample.pack_to_3d(band_names=("red", "green", "blue"))

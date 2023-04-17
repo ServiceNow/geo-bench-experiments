@@ -11,8 +11,8 @@ from typing import DefaultDict, Dict, List
 import numpy as np
 from tqdm import tqdm
 
-from geobench_exp import io
-from geobench_exp.io.dataset import compute_dataset_statistics
+from geobench import io
+from geobench.io.dataset import compute_dataset_statistics
 
 parser = argparse.ArgumentParser()
 parser.add_argument("dataset", help="path to CCB dataset folder")

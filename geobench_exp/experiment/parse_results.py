@@ -18,10 +18,10 @@ from matplotlib.ticker import FormatStrFormatter
 from pandas.errors import EmptyDataError
 from scipy.stats import trim_mean
 
-from geobench_exp import io
+from geobench import io
 from geobench_exp.benchmark.dataset_converters import inspect_tools
 from geobench_exp.experiment.discriminative_metric import boostrap_pw_entropy
-from geobench_exp.io.task import load_task_specs
+from geobench.io.task import load_task_specs
 
 
 def make_normalizer(data_frame, metrics=("test metric",)):

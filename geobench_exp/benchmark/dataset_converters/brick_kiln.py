@@ -13,7 +13,7 @@ import numpy as np
 import rasterio
 from tqdm import tqdm
 
-from geobench_exp import io
+from geobench import io
 
 DATASET_NAME = "brick_kiln_v1.0"
 SRC_DATASET_DIR = Path(io.src_datasets_dir, DATASET_NAME)  # type: ignore

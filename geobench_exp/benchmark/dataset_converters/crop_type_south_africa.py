@@ -12,7 +12,7 @@ from rasterio.transform import Affine
 from rasterio.vrt import WarpedVRT
 from tqdm import tqdm
 
-from geobench_exp import io
+from geobench import io
 
 DATASET_NAME = "southAfricaCropType"
 SRC_DATASET_DIR = Path(io.CCB_DIR, "source", DATASET_NAME)  # type: ignore

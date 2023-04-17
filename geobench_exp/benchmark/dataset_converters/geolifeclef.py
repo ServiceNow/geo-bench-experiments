@@ -19,7 +19,7 @@ import tifffile
 from PIL import Image
 from tqdm import tqdm
 
-from geobench_exp import io
+from geobench import io
 
 DATASET_NAME = "geolifeclef-2022"
 SPATIAL_RESOLUTION = 1

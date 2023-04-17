@@ -12,9 +12,9 @@ from torch import Tensor
 from torchgeo.datasets import So2Sat
 from tqdm import tqdm
 
-from geobench_exp import io
-from geobench_exp.io.dataset import Sample
-from geobench_exp.io.task import TaskSpecifications
+from geobench import io
+from geobench.io.dataset import Sample
+from geobench.io.task import TaskSpecifications
 
 DATASET_NAME = "so2sat"
 SRC_DATASET_DIR = io.CCB_DIR / "source" / DATASET_NAME  # type: ignore

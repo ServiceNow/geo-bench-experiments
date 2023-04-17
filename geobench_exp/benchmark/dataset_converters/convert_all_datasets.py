@@ -6,7 +6,7 @@ import shutil
 from importlib import import_module
 from pathlib import Path
 
-from geobench_exp import io
+from geobench import io
 
 CONVERTERS = [
     "brick_kiln",

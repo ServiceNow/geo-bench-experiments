@@ -13,7 +13,7 @@ import pandas as pd
 from PIL import Image, ImageDraw
 from tqdm import tqdm
 
-from geobench_exp import io
+from geobench import io
 from geobench_exp.benchmark.dataset_converters import util
 
 DATASET_NAME = "forestnet_v1.0"

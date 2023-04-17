@@ -3,8 +3,8 @@ import tempfile
 import numpy as np
 import pytest
 
-from geobench_exp import io
-from geobench_exp.io.bandstats import produce_band_stats
+from geobench import io
+from geobench.io.bandstats import produce_band_stats
 
 
 def random_band(shape=(16, 16), band_name="test_band", alt_band_names=("alt_name",)):
@@ -321,8 +321,8 @@ def test_dataset_statistics():
 
 
 def test_class_id():
-    from geobench_exp import io
-    from geobench_exp.io import dataset
+    from geobench import io
+    from geobench.io import dataset
 
     assert isinstance(dataset.sentinel2_13_bands[0], io.SpectralBand)
     assert isinstance(io.sentinel2_13_bands[0], dataset.SpectralBand)

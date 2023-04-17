@@ -8,7 +8,7 @@ import numpy as np
 from torchgeo.datamodules import ChesapeakeCVPRDataModule
 from tqdm import tqdm
 
-from geobench_exp import io
+from geobench import io
 
 # Note: both of the following datasets need to be downloaded manually
 # into the same directory. It will not download successfully using

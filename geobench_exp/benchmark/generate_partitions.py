@@ -4,7 +4,7 @@ from typing import List
 
 import numpy as np
 
-from geobench_exp import io
+from geobench import io
 
 
 def generate_train_size_sweep(

@@ -3,7 +3,7 @@ from email.policy import default
 from typing import Dict, List
 
 import numpy as np
-from geobench_exp import io
+from geobench import io
 from geobench_exp.benchmark.create_benchmark import resample, resample_from_stats
 
 

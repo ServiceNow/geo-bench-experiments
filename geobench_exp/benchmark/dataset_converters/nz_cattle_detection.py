@@ -15,7 +15,7 @@ import rasterio
 from PIL import Image
 from tqdm import tqdm
 
-from geobench_exp import io
+from geobench import io
 from geobench_exp.benchmark.rasterize_detection import point_to_boxes, rasterize_box
 
 SEGMENTATION = True

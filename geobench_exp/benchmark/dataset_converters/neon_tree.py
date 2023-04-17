@@ -22,7 +22,7 @@ import rasterio
 import xmltodict
 from tqdm import tqdm
 
-from geobench_exp import io
+from geobench import io
 from geobench_exp.benchmark.rasterize_detection import rasterize_box
 
 SEGMENTATION = True

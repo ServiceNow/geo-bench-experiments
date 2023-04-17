@@ -8,7 +8,7 @@ import pandas as pd
 import rasterio
 from tqdm import tqdm
 
-from geobench_exp import io
+from geobench import io
 
 # change dimensions to be H, W, C
 # Paths

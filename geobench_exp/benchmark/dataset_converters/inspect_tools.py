@@ -16,9 +16,9 @@ from rasterio import warp
 from rasterio.crs import CRS
 from tqdm.auto import tqdm
 
-from geobench_exp import io
-from geobench_exp.io import dataset as io_ds
-from geobench_exp.io.dataset import (
+from geobench import io
+from geobench.io import dataset as io_ds
+from geobench.io.dataset import (
     Band,
     GeobenchDataset,
     HyperSpectralBands,

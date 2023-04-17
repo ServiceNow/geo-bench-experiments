@@ -24,7 +24,7 @@ import rasterio
 from torchgeo.datasets import XView2
 from tqdm import tqdm
 
-from geobench_exp import io
+from geobench import io
 
 DATASET_NAME = "xview2"
 SRC_DATASET_DIR = Path(io.src_datasets_dir, DATASET_NAME)  # type: ignore

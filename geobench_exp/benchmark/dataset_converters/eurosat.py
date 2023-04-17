@@ -13,7 +13,7 @@ from torchgeo.datasets import EuroSAT
 from torchvision.datasets import ImageFolder
 from tqdm import tqdm
 
-from geobench_exp import io
+from geobench import io
 
 DATASET_NAME = "eurosat"
 SRC_DATASET_DIR = Path(io.src_datasets_dir, DATASET_NAME)  # type: ignore

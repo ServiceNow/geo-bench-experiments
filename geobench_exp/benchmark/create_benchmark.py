@@ -9,9 +9,9 @@ from typing import Any, DefaultDict, Dict, List, Tuple, Union
 import numpy as np
 from tqdm import tqdm
 
-from geobench_exp import io
-from geobench_exp.io import bandstats
-from geobench_exp.io.task import load_task_specs
+from geobench import io
+from geobench.io import bandstats
+from geobench.io.task import load_task_specs
 
 
 def make_subsampler(max_sizes):

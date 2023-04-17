@@ -18,7 +18,7 @@ import numpy as np
 from torchgeo.datasets import BeninSmallHolderCashews
 from tqdm import tqdm
 
-from geobench_exp import io
+from geobench import io
 
 # Classification labels
 LABELS = (
