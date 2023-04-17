@@ -12,10 +12,10 @@ from importlib import import_module
 from pathlib import Path
 from typing import Any, Dict, List, Union
 
+from geobench import io
+from geobench.io.task import TaskSpecifications
 from ruamel.yaml import YAML
 
-from geobench_exp import io
-from geobench_exp.io.task import TaskSpecifications
 from geobench_exp.torch_toolbox.model import ModelGenerator
 
 
@@ -113,9 +113,9 @@ class Job:
 
     def write_script(self, job_dir: str) -> None:
         """Write bash scrip that can be executed to run job.
-        to
-                Args:
-                    job_dir: job directory from which to run job
+
+        Args:
+            job_dir: job directory from which to run job
         """
         script_path = self.dir / "run.sh"
         with open(script_path, "w") as fd:

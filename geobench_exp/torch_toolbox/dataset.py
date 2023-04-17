@@ -3,10 +3,9 @@
 from pathlib import Path
 from typing import Sequence
 
+from geobench import io
 from lightning import LightningDataModule
 from torch.utils.data import DataLoader
-
-from geobench_exp import io
 
 
 class DataModule(LightningDataModule):

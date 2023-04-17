@@ -1,10 +1,10 @@
 import os
 from pathlib import Path
 
-from geobench_exp import io
-from geobench_exp.benchmark.create_benchmark import make_resampler_from_stats, transform_dataset
-from geobench_exp.benchmark.dataset_converters import crop_type_south_africa, eurosat
-from geobench_exp.io import bandstats
+from geobench import io
+from geobench.benchmark.create_benchmark import make_resampler_from_stats, transform_dataset
+from geobench.benchmark.dataset_converters import crop_type_south_africa, eurosat
+from geobench.io import bandstats
 
 
 def create_classification_test_benchmark():

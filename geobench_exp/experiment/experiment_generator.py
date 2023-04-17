@@ -11,8 +11,8 @@ from pathlib import Path
 from typing import Any, Dict
 
 import yaml
+from geobench import io
 
-from geobench_exp import io
 from geobench_exp.experiment.experiment import Job, get_model_generator
 
 
