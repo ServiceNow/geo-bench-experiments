@@ -8,13 +8,13 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.9.0,<4"
-segmentation-models-pytorch = { git = "https://github.com/ElementAI/segmentation_models.pytorch.git", rev = "903115cb156e7bd6d28148e7db66584b3b81b4a8" }
+python = ">=3.9.0,<3.12"
+segmentation-models-pytorch = { git = "https://github.com/qubvel/segmentation_models.pytorch.git", branch = "master"}
 pandas = "^1.5.3"
-geo-bench = { git = "https://github.com/ServiceNow/geo-bench.git" }
-timm = "0.6.12"
+scipy = "1.10.1"
+geo-bench = { git = "https://github.com/ServiceNow/geo-bench.git", rev = "main"}
 fastapi = ">=0.80"
-torchgeo = { git = "https://github.com/microsoft/torchgeo.git" }
+torchgeo = { git = "https://github.com/microsoft/torchgeo.git", rev = "main"}
 torchvision = "0.13.0"
 torchmetrics = "0.11.1"
 torch = ">=1.12.0"
