@@ -80,7 +80,7 @@ class Model(LightningModule):
         logits = self.head(features)
         return logits
 
-    def training_step(self, batch: Dict[str, Tensor], batch_idx: int) -> Dict[str, Tensor]:  # type: ignore
+    def training_step(self, batch: Dict[str, Tensor], batch_idx: int, dataloader_idx=0) -> Dict[str, Tensor]:  # type: ignore
         """Define steps taken during training mode.
 
         Args:
@@ -109,7 +109,7 @@ class Model(LightningModule):
         self.log("current_time", time.time(), logger=True)
         self.train_metrics.update(outputs["output"], outputs["target"])
 
-    def training_epoch_end(self, outputs: Dict[str, Tensor]) -> None:  # type: ignore
+    def on_train_epoch_end(self, *arg, **kwargs) -> None:  # type: ignore
         """Define actions after a training epoch.
 
         Args:
@@ -118,7 +118,7 @@ class Model(LightningModule):
         self.log_dict({f"train_{k}": v for k, v in self.train_metrics.compute().items()}, logger=True)
         self.train_metrics.reset()
 
-    def validation_step(self, batch, batch_idx, loader_idx):
+    def validation_step(self, batch, batch_idx, dataloader_idx=0):
         """Define steps taken during validation mode.
 
         Args:
@@ -127,7 +127,7 @@ class Model(LightningModule):
         Returns:
             validation step outputs
         """
-        return self.eval_step(batch, batch_idx, ["val", "test"][loader_idx])
+        return self.eval_step(batch, batch_idx, ["val", "test"][dataloader_idx])
 
     def eval_step(self, batch: Dict[str, Tensor], batch_idx: int, prefix: str) -> Dict[str, Tensor]:
         """Define steps taken during validation and testing.
@@ -156,7 +156,7 @@ class Model(LightningModule):
             "split": prefix,
         }
 
-    def validation_step_end(self, outputs):
+    def on_validation_step_end(self, outputs):
         """Define steps after validation phase.
 
         Args:
@@ -178,7 +178,7 @@ class Model(LightningModule):
         elif prefix == "test":
             self.test_metrics.update(outputs["output"], outputs["target"])
 
-    def validation_epoch_end(self, outputs):
+    def on_validation_epoch_end(self, *arg, **kwargs):
         """Define actions after a validation epoch.
 
         Args:
@@ -186,24 +186,24 @@ class Model(LightningModule):
         """
         eval_metrics = self.eval_metrics.compute()
         self.log_dict({f"val_{k}": v for k, v in eval_metrics.items()}, logger=True)
-
         self.eval_metrics.reset()
-        val_outputs = outputs[0]  # 0 == validation, 1 == test
-        if self.config["model"].get("log_segmentation_masks", False):
-            import wandb
 
-            current_element = int(torch.randint(0, val_outputs[0]["input"].shape[0], size=(1,)))
-            image = val_outputs[0]["input"][current_element].permute(1, 2, 0).cpu().numpy()
-            pred_mask = val_outputs[0]["output"].argmax(1)[current_element].cpu().numpy()
-            gt_mask = val_outputs[0]["target"][current_element].cpu().numpy()
-            image = wandb.Image(
-                image, masks={"predictions": {"mask_data": pred_mask}, "ground_truth": {"mask_data": gt_mask}}
-            )
-            wandb.log({"segmentation_images": image})
+    #     val_outputs = outputs[0]  # 0 == validation, 1 == test
+    #     if self.config["model"].get("log_segmentation_masks", False):
+    #         import wandb
 
-        self.test_epoch_end(outputs[1])  # outputs[1] -> test
+    #         current_element = int(torch.randint(0, val_outputs[0]["input"].shape[0], size=(1,)))
+    #         image = val_outputs[0]["input"][current_element].permute(1, 2, 0).cpu().numpy()
+    #         pred_mask = val_outputs[0]["output"].argmax(1)[current_element].cpu().numpy()
+    #         gt_mask = val_outputs[0]["target"][current_element].cpu().numpy()
+    #         image = wandb.Image(
+    #             image, masks={"predictions": {"mask_data": pred_mask}, "ground_truth": {"mask_data": gt_mask}}
+    #         )
+    #         wandb.log({"segmentation_images": image})
 
-    def test_step(self, batch, batch_idx):
+    #     self.test_epoch_end(outputs[1])  # outputs[1] -> test
+
+    def test_step(self, batch, batch_idx, dataloader_idx=0):
         """Define steps taken during test mode.
 
         Args:
@@ -215,7 +215,7 @@ class Model(LightningModule):
         """
         return self.eval_step(batch, batch_idx, "test")
 
-    def test_step_end(self, outputs):
+    def on_test_step_end(self, outputs):
         """Define steps after testing phase.
 
         Args:
@@ -223,7 +223,7 @@ class Model(LightningModule):
         """
         self.eval_step_end(outputs)
 
-    def test_epoch_end(self, outputs):
+    def on_test_epoch_end(self, *arg, **kwargs):
         """Define actions after a test epoch.
 
         Args:

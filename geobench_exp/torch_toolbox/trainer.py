@@ -41,7 +41,7 @@ def train(job_dir: str) -> None:
         task_specs=task_specs,
         benchmark_dir=config["experiment"]["benchmark_dir"],
         partition_name=config["experiment"]["partition_name"],
-        batch_size=config["model"]["batch_size"],
+        batch_size=config["dataloader"]["batch_size"],
         num_workers=config["dataloader"]["num_workers"],
         train_transform=model_gen.get_transform(task_specs=task_specs, config=config, train=True),
         eval_transform=model_gen.get_transform(task_specs=task_specs, config=config, train=False),
