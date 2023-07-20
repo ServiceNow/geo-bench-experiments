@@ -12,7 +12,7 @@ python = ">=3.9.0,<3.12"
 segmentation-models-pytorch = { git = "https://github.com/qubvel/segmentation_models.pytorch.git", branch = "master"}
 pandas = "^1.5.3"
 scipy = "1.10.1"
-geo-bench = { git = "https://github.com/ServiceNow/geo-bench.git", rev = "main"}
+geobench = { git = "https://github.com/ServiceNow/geo-bench.git", rev = "main"}
 fastapi = ">=0.80"
 torchgeo = { git = "https://github.com/microsoft/torchgeo.git", rev = "main"}
 torchvision = "0.13.0"
