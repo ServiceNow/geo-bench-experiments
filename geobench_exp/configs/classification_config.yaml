@@ -3,7 +3,8 @@ experiment:
   # generate_experiment_dir: /mnt/data/experiments/pau/partition_sweeps_classification
   experiment_name: 0.01x_train # prefix
   experiment_type: sweep # standard, seeded_runs, sweep
-  benchmark_dir: /mnt/data/cc_benchmark/classification_v0.8.1
+  benchmark_dir: /mnt/data/cc_benchmark/classification_v0.9.1
+  benchmark_name: classification_v0.9.1
   partition_name: 0.01x_train
   tasks: ["so2sat", "brick_kiln_v1.0", "eurosat", "bigearthnet"] #, "pv4ger_classification", "forestnet_v1.0"]
 wandb:
@@ -29,8 +30,9 @@ dataset:
   format: hdf5
 dataloader:
   num_workers: 4
+  batch_size: 256
 pl: # all flags for pytorch lightning Trainer module, see https://pytorch-lightning.readthedocs.io/en/stable/common/trainer.html
-  gpus: 1
+  devices: [0]
   accelerator: gpu
   max_epochs: 600
   max_steps: -1

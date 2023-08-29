@@ -9,10 +9,9 @@ from typing import Any, Callable, Dict, List, Tuple
 import torch
 import torch.nn.functional as F
 import torchmetrics
-from geobench import io
-from geobench.io.dataset import SegmentationClasses
-from geobench.io.label import Classification, MultiLabelClassification
-from geobench.io.task import TaskSpecifications
+from geobench.dataset import SegmentationClasses
+from geobench.label import Classification, MultiLabelClassification
+from geobench.task import TaskSpecifications
 from lightning import LightningModule, Trainer
 from lightning.pytorch.callbacks import ModelCheckpoint
 from lightning.pytorch.callbacks.early_stopping import EarlyStopping
@@ -461,7 +460,10 @@ def eval_metrics_generator(
             {
                 "Jaccard": torchmetrics.JaccardIndex(task="multiclass", num_classes=task_specs.label_type.n_classes),
                 "FBeta": torchmetrics.FBetaScore(
-                    task="multiclass", num_classes=task_specs.label_type.n_classes, beta=2.0, mdmc_average="samplewise"
+                    task="multiclass",
+                    num_classes=task_specs.label_type.n_classes,
+                    beta=2.0,
+                    multidim_average="samplewise",
                 ),
             }
         ),

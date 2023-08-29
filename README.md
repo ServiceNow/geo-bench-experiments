@@ -13,18 +13,14 @@ Simply run the notebook `instpect_benchmark.ipynb`
 
 ## Basic Usage
 
-```bash
-export CCB_DIR=/path/to/the/benchmark_dir
-```
-
 ```python
-from geobench import io
+from geobench.task import task_iterator
 
 def my_transform(sample):
     data, _ = sample.pack_to_3d(band_names=("red", "green", "blue"))
     return data
 
-for task in io.task_iterator(io.CCB_DIR / "classification_v0.7"):
+for task in task_iterator(GEO_BENCH_DIR / "classification_v0.7"):
     print(task)
     dataset = task.get_dataset(split="train", partition_name="default", transform=my_transform)
     data = dataset[0] # load and transform the first sample

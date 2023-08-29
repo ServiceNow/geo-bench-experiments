@@ -7,7 +7,6 @@ import pickle
 
 import pytest
 import torch
-from geobench import io
 from ruamel.yaml import YAML
 
 from geobench_exp.torch_toolbox.model import (
@@ -104,7 +103,7 @@ class TestHeadGenerator:
 
     def test_multilabel_task(self):
         task_specs = copy.copy(self.task_specs)
-        setattr(task_specs, "label_type", io.MultiLabelClassification(n_classes=2, class_names=["foo", "bar"]))
+        setattr(task_specs, "label_type", MultiLabelClassification(n_classes=2, class_names=["foo", "bar"]))
         head = head_generator(task_specs=task_specs, features_shape=[(3, 10, 10)])
         assert isinstance(head, ClassificationHead)
 

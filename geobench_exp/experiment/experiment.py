@@ -12,8 +12,7 @@ from importlib import import_module
 from pathlib import Path
 from typing import Any, Dict, List, Union
 
-from geobench import io
-from geobench.io.task import TaskSpecifications
+from geobench.task import TaskSpecifications
 from ruamel.yaml import YAML
 
 from geobench_exp.torch_toolbox.model import ModelGenerator
@@ -53,7 +52,7 @@ class Job:
             load_task_specs: TaskSpecifications = pickle.load(fd)
             return load_task_specs
 
-    def save_task_specs(self, task_specs: io.TaskSpecifications, overwrite: bool = False) -> None:
+    def save_task_specs(self, task_specs: TaskSpecifications, overwrite: bool = False) -> None:
         """Save task specifications in job directory.
 
         Args:

@@ -3,7 +3,7 @@
 import argparse
 import os
 
-import pytorch_lightning as pl
+import lightning as L
 import wandb
 from ruamel.yaml import YAML
 from torch.utils.data.dataloader import default_collate
@@ -23,7 +23,7 @@ def train(job_dir: str) -> None:
     task_specs = job.task_specs
     seed = config["model"].get("seed", None)
     if seed is not None:
-        pl.seed_everything(seed, workers=True)
+        L.seed_everything(seed, workers=True)
 
     if config["dataset"]["band_names"] == "all":
         config["dataset"]["band_names"] = [band_info.name for band_info in task_specs.bands_info]
@@ -38,10 +38,9 @@ def train(job_dir: str) -> None:
         group=config["wandb"].get("wandb_group", None),
         allow_val_change=True,
     ) as run:
-
         wandb_config = run.config  # wandb config now includes all variables that have been changed by sweep
         # set up W&B logger
-        wandb_logger = pl.loggers.WandbLogger(
+        wandb_logger = L.pytorch.loggers.WandbLogger(
             project=config["wandb"]["project"],
             entity="climate-benchmark",
             id=None,
@@ -51,7 +50,7 @@ def train(job_dir: str) -> None:
             resume=True,
         )
 
-        csv_logger = pl.loggers.CSVLogger(str(job.dir), name="csv_logs")
+        csv_logger = L.pytorch.loggers.CSVLogger(str(job.dir), name="csv_logs")
         csv_logger_dir = csv_logger.log_dir
 
         loggers = [csv_logger, wandb_logger]

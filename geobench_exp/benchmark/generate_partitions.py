@@ -3,12 +3,13 @@
 from typing import List
 
 import numpy as np
-
-from geobench import io
+from geobench.config import GEO_BENCH_DIR
+from geobench.dataset import Partition
+from geobench.task import task_iterator
 
 
 def generate_train_size_sweep(
-    partition: io.Partition, train_fractions: List[float], dataset_dir=None, rng=np.random, verbose=True
+    partition: Partition, train_fractions: List[float], dataset_dir=None, rng=np.random, verbose=True
 ):
     """Generate growing train size partition for the dataset specified by `dataset_dir`."""
     train_set = partition.partition_dict["train"][:]
@@ -25,8 +26,7 @@ def generate_train_size_sweep(
 
 def generate_partitions_for_benchmark(benchmark_name, train_fractions):
     """Generate growing train size partition for all dataset in `benchmark_name`."""
-    for task in io.task_iterator(benchmark_dir=io.CCB_DIR / benchmark_name):
-
+    for task in task_iterator(benchmark_dir=GEO_BENCH_DIR / benchmark_name):
         # if not task.dataset_name.startswith("forest"): continue
 
         print(f"Working with task: {task.dataset_name}.")

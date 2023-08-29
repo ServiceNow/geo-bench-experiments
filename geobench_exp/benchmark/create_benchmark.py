@@ -7,11 +7,9 @@ from pathlib import Path
 from typing import Any, DefaultDict, Dict, List, Tuple, Union
 
 import numpy as np
+from geobench.config import GEO_BENCH_DIR
+from geobench.dataset import Band, GeobenchDataset, Partition, Sample, load_sample
 from tqdm import tqdm
-
-from geobench import io
-from geobench.io import bandstats
-from geobench.io.task import load_task_specs
 
 
 def make_subsampler(max_sizes):
@@ -30,7 +28,7 @@ def make_subsampler(max_sizes):
     return _subsample
 
 
-def subsample(partition: io.Partition, max_sizes: Dict[str, int], rng=np.random) -> io.Partition:
+def subsample(partition: Partition, max_sizes: Dict[str, int], rng=np.random) -> Partition:
     """Randomly subsample `partition` to satisfy `max_sizes`.
 
     Args:
@@ -41,7 +39,7 @@ def subsample(partition: io.Partition, max_sizes: Dict[str, int], rng=np.random)
     Returns:
         subsampled partition
     """
-    new_partition = io.Partition()
+    new_partition = Partition()
 
     for split_name, sample_names in partition.partition_dict.items():
         if len(sample_names) > max_sizes[split_name]:
@@ -86,7 +84,6 @@ def _filter_for_min_size(split_label_maps, min_class_sizes: Dict[str, int]) -> D
     """
     new_split_label_maps: DefaultDict[str, Dict[int, List[str]]] = defaultdict(dict)
     for label in split_label_maps["train"].keys():
-
         ok = True
         for split, min_class_size in min_class_sizes.items():
             if len(split_label_maps[split].get(label, ())) < min_class_size:
@@ -135,13 +132,13 @@ def make_resampler(max_sizes, min_class_sizes: Dict[str, int] = {"train": 10, "v
 
 
 def resample(
-    partition: io.Partition,
+    partition: Partition,
     label_map: Dict[int, List[str]],
     max_sizes: Dict[str, int],
     min_class_sizes: Dict[str, int],
     verbose: bool = True,
     rng=np.random,
-) -> io.Partition:
+) -> Partition:
     """Reduce class imbalance in `partition` based on information in `label_map`.
 
     Args:
@@ -161,7 +158,6 @@ def resample(
     assert_no_overlap(new_split_label_maps)
     partition_dict = defaultdict(list)
     for split in ("train", "valid", "test"):
-
         label_map = new_split_label_maps[split]
         n_classes = len(label_map)
         if split == "train":
@@ -191,7 +187,7 @@ def resample(
                 new_sample_names = new_split_label_maps[split].get(label, ())
                 print(f"  class {label} size: {len(sample_names)} -> {len(new_sample_names)}.")
         print()
-    return io.Partition(partition_dict=partition_dict)
+    return Partition(partition_dict=partition_dict)
 
 
 def make_resampler_from_stats(max_sizes):
@@ -205,13 +201,13 @@ def make_resampler_from_stats(max_sizes):
 
 
 def resample_from_stats(
-    partition: io.Partition,
+    partition: Partition,
     label_stats: Dict[str, List[float]],
     max_sizes: Dict[str, int],
     verbose: bool = True,
     rng=np.random,
     return_prob: bool = False,
-) -> Union[io.Partition, Tuple[io.Partition, Dict[str, List[str]]]]:
+) -> Union[Partition, Tuple[Partition, Dict[str, List[str]]]]:
     """Resample based on statistics.
 
     Args:
@@ -228,9 +224,7 @@ def resample_from_stats(
     partition_dict = defaultdict(list)
     prob_dict: Dict[str, List[str]] = {}
     for split, sample_names in partition.partition_dict.items():
-
         if len(sample_names) > max_sizes[split]:
-
             stats = np.array([label_stats[sample_name] for sample_name in sample_names])
             cum_stats = np.sum(stats, axis=0, keepdims=True)
             weight_factors = 1 / (cum_stats + 1)
@@ -244,7 +238,7 @@ def resample_from_stats(
             print(f"Split {split} unchanged since {len(sample_names)} <= {max_sizes[split]}.")
             partition_dict[split] = sample_names
 
-    new_partition = io.Partition(partition_dict=partition_dict)
+    new_partition = Partition(partition_dict=partition_dict)
 
     if return_prob:
         return new_partition, prob_dict
@@ -257,10 +251,9 @@ def max_shape_center_crop(max_shape):
     e.g., a band that is half the size of the max band will have a crop that is half the size of max_shape"""
     max_shape = np.array(max_shape)
 
-    def sample_converter(sample: io.Sample) -> io.Sample:
-
+    def sample_converter(sample: Sample) -> Sample:
         # # include label if it is a band
-        # band_label = isinstance(sample.label, io.Band)
+        # band_label = isinstance(sample.label, Band)
         # bands: List[Any] = sample.bands
         # if band_label:
         #     bands.append(sample.label)
@@ -273,14 +266,13 @@ def max_shape_center_crop(max_shape):
             return sample
 
         elif np.all(max_band_shape > np.array(max_shape)):
-
             size_ratio = max_shape / max_band_shape
             start_ratio = (1.0 - size_ratio) / 2.0
 
             for band in sample.bands:
                 band.crop_from_ratio(start_ratio, size_ratio)
 
-            if isinstance(sample.label, io.Band):
+            if isinstance(sample.label, Band):
                 sample.label.crop_from_ratio(start_ratio, size_ratio)
 
             return sample
@@ -313,7 +305,7 @@ def transform_dataset(
         delete_existing:
         hdf5:
     """
-    dataset = io.GeobenchDataset(dataset_dir, partition_name=partition_name)
+    dataset = GeobenchDataset(dataset_dir, partition_name=partition_name)
     task_specs = dataset.task_specs
     task_specs.benchmark_name = new_benchmark_dir.name
     new_dataset_dir = new_benchmark_dir / dataset_dir.name
@@ -357,7 +349,7 @@ def transform_dataset(
                     shutil.copytree(dataset_dir / sample_name, new_dataset_dir / sample_name, dirs_exist_ok=True)
             else:
                 format = "hdf5" if hdf5 else "tif"
-                sample = io.load_sample(dataset_dir / sample_name, format=format)
+                sample = load_sample(dataset_dir / sample_name, format=format)
                 new_sample = sample_converter(sample)
                 new_sample.write(new_dataset_dir, format=format)
 
@@ -369,11 +361,11 @@ def _make_benchmark(new_benchmark_name, specs, src_benchmark_name="converted"):
     """Create benchmark."""
     for dataset_name, (resampler, sample_converter) in specs.items():
         print(f"Transforming {dataset_name}.")
-        dataset_dir = io.CCB_DIR / src_benchmark_name / "geobench_exp" / dataset_name
+        dataset_dir = GEO_BENCH_DIR / src_benchmark_name / "geobench_exp" / dataset_name
 
         new_dataset_dir = transform_dataset(
             dataset_dir=dataset_dir,
-            new_benchmark_dir=io.CCB_DIR / new_benchmark_name,
+            new_benchmark_dir=GEO_BENCH_DIR / new_benchmark_name,
             partition_name="default",
             resampler=resampler,
             sample_converter=sample_converter,
@@ -382,7 +374,7 @@ def _make_benchmark(new_benchmark_name, specs, src_benchmark_name="converted"):
 
         if new_dataset_dir is not None:
             print(f"  Producing band stats for {dataset_name}.")
-            bandstats.produce_band_stats(io.GeobenchDataset(new_dataset_dir))
+            bandstats.produce_band_stats(GeobenchDataset(new_dataset_dir))
             print()
 
 

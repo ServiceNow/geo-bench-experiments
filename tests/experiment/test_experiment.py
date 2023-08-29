@@ -33,7 +33,6 @@ def test_unexisting_path():
     ],
 )
 def test_experiment_generator_on_benchmark(config_filepath: str, tmp_path: Path):
-
     experiment_generator_dir = Path(geobench_exp.experiment.__file__).absolute().parent
 
     # change experiment dir to tmp path

@@ -7,8 +7,8 @@ import kornia.augmentation as K
 import numpy as np
 import timm
 import torch
-from geobench import io
-from geobench.io.task import TaskSpecifications
+from geobench.dataset import Sample
+from geobench.task import TaskSpecifications
 from kornia.augmentation import ImageSequential
 from torch.utils.data.dataloader import default_collate
 from torchgeo.models import get_weight
@@ -94,7 +94,7 @@ class TIMMGenerator(ModelGenerator):
 
     def get_transform(
         self, task_specs, config: Dict[str, Any], train=True, scale=None, ratio=None
-    ) -> Callable[[io.Sample], Dict[str, Any]]:
+    ) -> Callable[[Sample], Dict[str, Any]]:
         """Define data transformations specific to the models generated.
 
         Args:
@@ -107,11 +107,12 @@ class TIMMGenerator(ModelGenerator):
         Returns:
             callable function that applies transformations on input data
         """
+
         mean, std = task_specs.get_dataset(
             split="train",
             format=config["dataset"]["format"],
             band_names=tuple(config["dataset"]["band_names"]),
-            benchmark_dir=config["experiment"]["benchmark_dir"],
+            # benchmark_dir=config["experiment"]["benchmark_dir"],
             partition_name=config["experiment"]["partition_name"],
         ).normalization_stats()
 
@@ -130,7 +131,7 @@ class TIMMGenerator(ModelGenerator):
                 K.Resize((desired_input_size, desired_input_size)),
             )
 
-        def transform(sample: io.Sample):
+        def transform(sample: Sample):
             x: "np.typing.NDArray[np.float_]" = sample.pack_to_3d(band_names=config["dataset"]["band_names"])[0].astype(
                 "float32"
             )

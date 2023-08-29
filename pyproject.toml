@@ -1,8 +1,14 @@
 [tool.poetry]
 name = "geo-bench-experiments"
 version = "0.0.1"
-description = ""
-authors = ["ATG Vision <atg-vision@servicenow.com>"]
+description = "Experiment code."
+authors = [
+    "Alexandre Lacoste <alexandre.lacoste@servicenow.com>",
+    "Nils Lehmann",
+    "Pau Rodriguez",
+    "Alexandre Drouin",
+    "Mehmet Gunturkun",
+]
 packages = [
     { include = "geobench_exp" }
 ]
@@ -11,8 +17,8 @@ packages = [
 python = ">=3.9.0,<3.12"
 segmentation-models-pytorch = { git = "https://github.com/qubvel/segmentation_models.pytorch.git", branch = "master"}
 pandas = "^1.5.3"
-scipy = "1.10.1"
-geobench = { git = "https://github.com/ServiceNow/geo-bench.git", rev = "main"}
+scipy = "^1.11.2"
+geo-benchmark = "^0.0.3"
 fastapi = ">=0.80"
 torchgeo = { git = "https://github.com/microsoft/torchgeo.git", rev = "main"}
 torchvision = "0.13.0"

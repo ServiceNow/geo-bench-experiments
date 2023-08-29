@@ -6,16 +6,15 @@ from collections import defaultdict
 from functools import cache
 from pathlib import Path
 from textwrap import wrap
-from typing import Dict, List
 from warnings import warn
 
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import yaml
-from geobench import io
 from geobench.benchmark.dataset_converters import inspect_tools
-from geobench.io.task import load_task_specs
+from geobench.config import GEO_BENCH_DIR
+from geobench.task import load_task_specs
 from matplotlib import pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
 from pandas.errors import EmptyDataError
@@ -41,7 +40,7 @@ def make_normalizer(data_frame, metrics=("test metric",)):
 
 def load_normalizer(benchmark_name):
     """Load normalizer from json file."""
-    with open(io.CCB_DIR / benchmark_name / "normalizer.json", "r") as f:
+    with open(GEO_BENCH_DIR / benchmark_name / "normalizer.json", "r") as f:
         range_dict = json.load(f)
     return Normalizer(range_dict)
 
@@ -74,7 +73,7 @@ class Normalizer:
 
     def save(self, benchmark_name):
         """Save normalizer to json file."""
-        with open(io.CCB_DIR / benchmark_name / "normalizer.json", "w") as f:
+        with open(GEO_BENCH_DIR / benchmark_name / "normalizer.json", "w") as f:
             json.dump(self.range_dict, f, indent=2)
 
 
@@ -694,7 +693,6 @@ def plot_all_models_datasets(df, plot_fn=make_plot_sweep(legend=False), fig_size
     for i, dataset in enumerate(datasets):
         print(dataset)
         for j, model in enumerate(models):
-
             sub_df = df[(df["model"] == model) & (df["dataset"] == dataset)]
             # if len(sub_df) == 0:
             #     continue
@@ -753,11 +751,9 @@ def plot_discriminative_metric(df, metric="test metric", n_largest=3, fig_size=N
     fig.suptitle("Effect of train size on discriminativity", fontsize=16)
 
     for i, dataset in enumerate(datasets):
-
         print(dataset)
         colors = sns.color_palette("colorblind")
         for k, train_ratio in enumerate(train_ratios):
-
             # print(f"  train ratio : {train_ratio}")
 
             all_scores = []
@@ -871,7 +867,6 @@ def plot_speed_results(pkl_file, df, model_order, time_metric="best step"):
         df["n batches"] = df[time_metric] * df["batch size"] / 32
 
     for i, model in enumerate(model_names):
-
         sub_df = df[df["model"] == model]
         values = sub_df[time_metric]
         ax.violinplot(values / 1000, positions=[i], vert=False, showmeans=True, showextrema=False, widths=0.8)

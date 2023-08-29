@@ -31,7 +31,7 @@ dataset:
 dataloader:
   num_workers: 4
 pl: # all flags for pytorch lightning Trainer module, see https://pytorch-lightning.readthedocs.io/en/stable/common/trainer.html
-  gpus: 1
+  devices: [0]
   accelerator: gpu
   max_epochs: 600
   max_steps: -1

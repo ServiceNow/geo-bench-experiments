@@ -110,7 +110,6 @@ def retrieve_runs_old(experiment_dir, use_cached_csv=False, exp_type="sweep", ma
     )
 
     for csv_logger_dir in tqdm(csv_run_dirs):
-
         # load task_specs # TODO use the one from task.py
         with open(csv_logger_dir.parents[1] / "task_specs.pkl", "rb") as f:
             task_specs = pickle.load(f)

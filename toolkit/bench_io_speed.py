@@ -4,30 +4,28 @@ from pathlib import Path
 from tempfile import mkdtemp
 
 import numpy as np
-from geobench import io
+from geobench.dataset import Band, Sample, load_sample_tif, sentinel2_13_bands, write_sample_tif
 
 
 def random_sentinel2_sample(sample_name, max_shape):
     bands = []
 
-    for band_info in io.sentinel2_13_bands:
-
+    for band_info in sentinel2_13_bands:
         shape = int(max_shape // (band_info.spatial_resolution / 10))
         data = (np.random.rand(shape, shape, 1) * 255).astype(np.int16)
 
-        band_data = io.Band(data=data, band_info=band_info, spatial_resolution=band_info.spatial_resolution)
+        band_data = Band(data=data, band_info=band_info, spatial_resolution=band_info.spatial_resolution)
         bands.append(band_data)
 
-    return io.Sample(bands, label=int(np.random.randint(10)), sample_name=sample_name)
+    return Sample(bands, label=int(np.random.randint(10)), sample_name=sample_name)
 
 
-def geotiff_writer(sample: io.Sample, dataset_dir):
+def geotiff_writer(sample: Sample, dataset_dir):
     sample.write(dataset_dir)
     return dataset_dir / sample.sample_name
 
 
 def test_read_write_speed(writer, reader, n=100, max_shape=96):
-
     print(f"Test writer {writer.__name__}, reader {reader.__name__} with max_shape {max_shape}.")
     samples = [random_sentinel2_sample(f"sample_{i:02d}", max_shape=max_shape) for i in range(n)]
 
@@ -55,9 +53,8 @@ def test_read_write_speed(writer, reader, n=100, max_shape=96):
 
 
 if __name__ == "__main__":
+    # test_read_write_speed(write_sample_npz, load_sample_npz, max_shape=384)
 
-    # test_read_write_speed(io.write_sample_npz, io.load_sample_npz, max_shape=384)
+    # test_read_write_speed(write_sample_hdf5, load_sample_hdf5, max_shape=384)
 
-    # test_read_write_speed(io.write_sample_hdf5, io.load_sample_hdf5, max_shape=384)
-
-    test_read_write_speed(io.write_sample_tif, io.load_sample_tif, max_shape=384)
+    test_read_write_speed(write_sample_tif, load_sample_tif, max_shape=384)

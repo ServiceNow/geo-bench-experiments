@@ -6,9 +6,8 @@ import kornia.augmentation as K
 import segmentation_models_pytorch as smp
 import torch
 import torchvision.transforms.functional as TF
-from geobench import io
-from geobench.io.dataset import Band
-from geobench.io.task import TaskSpecifications
+from geobench.dataset import Band
+from geobench.task import TaskSpecifications
 from torch.utils.data.dataloader import default_collate
 from torchgeo.transforms import AugmentationSequential
 
@@ -120,7 +119,7 @@ class SegmentationGenerator(ModelGenerator):
             split="train",
             format=config["dataset"]["format"],
             band_names=tuple(config["dataset"]["band_names"]),
-            benchmark_dir=config["experiment"]["benchmark_dir"],
+            # benchmark_dir=config["experiment"]["benchmark_dir"],
             partition_name=config["experiment"]["partition_name"],
         ).rgb_stats()
         band_names = config["dataset"]["band_names"]
@@ -140,7 +139,7 @@ class SegmentationGenerator(ModelGenerator):
                 data_keys=["image", "mask"],
             )
 
-        def transform(sample: io.Sample):
+        def transform(sample: Sample):
             x = sample.pack_to_3d(band_names=band_names)[0].astype("float32")
 
             if isinstance(sample.label, Band):

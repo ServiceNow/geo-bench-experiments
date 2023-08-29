@@ -21,7 +21,6 @@ def rasterize_box(boxes: List[Dict[str, int]], img_shape: Tuple[int, int], scale
     ctxt = ImageDraw.Draw(im)
     for obj in boxes:
         if isinstance(obj, dict) and "xmin" in obj:
-
             if scale != 1:
                 range = np.array([obj["xmax"] - obj["xmin"], obj["ymax"] - obj["ymin"]])
                 d_x, d_y = range * (1 - scale) / 2.0
@@ -53,7 +52,6 @@ def point_to_boxes(points, radius):
 
 
 if __name__ == "__main__":
-
     boxes = [{"xmin": 2, "ymin": 3, "xmax": 6, "ymax": 12}]
     raster = rasterize_box(boxes, img_shape=(20, 20))
     print(raster.dtype)

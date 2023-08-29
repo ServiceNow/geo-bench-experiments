@@ -3,7 +3,6 @@ import pickle
 import tempfile
 
 import pytest
-from geobench import io
 from ruamel.yaml import YAML
 
 from geobench_exp.experiment.experiment import Job
@@ -19,17 +18,14 @@ def train_job_on_task(config, task_specs, threshold, check_logs=True, metric_nam
         task_specs: task specifications which to train model on
     """
     with tempfile.TemporaryDirectory(prefix="test") as job_dir:
-
         job = Job(job_dir)
         task_specs.save(job.dir)
 
         job.save_config(config)
 
         trainer.train(job_dir=job_dir)
-
         print(task_specs.benchmark_name)
         if check_logs:
-
             metrics = job.get_metrics()
             print(metrics)
             print(task_specs.benchmark_name)
@@ -46,6 +42,7 @@ def test_toolbox_segmentation():
         os.path.join("tests", "data", "geobench-segmentation-test", "southAfricaCropType", "task_specs.pkl"), "rb"
     ) as fd:
         task_specs = pickle.load(fd)
+        task_specs.benchmark_name = "testing"
 
     yaml = YAML()
     with open(os.path.join("tests", "configs", "base_segmentation.yaml"), "r") as yamlfile:
@@ -63,6 +60,7 @@ def test_toolbox_segmentation():
 def test_toolbox_classification(backbone, model_generator_module_name):
     with open(os.path.join("tests", "data", "geobench-classification-test", "eurosat", "task_specs.pkl"), "rb") as fd:
         task_specs = pickle.load(fd)
+        task_specs.benchmark_name = "testing"
 
     yaml = YAML()
     with open(os.path.join("tests", "configs", "base_classification.yaml"), "r") as yamlfile:
@@ -72,13 +70,3 @@ def test_toolbox_classification(backbone, model_generator_module_name):
     config["model"]["model_generator_module_name"] = model_generator_module_name
 
     train_job_on_task(config=config, task_specs=task_specs, threshold=0.40)
-
-
-def test_toolbox_getitem():
-    benchmarks = ["geobench-classification-test", "geobench-segmentation-test"]
-    test_dirs = [os.path.join("tests", "data", benchmark) for benchmark in benchmarks]
-    for benchmark_dir in test_dirs:
-        for task in io.task_iterator(benchmark_dir):
-            dataset = task.get_dataset(split="valid", benchmark_dir=benchmark_dir, partition_name="default")
-            data = dataset[0]
-            assert isinstance(data, io.Sample)

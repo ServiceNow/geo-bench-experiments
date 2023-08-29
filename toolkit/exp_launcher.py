@@ -5,13 +5,19 @@
 # Please don't commit the changes related to your personnal experiments
 
 import os
-import pdb
+import sys
+
+# from ..geobench_exp.experiment.experiment_generator import experiment_generator
 from pathlib import Path
 
-from geobench_exp.experiment.experiment_generator import experiment_generator
-from toolkit import dispatch_toolkit
+import dispatch_toolkit
 
-pdb.set_trace
+from geobench_exp.experiment.experiment_generator import experiment_generator
+
+sys.path.append("/mnt/home/geo-bench-experiments/geobench_exp")
+
+os.environ["GEO_BENCH_DIR"] = "/mnt/data/ccb/"
+
 experiment_dir = experiment_generator(
     # config_filepath=str(Path(__file__).parent.parent / "geobench/configs/classification_config.yaml"),
     config_filepath="/mnt/home/geo-bench-experiments/geobench_exp/configs/classification_config.yaml"
@@ -21,4 +27,7 @@ dispatch_toolkit.push_code(Path(__file__).parent.parent)
 
 # you may want to change to your WANDB_API_KEY."
 os.environ["WANDB_API_KEY"] = "def8d0fad10d1479d79ab4c7e68530d59be04cf5"
-dispatch_toolkit.toolkit_dispatcher(experiment_dir, env_vars=(f"WANDB_API_KEY={os.environ['WANDB_API_KEY']}",))
+dispatch_toolkit.toolkit_dispatcher(
+    experiment_dir,
+    env_vars=(f"WANDB_API_KEY={os.environ['WANDB_API_KEY']}", f"GEO_BENCH_DIR={os.environ['GEO_BENCH_DIR']}"),
+)

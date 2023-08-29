@@ -1,9 +1,9 @@
-"""GeobenchDataset Datamodule."""
+"""geobench.dataset Datamodule."""
 
 from pathlib import Path
 from typing import Sequence
 
-from geobench import io
+from geobench.task import TaskSpecifications
 from lightning import LightningDataModule
 from torch.utils.data import DataLoader
 
@@ -18,7 +18,7 @@ class DataModule(LightningDataModule):
 
     def __init__(
         self,
-        task_specs: io.TaskSpecifications,
+        task_specs: TaskSpecifications,
         benchmark_dir: str,
         partition_name: str,
         batch_size: int,
@@ -66,7 +66,7 @@ class DataModule(LightningDataModule):
                 transform=self.train_transform,
                 band_names=self.band_names,
                 format=self.format,
-                benchmark_dir=self.benchmark_dir,
+                # benchmark_dir=self.benchmark_dir,
             ),
             batch_size=self.batch_size,
             shuffle=True,
@@ -84,7 +84,7 @@ class DataModule(LightningDataModule):
                     transform=self.eval_transform,
                     band_names=self.band_names,
                     format=self.format,
-                    benchmark_dir=Path(self.benchmark_dir),
+                    # benchmark_dir=Path(self.benchmark_dir),
                 ),
                 batch_size=self.val_batch_size,
                 shuffle=False,
@@ -98,7 +98,7 @@ class DataModule(LightningDataModule):
                     transform=self.eval_transform,
                     band_names=self.band_names,
                     format=self.format,
-                    benchmark_dir=Path(self.benchmark_dir),
+                    # benchmark_dir=Path(self.benchmark_dir),
                 ),
                 batch_size=self.val_batch_size,
                 shuffle=False,
@@ -116,7 +116,7 @@ class DataModule(LightningDataModule):
                 transform=self.eval_transform,
                 band_names=self.band_names,
                 format=self.format,
-                benchmark_dir=self.benchmark_dir,
+                # benchmark_dir=self.benchmark_dir,
             ),
             batch_size=self.val_batch_size,
             shuffle=False,

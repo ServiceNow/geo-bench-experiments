@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 import yaml
-from geobench import io
+from geobench.task import task_iterator
 
 from geobench_exp.experiment.experiment import Job, get_model_generator
 
@@ -59,8 +59,10 @@ def experiment_generator(
     else:
         experiment_dir: Path = Path(config["experiment"]["generate_experiment_dir"])  # type: ignore[no-redef]
 
-    for task_specs in io.task_iterator(
-        benchmark_dir=benchmark_dir, task_filter=config["experiment"].get("tasks", None)
+    for task_specs in task_iterator(
+        benchmark_name=config["experiment"]["benchmark_name"],
+        benchmark_dir=benchmark_dir,
+        ignore_task=config["experiment"].get("tasks", None),
     ):
         print(task_specs.dataset_name)
         experiment_type = config["experiment"]["experiment_type"]
@@ -98,7 +100,6 @@ def experiment_generator(
             )
 
         elif experiment_type == "seeded_runs":
-
             with open(config["experiment"]["best_hparam_config"], "r") as f:
                 seed_run_dict = json.load(f)
 

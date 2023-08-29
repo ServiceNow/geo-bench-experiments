@@ -19,13 +19,13 @@ model:
   lr_head: 1.0e-2
   optimizer: sgd
   hidden_size: 512
-  batch_size: 2
   early_stopping_metric: train_loss
 dataset:
   band_names: ["red", "green", "blue"]
   format: hdf5
 dataloader:
   num_workers: 0
+  batch_size: 2
 wandb:
   project: geobench_exp # wandb project name
   entity: climate-benchmark # user or team entity that hosts a project
@@ -35,7 +35,6 @@ wandb:
     num_agents: 4 # how many agents participate in sweep, one agent usually corresponds to one gpu
     num_trials_per_agent: 5 # how many hparam trials each agent should execute, num_agents x num_trials_per_agent corresponds to total number of trials executed by sweep
 pl: # all flags for pytorch lightning Trainer module, see https://pytorch-lightning.readthedocs.io/en/stable/common/trainer.html
-  gpus: 0
   accelerator: cpu
   max_epochs: 1
   max_steps: -1
