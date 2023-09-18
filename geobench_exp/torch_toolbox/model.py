@@ -95,18 +95,11 @@ class Model(LightningModule):
         target = batch["label"]
         output = self(inputs)
         loss_train = self.loss_function(output, target)
-        return {"loss": loss_train, "output": output.detach(), "target": target.detach()}
-
-    def training_step_end(self, outputs: Dict[str, Tensor]) -> None:  # type: ignore
-        """Define steps taken after training phase.
-
-        Args:
-            outputs: outputs from :meth:`__training_step`
-        """
-        # update and log
-        self.log("train_loss", outputs["loss"], logger=True)
+        self.train_metrics(output, target)
+        self.log("train_loss", loss_train, logger=True)
         self.log("current_time", time.time(), logger=True)
-        self.train_metrics.update(outputs["output"], outputs["target"])
+        # return {"loss": loss_train, "output": output.detach(), "target": target.detach()}
+        return loss_train
 
     def on_train_epoch_end(self, *arg, **kwargs) -> None:  # type: ignore
         """Define actions after a training epoch.
@@ -126,56 +119,13 @@ class Model(LightningModule):
         Returns:
             validation step outputs
         """
-        return self.eval_step(batch, batch_idx, ["val", "test"][dataloader_idx])
-
-    def eval_step(self, batch: Dict[str, Tensor], batch_idx: int, prefix: str) -> Dict[str, Tensor]:
-        """Define steps taken during validation and testing.
-
-        Args:
-            batch: input batch
-            batch_idx: index of batch
-            prefix: prefix for logging
-
-        Returns:
-            evaluation step outputs
-        """
         inputs = batch["input"]
         target = batch["label"]
         output = self(inputs)
         loss = self.loss_function(output, target)
-        self.log(
-            f"{prefix}_loss", loss, logger=True, prog_bar=True, add_dataloader_idx=False
-        )  # , on_step=True, on_epoch=True, logger=True)
-
-        return {
-            "loss": loss.detach(),
-            "input": inputs.detach(),
-            "output": output.detach(),
-            "target": target.detach(),
-            "split": prefix,
-        }
-
-    def on_validation_step_end(self, outputs):
-        """Define steps after validation phase.
-
-        Args:
-            outputs: outputs from :meth:`__eval_step`
-        """
-        self.eval_step_end(outputs)
-
-    def eval_step_end(self, outputs) -> None:
-        """Define steps after evaluation phase.
-
-        Args:
-            outputs: outputs from :meth:`__eval_step`
-        """
-        # update and log
-        prefix = outputs["split"]
-        self.log(f"{prefix}_loss", outputs["loss"], logger=True)
-        if prefix == "val":
-            self.eval_metrics.update(outputs["output"], outputs["target"])
-        elif prefix == "test":
-            self.test_metrics.update(outputs["output"], outputs["target"])
+        self.log("val_loss", loss)
+        self.eval_metrics(output, target)
+        return loss
 
     def on_validation_epoch_end(self, *arg, **kwargs):
         """Define actions after a validation epoch.
@@ -212,15 +162,13 @@ class Model(LightningModule):
         Returns:
             test step outputs
         """
-        return self.eval_step(batch, batch_idx, "test")
-
-    def on_test_step_end(self, outputs):
-        """Define steps after testing phase.
-
-        Args:
-            outputs: outputs from :meth:`__eval_step`
-        """
-        self.eval_step_end(outputs)
+        inputs = batch["input"]
+        target = batch["label"]
+        output = self(inputs)
+        loss = self.loss_function(output, target)
+        self.log("test_loss", loss)
+        self.test_metrics(output, target)
+        return loss
 
     def on_test_epoch_end(self, *arg, **kwargs):
         """Define actions after a test epoch.
@@ -336,16 +284,15 @@ class ModelGenerator:
         ds_name = job.task_specs.dataset_name
 
         if ds_name in [
-            "eurosat",
-            "brick_kiln_v1.0",
-            "pv4ger_classification",
-            "so2sat",
-            "forestnet_v1.0",
-            "geolifeclef-2022",
+            "m-eurosat",
+            "m-brick-kiln",
+            "m-pv4ger",
+            "m-so2sat",
+            "m-forestnet",
         ]:
             track_metric = "val_Accuracy"
             mode = "max"
-        elif ds_name == "bigearthnet":
+        elif ds_name == "m-bigearthnet":
             track_metric = "val_F1Score"
             mode = "max"
         elif ds_name in [
