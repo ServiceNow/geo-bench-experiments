@@ -12,7 +12,8 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import yaml
-from geobench.benchmark.dataset_converters import inspect_tools
+
+# from geobench.dataset_converters import inspect_tools
 from geobench.config import GEO_BENCH_DIR
 from geobench.task import load_task_specs
 from matplotlib import pyplot as plt
@@ -649,7 +650,7 @@ def make_plot_sweep(filt_size=5, top_k=6, legend=False):
         colors = sns.color_palette("tab10")
         for i, log_dir in enumerate(sorted_log_dirs[:top_k]):
             trace_dict = collect_trace_info(log_dir)
-            val_loss = smooth_series(trace_dict["val_loss"], filt_size)
+            val_loss = smooth_series(trace_dict["val_loss/dataloader_idx_0"], filt_size)
             val_trace = smooth_series(trace_dict["val_metric"], filt_size)
             test_trace = smooth_series(trace_dict["test_metric"], filt_size)
 

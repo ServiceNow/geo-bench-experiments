@@ -53,7 +53,7 @@ def experiment_generator(
 
     benchmark_dir = config["experiment"]["benchmark_dir"]
 
-    experiment_prefix = f"{config['experiment']['experiment_name'] or 'experiment'}_{os.path.basename(benchmark_dir)}_{datetime.now().strftime('%m-%d-%Y_%H:%M:%S')}"
+    experiment_prefix = f"{config['experiment']['experiment_name'] or 'experiment'}_{os.path.basename(benchmark_dir)}_{datetime.now().strftime('%m-%d-%Y_%H:%M:%S')}_{config['model']['backbone']}"
     if config["experiment"]["experiment_name"] is not None:
         experiment_dir: Path = Path(config["experiment"]["generate_experiment_dir"]) / experiment_prefix
     else:
