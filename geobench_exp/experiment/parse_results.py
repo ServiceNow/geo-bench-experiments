@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import yaml
+from tqdm import tqdm
 
 # from geobench.dataset_converters import inspect_tools
 from geobench.config import GEO_BENCH_DIR
@@ -421,7 +422,7 @@ def find_best_hparam_for_seeds(df):
 
     best_hparam_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(str)))
 
-    for model, ds, part in zip(model_names, ds_names, part_names):
+    for model, ds, part in tqdm(zip(model_names, ds_names, part_names)):
         sweep_df = df[(df["model"] == model) & (df["dataset"] == ds) & (df["partition_name"] == part)]
         best_log_dir = extract_best_points(sweep_df["csv_log_dir"].tolist())[1][0]
 
@@ -460,7 +461,7 @@ def extract_best_point(log_dir, filt_size=5, lower_is_better=False):
     )
 
     for key, trace in trace_dict.items():
-        best_value = trace.iloc[trace.index.get_loc(best_step, "nearest")]
+        best_value = trace.iloc[trace.index.get_indexer([best_step], method="nearest")]
         if key == "current_time":
             best_point["convergence_time"] = best_value - trace.iloc[0]
         else:
@@ -691,7 +692,7 @@ def plot_all_models_datasets(df, plot_fn=make_plot_sweep(legend=False), fig_size
     new_df = pd.DataFrame()
     fig, axes = plt.subplots(len(datasets), len(models), figsize=fig_size)
     # fig.suptitle(metric, fontsize=20)
-    for i, dataset in enumerate(datasets):
+    for i, dataset in tqdm(enumerate(datasets)):
         print(dataset)
         for j, model in enumerate(models):
             sub_df = df[(df["model"] == model) & (df["dataset"] == dataset)]
