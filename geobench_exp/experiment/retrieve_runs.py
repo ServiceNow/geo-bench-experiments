@@ -4,6 +4,7 @@ import glob
 import os
 import pickle
 from email.quoprimime import unquote
+from multiprocessing import Pool
 from pathlib import Path
 from typing import Dict, List
 

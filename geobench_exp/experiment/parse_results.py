@@ -12,7 +12,6 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import yaml
-from tqdm import tqdm
 
 # from geobench.dataset_converters import inspect_tools
 from geobench.config import GEO_BENCH_DIR
@@ -21,6 +20,7 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
 from pandas.errors import EmptyDataError
 from scipy.stats import trim_mean
+from tqdm import tqdm
 
 from geobench_exp.experiment.discriminative_metric import boostrap_pw_entropy
 
@@ -669,8 +669,9 @@ def make_plot_sweep(filt_size=5, top_k=6, legend=False):
             best_step = best_points.at[log_dir, "best_step"]
             val_best_value = best_points.at[log_dir, "val_metric"]
             test_value = best_points.at[log_dir, "test_metric"]
-            sns.lineplot(x=[best_step], y=[val_best_value], marker="*", markersize="15", color=colors[i])
-            sns.lineplot(x=[best_step], y=[test_value], marker="X", markersize="15", color=colors[i])
+            # print(best_step), print(val_best_value.value)
+            # sns.lineplot(x=[best_step], y=[val_best_value], marker="*", markersize="15", color=colors[i])
+            # sns.lineplot(x=[best_step], y=[test_value], marker="X", markersize="15", color=colors[i])
 
         # mn, mx = np.nanpercentile(np.concatenate(all_val_loss), q=[0, 99])
         # ax.set_ylim(bottom=mn, top=mx)
@@ -704,7 +705,7 @@ def plot_all_models_datasets(df, plot_fn=make_plot_sweep(legend=False), fig_size
             sub_df["dataset"] = dataset
             sub_df["model"] = model
 
-            new_df = new_df.append(sub_df)
+            new_df = pd.concat([new_df, sub_df], ignore_index=True)
 
     return new_df
 
