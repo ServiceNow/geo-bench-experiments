@@ -351,7 +351,7 @@ def collect_trace_info(log_dir: str, index="step", normalize_col_name=True) -> p
 
     df = df.set_index(index)
 
-    pattern_replace = {"F1Score": "metric", "JaccardIndex": "metric", "Accuracy": "metric"}
+    pattern_replace = {"F1Score": "metric", "Jaccard": "metric", "Accuracy": "metric"}
     trace_dict = {}
     for col_name, series in df.items():
         if normalize_col_name:
@@ -498,6 +498,10 @@ class ExpResult:
         with open(Path(self.log_dir) / "config.yaml", "r") as stream:
             config = yaml.safe_load(stream)
 
+        if "weights" in config["model"]:
+            config["model"]["model_name"] = (
+                config["model"]["model_name"] + f"_{config['model']['weights'].split('_')[-1]}"
+            )
         config["model"]["model_name"] = config["model"]["model_name"].replace("ssl_moco", "moco")
 
         return config

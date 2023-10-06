@@ -53,9 +53,13 @@ def experiment_generator(
 
     benchmark_dir = config["experiment"]["benchmark_dir"]
 
-    experiment_prefix = f"{config['experiment']['experiment_name'] or 'experiment'}_{os.path.basename(benchmark_dir)}_{datetime.now().strftime('%m-%d-%Y_%H:%M:%S')}_{config['model']['backbone']}"
+    experiment_prefix = f"{config['experiment']['experiment_name'] or 'experiment'}_{os.path.basename(benchmark_dir)}_{datetime.now().strftime('%m-%d-%Y_%H:%M:%S')}"
     if "weights" in config["model"]:
         experiment_prefix += f"{config['model']['weights']}"
+    if "backbone" in config["model"]:
+        experiment_prefix += f"{config['model']['backbone']}"
+    else:
+        experiment_prefix += f"{config['model']['encoder_type']}_{config['model']['decoder_type']}"
 
     if config["experiment"]["experiment_name"] is not None:
         experiment_dir: Path = Path(config["experiment"]["generate_experiment_dir"]) / experiment_prefix
@@ -113,7 +117,7 @@ def experiment_generator(
             # use wandb sweep for hyperparameter search
             model = model_generator.generate_model(task_specs, task_config)
 
-            model_name = model_generator.generate_model_name(task_config)
+            model_name = task_config["model"]["model_name"]
 
             ds_dict = seed_run_dict[model_name][part_name]
             exp_dir = ds_dict[task_specs.dataset_name]
@@ -121,6 +125,8 @@ def experiment_generator(
             # load best config file
             with open(os.path.join(exp_dir, "config.yaml")) as f:
                 best_config = yaml.safe_load(f)
+
+            best_config["dataloader"]["batch_size"] = best_config["model"]["batch_size"]
 
             best_config["wandb"]["wandb_group"] = task_specs.dataset_name + "/" + model_name + "/" + experiment_prefix
 

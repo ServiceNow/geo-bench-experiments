@@ -6,7 +6,7 @@ import kornia.augmentation as K
 import segmentation_models_pytorch as smp
 import torch
 import torchvision.transforms.functional as TF
-from geobench.dataset import Band
+from geobench.dataset import Band, Sample
 from geobench.task import TaskSpecifications
 from torch.utils.data.dataloader import default_collate
 from torchgeo.transforms import AugmentationSequential

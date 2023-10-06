@@ -107,7 +107,7 @@ class Model(LightningModule):
         Args:
             outputs: outputs from :meth:`__training_step`
         """
-        self.log_dict({f"train_{k}": v for k, v in self.train_metrics.compute().items()}, logger=True)
+        self.log_dict({f"train_{k}": v.mean() for k, v in self.train_metrics.compute().items()}, logger=True)
         self.train_metrics.reset()
 
     def validation_step(self, batch, batch_idx, dataloader_idx=0):
@@ -134,7 +134,7 @@ class Model(LightningModule):
             outputs: outputs from :meth:`__validation_step`
         """
         eval_metrics = self.eval_metrics.compute()
-        self.log_dict({f"val_{k}": v for k, v in eval_metrics.items()}, logger=True)
+        self.log_dict({f"val_{k}": v.mean() for k, v in eval_metrics.items()}, logger=True)
         self.eval_metrics.reset()
 
     #     val_outputs = outputs[0]  # 0 == validation, 1 == test
@@ -177,7 +177,7 @@ class Model(LightningModule):
             outputs: outputs from :meth:`__test_step`
         """
         test_metrics = self.test_metrics.compute()
-        self.log_dict({f"test_{k}": v for k, v in test_metrics.items()}, logger=True)
+        self.log_dict({f"test_{k}": v.mean() for k, v in test_metrics.items()}, logger=True)
         self.test_metrics.reset()
 
     def configure_optimizers(self):
@@ -296,14 +296,14 @@ class ModelGenerator:
             track_metric = "val_F1Score"
             mode = "max"
         elif ds_name in [
-            "pv4ger_segmentation",
-            "nz_cattle_segmentation",
-            "smallholder_cashew",
-            "southAfricaCropType",
-            "cvpr_chesapeake_landcover",
-            "NeonTree_segmentation",
+            "m-pv4ger-seg",
+            "m-nz-cattle",
+            "m-SA-crop-type",
+            "m-seasonet",
+            "m-chesapeake",
+            "m-NeonTree",
         ]:
-            track_metric = "val_JaccardIndex"
+            track_metric = "val_Jaccard"
             mode = "max"
 
         if "early_stopping_metric" in config["model"]:
