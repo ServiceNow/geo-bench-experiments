@@ -110,7 +110,7 @@ class Model(LightningModule):
         self.log_dict({f"train_{k}": v.mean() for k, v in self.train_metrics.compute().items()}, logger=True)
         self.train_metrics.reset()
 
-    def validation_step(self, batch, batch_idx, dataloader_idx=0):
+    def validation_step(self, batch, batch_idx, dataloader_idx):
         """Define steps taken during validation mode.
 
         Args:
@@ -119,23 +119,33 @@ class Model(LightningModule):
         Returns:
             validation step outputs
         """
+        prefix = ["val", "test"][dataloader_idx]
         inputs = batch["input"]
         target = batch["label"]
         output = self(inputs)
         loss = self.loss_function(output, target)
-        self.log("val_loss", loss)
-        self.eval_metrics(output, target)
-        return loss
+        self.log(f"{prefix}_loss", loss)
+        if prefix == "val":
+            self.eval_metrics(output, target)
+        else:
+            self.test_metrics(output, target)
+        return {"loss": loss.detach(), "prefix": prefix}
 
-    def on_validation_epoch_end(self, *arg, **kwargs):
+    def on_validation_epoch_end(self, outputs):
         """Define actions after a validation epoch.
 
         Args:
             outputs: outputs from :meth:`__validation_step`
         """
-        eval_metrics = self.eval_metrics.compute()
-        self.log_dict({f"val_{k}": v.mean() for k, v in eval_metrics.items()}, logger=True)
-        self.eval_metrics.reset()
+        if outputs["prefix"] == "val":
+            eval_metrics = self.eval_metrics.compute()
+            self.log_dict({f"val_{k}": v.mean() for k, v in eval_metrics.items()}, logger=True)
+            self.eval_metrics.reset()
+        else:
+            eval_metrics = self.eval_metrics.compute()
+            self.log_dict({f"test_{k}": v.mean() for k, v in eval_metrics.items()}, logger=True)
+            self.test_metrics.reset()
+
 
     #     val_outputs = outputs[0]  # 0 == validation, 1 == test
     #     if self.config["model"].get("log_segmentation_masks", False):
