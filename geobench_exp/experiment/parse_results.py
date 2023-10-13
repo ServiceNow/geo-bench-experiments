@@ -13,7 +13,6 @@ import pandas as pd
 import seaborn as sns
 import yaml
 
-# from geobench.dataset_converters import inspect_tools
 from geobench.config import GEO_BENCH_DIR
 from geobench.task import load_task_specs
 from matplotlib import pyplot as plt
@@ -316,7 +315,7 @@ def get_train_ratio(part_name):
 def clean_names(val):
     """Rename a few strings for more compact formatting."""
     try:
-        val = inspect_tools.DISPLAY_NAMES.get(val, val)
+        val = DISPLAY_NAMES.get(val, val)
     except TypeError:
         pass
 
@@ -330,7 +329,6 @@ def clean_names(val):
     return val
 
 
-@cache
 def collect_trace_info(log_dir: str, index="step", normalize_col_name=True) -> pd.DataFrame:
     """Collect trace infor for a single run.
 
@@ -368,6 +366,47 @@ def collect_trace_info(log_dir: str, index="step", normalize_col_name=True) -> p
 
     return trace_dict
 
+
+DISPLAY_NAMES = {
+    "forestnet_v1.0": "m-forestnet",
+    "eurosat": "m-eurosat",
+    "brick_kiln_v1.0": "m-brick-kiln",
+    "so2sat": "m-so2sat",
+    "pv4ger_classification": "m-pv4ger",
+    "geolifeclef-2022": "m-geolifeclef",
+    "bigearthnet": "m-bigearthnet",
+    "pv4ger_segmentation": "m-pv4ger-seg",
+    "nz_cattle_segmentation": "m-nz-cattle",
+    "NeonTree_segmentation": "m-NeonTree",
+    "smallholder_cashew": "m-cashew-plant.",
+    "southAfricaCropType": "m-SA-crop-type",
+    "cvpr_chesapeake_landcover": "m-chesapeake",
+    "vit_small_patch16_224": "ViT-S-timm",
+    "scratch_vit_small_patch16_224": "ViT-S-Rnd",
+    "vit_tiny_patch16_224": "ViT-T-timm",
+    "swinv2_tiny_window16_256": "SwinV2-T-timm",
+    "convnext_base": "ConvNeXt-B-timm",
+    "resnet18": "ResNet18-timm",
+    "resnet50": "ResNet50-timm",
+    "millionaid_resnet50": "ResNet50-MillionAID",
+    "moco_resnet50": "ResNet50-MoCo-S2",
+    "moco_resnet50-multi": "ResNet50-MoCo-S2-multi",
+    "moco_resnet18": "ResNet18-MoCo-S2",
+    "scratch_resnet18": "ResNet18-Rnd",
+    "scratch_resnet50": "ResNet50-Rnd",
+    "resnet18_Unet": "ResNet18-U-Net-timm",
+    "resnet50_Unet": "ResNet50-U-Net-timm",
+    "resnet101_Unet": "ResNet101-U-Net-timm",
+    "resnet18_DeepLabV3": "ResNet18 DeepLabV3-timm",
+    "resnet50_DeepLabV3": "ResNet50 DeepLabV3-timm",
+    "resnet101_DeepLabV3": "ResNet101 DeepLabV3-timm",
+    "moco_vit_small_patch16_224": "ViT-S-MoCo-S2",
+    "moco_vit_small_patch16_224-multi": "ViT-S-MoCo-S2-multi",
+    "dino_resnet50": "ResNet50-DINO-S2",
+    "dino_resnet50-multi": "ResNet50-DINO-S2-multi",
+    "dino_vit_small_patch16_224": "ViT-S-DINO-S2",
+    "dino_vit_small_patch16_224-multi": "ViT-S-DINO-S2-multi",
+}
 
 # def collect_trace_info_raw(log_dir: str) -> pd.DataFrame:
 #     """Collect trace infor for a single run.
@@ -466,7 +505,7 @@ def extract_best_point(log_dir, filt_size=5, lower_is_better=False):
 
     for key, trace in trace_dict.items():
         try:
-            best_value = trace.iloc[trace.index.get_indexer([best_step], method="nearest")]
+            best_value = trace.iloc[trace.index.get_indexer([best_step], method="nearest")[0]]
         except:
             print(key)
             print(trace)
@@ -839,7 +878,7 @@ def plot_speed_results(pkl_file, df, model_order, time_metric="best step"):
     # axes2 = axes2.flatten()
 
     ax = axes[0]
-    model_names = [inspect_tools.DISPLAY_NAMES[model] for model in model_order]
+    model_names = [DISPLAY_NAMES[model] for model in model_order]
     ax.set_yticks(np.arange(len(model_order)), model_names)
     ax.set_title("Number of parameters")
     for i, model in enumerate(model_order):
