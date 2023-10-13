@@ -442,6 +442,10 @@ def extract_best_point(log_dir, filt_size=5, lower_is_better=False):
         warn(f"Not enough steps in {log_dir}. len(trace_dict['val_metric']) = {len(trace_dict['val_metric'])}.")
         return None
 
+    if "test_metric" not in trace_dict:
+        warn(f"No test metrics found.")
+        return None
+
     # if val_metric is None:
     #     val_metric, _ = find_metric_names(trace_dict.keys())
 
@@ -461,7 +465,13 @@ def extract_best_point(log_dir, filt_size=5, lower_is_better=False):
     )
 
     for key, trace in trace_dict.items():
-        best_value = trace.iloc[trace.index.get_indexer([best_step], method="nearest")]
+        try:
+            best_value = trace.iloc[trace.index.get_indexer([best_step], method="nearest")]
+        except:
+            print(key)
+            print(trace)
+            print(log_dir)
+            print(best_step)
         if key == "current_time":
             best_point["convergence_time"] = best_value - trace.iloc[0]
         else:

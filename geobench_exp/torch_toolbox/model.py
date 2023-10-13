@@ -302,6 +302,7 @@ class ModelGenerator:
             "m-seasonet",
             "m-chesapeake",
             "m-NeonTree",
+            "m-cashew-plant"
         ]:
             track_metric = "val_Jaccard"
             mode = "max"

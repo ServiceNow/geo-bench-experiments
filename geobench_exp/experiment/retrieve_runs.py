@@ -51,7 +51,6 @@ def retrieve_runs(experiment_dir, use_cached_csv=False, is_sweep=True, max_num_e
         info_list.append(exp_info)
 
     info_df = pd.DataFrame(info_list)
-
     info_df["date"] = info_df["exp_dir"].str.extract(r"(\d{2}-\d{2}-\d{4})_\d{2}:\d{2}:\d{2}")
     # info_df["date"] = (
     #     info_df["exp_dir"].str.split("_", expand=True)[8] + "_" + info_df["exp_dir"].str.split("_", expand=True)[9]
