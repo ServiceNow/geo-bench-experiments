@@ -119,32 +119,30 @@ class Model(LightningModule):
         Returns:
             validation step outputs
         """
-        prefix = ["val", "test"][dataloader_idx]
+        self.prefix = ["val", "test"][dataloader_idx]
         inputs = batch["input"]
         target = batch["label"]
         output = self(inputs)
         loss = self.loss_function(output, target)
-        self.log(f"{prefix}_loss", loss)
-        if prefix == "val":
+        self.log(f"{self.prefix}_loss", loss)
+        if self.prefix == "val":
             self.eval_metrics(output, target)
         else:
             self.test_metrics(output, target)
-        return {"loss": loss.detach(), "prefix": prefix}
 
-    def on_validation_epoch_end(self, outputs):
-        """Define actions after a validation epoch.
+        return loss.detach()
 
-        Args:
-            outputs: outputs from :meth:`__validation_step`
-        """
-        if outputs["prefix"] == "val":
-            eval_metrics = self.eval_metrics.compute()
-            self.log_dict({f"val_{k}": v.mean() for k, v in eval_metrics.items()}, logger=True)
-            self.eval_metrics.reset()
-        else:
-            eval_metrics = self.eval_metrics.compute()
-            self.log_dict({f"test_{k}": v.mean() for k, v in eval_metrics.items()}, logger=True)
-            self.test_metrics.reset()
+    def on_validation_epoch_end(self):
+        """Define actions after a validation epoch."""
+        
+        # if self.prefix == "val":
+        eval_metrics = self.eval_metrics.compute()
+        self.log_dict({f"val_{k}": v.mean() for k, v in eval_metrics.items()}, logger=True)
+        self.eval_metrics.reset()
+        # else:
+        test_metrics = self.test_metrics.compute()
+        self.log_dict({f"test_{k}": v.mean() for k, v in test_metrics.items()}, logger=True)
+        self.test_metrics.reset()
 
 
     #     val_outputs = outputs[0]  # 0 == validation, 1 == test
@@ -274,7 +272,12 @@ class ModelGenerator:
 
         loggers = [
             CSVLogger(str(job.dir), name="csv_logs"),
-            WandbLogger(
+        ]
+
+        print("IN GENERATE TRAINER")
+        print(config["experiment"])
+        if config["experiment"]["experiment_type"] != "seeded_runs":
+            loggers.append(WandbLogger(
                 save_dir=str(job.dir),
                 project=config["wandb"]["project"],
                 entity=config["wandb"]["entity"],
@@ -284,8 +287,7 @@ class ModelGenerator:
                 resume="allow",
                 config=config["model"],
                 mode=config["wandb"].get("mode", "online"),
-            ),
-        ]
+            ))
 
         job.save_config(config, overwrite=True)
 

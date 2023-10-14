@@ -129,6 +129,7 @@ def experiment_generator(
             best_config["dataloader"]["batch_size"] = best_config["model"]["batch_size"]
 
             best_config["wandb"]["wandb_group"] = task_specs.dataset_name + "/" + model_name + "/" + experiment_prefix
+            best_config["experiment"]["experiment_type"] = "seeded_runs"
             
             for i in range(config["experiment"]["num_seeds"]):
                 # set seed to be used in experiment
