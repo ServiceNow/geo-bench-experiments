@@ -14,17 +14,24 @@ from torch.utils.data import DataLoader
 from torchgeo.transforms import AugmentationSequential
 
 
-def get_classification_transform(
-    task_specs, config: Dict[str, Any], train=True, scale=None, ratio=None
-) -> Callable[[Sample], Dict[str, Any]]:
+def get_transform(task_specs, config, train):
+    """Decide which transforms to get."""
+
+    if task_specs.task_type == "classification":
+        return get_classification_transform(task_specs, config, train)
+    elif task_specs.task_type == "segmentation":
+        return get_segmentation_transform(task_specs, config, train)
+    else:
+        raise NotImplementedError
+
+
+def get_classification_transform(task_specs, config: Dict[str, Any], train=True) -> Callable[[Sample], Dict[str, Any]]:
     """Define data transformations specific to the models generated.
 
     Args:
         task_specs: task specs to retrieve dataset
         config: config file for dataset specifics
         train: train mode true or false
-        scale: define image scale
-        ratio: define image ratio range
 
     Returns:
         callable function that applies transformations on input data
