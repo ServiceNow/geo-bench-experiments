@@ -27,6 +27,7 @@ def get_band_names(config: Dict[str, Any], task_specs) -> Dict[str, Any]:
     return config
 
 
+# TODO: overhaul with hydra and OmegaConf
 def experiment_generator(
     config_filepath: str,
 ) -> Path:
@@ -130,7 +131,7 @@ def experiment_generator(
 
             best_config["wandb"]["wandb_group"] = task_specs.dataset_name + "/" + model_name + "/" + experiment_prefix
             best_config["experiment"]["experiment_type"] = "seeded_runs"
-            
+
             for i in range(config["experiment"]["num_seeds"]):
                 # set seed to be used in experiment
                 best_config["experiment"]["seed"] = i

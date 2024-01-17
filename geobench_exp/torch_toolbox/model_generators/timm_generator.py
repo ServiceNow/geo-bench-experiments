@@ -10,13 +10,10 @@ import torch
 from geobench.dataset import Sample
 from geobench.task import TaskSpecifications
 from kornia.augmentation import ImageSequential
-from torch.utils.data.dataloader import default_collate
 from torchgeo.models import get_weight
 from torchgeo.trainers.utils import load_state_dict
-from torchvision import transforms as tt
 
 from geobench_exp.torch_toolbox.model import (
-    BackBone,
     Model,
     ModelGenerator,
     eval_metrics_generator,
@@ -91,54 +88,6 @@ class TIMMGenerator(ModelGenerator):
             eval_metrics=eval_metrics_generator(task_specs, config),
             test_metrics=eval_metrics_generator(task_specs, config),
         )
-
-    def get_transform(
-        self, task_specs, config: Dict[str, Any], train=True, scale=None, ratio=None
-    ) -> Callable[[Sample], Dict[str, Any]]:
-        """Define data transformations specific to the models generated.
-
-        Args:
-            task_specs: task specs to retrieve dataset
-            config: config file for dataset specifics
-            train: train mode true or false
-            scale: define image scale
-            ratio: define image ratio range
-
-        Returns:
-            callable function that applies transformations on input data
-        """
-
-        mean, std = task_specs.get_dataset(
-            split="train",
-            format=config["dataset"]["format"],
-            band_names=tuple(config["dataset"]["band_names"]),
-            # benchmark_dir=config["experiment"]["benchmark_dir"],
-            partition_name=config["experiment"]["partition_name"],
-        ).normalization_stats()
-
-        desired_input_size = config["model"]["default_input_size"][1]
-
-        if train:
-            t = ImageSequential(
-                K.Normalize(mean=torch.Tensor(mean), std=torch.Tensor(std)),
-                K.RandomHorizontalFlip(p=0.5),
-                K.RandomVerticalFlip(p=0.5),
-                K.Resize((desired_input_size, desired_input_size)),
-            )
-        else:
-            t = ImageSequential(
-                K.Normalize(mean=torch.Tensor(mean), std=torch.Tensor(std)),
-                K.Resize((desired_input_size, desired_input_size)),
-            )
-
-        def transform(sample: Sample):
-            x: "np.typing.NDArray[np.float_]" = sample.pack_to_3d(band_names=config["dataset"]["band_names"])[0].astype(
-                "float32"
-            )
-            x = t(torch.from_numpy(x).permute(2, 0, 1)).squeeze(0)
-            return {"input": x, "label": sample.label}
-
-        return transform
 
     def generate_model_name(self, config: Dict[str, Any]) -> str:
         """Generate a model name that can be used throughout to the pipeline.

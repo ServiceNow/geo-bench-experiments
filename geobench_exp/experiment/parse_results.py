@@ -12,7 +12,6 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import yaml
-
 from geobench.config import GEO_BENCH_DIR
 from geobench.task import load_task_specs
 from matplotlib import pyplot as plt

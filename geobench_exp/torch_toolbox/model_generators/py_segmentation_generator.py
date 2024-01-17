@@ -73,10 +73,6 @@ class SegmentationGenerator(ModelGenerator):
             features = torch.zeros(config["model"]["input_size"]).unsqueeze(0)
             features = backbone.encoder(features)
 
-        class Noop(torch.nn.Module):
-            def forward(self, x):
-                return x
-
         head = ClassificationHead(
             num_classes=1, in_ch=1, ret_identity=True
         )  # pytorch image models already adds a classifier on top of the UNETs

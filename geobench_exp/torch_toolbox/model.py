@@ -1,83 +1,73 @@
 """Model."""
 
 import os
-import random
-import string
 import time
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Callable, Dict, List, Union
 
-import torch
+import lightning
+import segmentation_models_pytorch as smp
+import timm
 import torch.nn.functional as F
 import torchmetrics
 from geobench.dataset import SegmentationClasses
 from geobench.label import Classification, MultiLabelClassification
 from geobench.task import TaskSpecifications
-from lightning import LightningModule, Trainer
-from lightning.pytorch.callbacks import ModelCheckpoint
-from lightning.pytorch.callbacks.early_stopping import EarlyStopping
-from lightning.pytorch.loggers import CSVLogger, WandbLogger
+from lightning import LightningModule
 from torch import Tensor
+from torchgeo.models import get_weight
+from torchgeo.trainers import utils
+from torchvision.models._api import WeightsEnum
 
-from geobench_exp.torch_toolbox.modules import ClassificationHead
 
-
-class Model(LightningModule):
-    """Default Model class provided by the toolbox.
-
-    Define model training, evaluation and testing steps for
-    `Pytorch LightningModule <https://pytorch-lightning.readthedocs.io/en/latest/common/lightning_module.html>`_
-    """
+class GeoBenchBaseModule(LightningModule):
+    """"""
 
     def __init__(
         self,
-        backbone,
-        head: ClassificationHead,
-        loss_function,
-        config,
-        train_metrics=None,
-        eval_metrics=None,
-        test_metrics=None,
+        task_specs: TaskSpecifications,
+        in_channels: int = 3,
+        freeze_backbone: bool = False,
     ) -> None:
-        """Initialize a new instance of Model.
+        """Initialize a new ClassificationTask instance.
 
         Args:
-            backbone: model backbone
-            head: model prediction head
-            loss_function: loss function for training
-            hyperparameters: model hyperparameters
-            train_metrics: metrics used during training
-            eval_metrics: metrics used during evaluation
-            test_metrics: metrics used during evaluation
-
+            task_specs: an object describing the task to be performed
+            model: Name of the `timm
+                <https://huggingface.co/docs/timm/reference/models>`__ model to use.
+            weights: Initial model weights. Either a weight enum, the string
+                representation of a weight enum, True for ImageNet weights, False
+                or None for random weights, or the path to a saved model state dict.
+            in_channels: Number of input channels to model.
+            num_classes: Number of prediction classes.
+            loss_fn: loss function module
+            freeze_backbone: Freeze the backbone network to linear probe
+                the classifier head.
         """
         super().__init__()
-        self.backbone = backbone
-        self.head = head
-        self.loss_function = loss_function
-        self.train_metrics = train_metrics
-        self.eval_metrics = eval_metrics
-        self.test_metrics = test_metrics
-        self.config = config
+        self.task_specs = task_specs
 
-        self.forward_pass_arr = []
+        self.configure_models()
 
-    def forward(self, x):
-        """Forward input through model.
+        self.loss_fn = train_loss_generator(task_specs)
+
+        self.train_metrics = eval_metrics_generator(task_specs)
+        self.eval_metrics = eval_metrics_generator(task_specs)
+        self.test_metrics = eval_metrics_generator(task_specs)
+
+    def forward(self, x: Tensor) -> Tensor:
+        """Forward pass.
 
         Args:
-            x: input
+            x: Input tensor (N, C, H, W)
 
         Returns:
-            feature representation
+            Tensor (N, num_classes)
         """
-        if self.config["model"]["lr_backbone"] == 0:
-            self.backbone.eval()
-            with torch.no_grad():
-                features = self.backbone(x)
-        else:
-            features = self.backbone(x)
-        logits = self.head(features)
-        return logits
+        return self.model(x)
+
+    def configure_model(self) -> None:
+        """Initialize the model."""
+        raise NotImplementedError("Necessary to define a model.")
 
     def training_step(self, batch: Dict[str, Tensor], batch_idx: int, dataloader_idx=0) -> Dict[str, Tensor]:  # type: ignore
         """Define steps taken during training mode.
@@ -90,15 +80,13 @@ class Model(LightningModule):
             training step outputs
         """
         inputs = batch["input"]
-        if batch_idx < 1:
-            print(inputs.shape)
         target = batch["label"]
         output = self(inputs)
-        loss_train = self.loss_function(output, target)
+        loss_train = self.loss_fn(output, target)
         self.train_metrics(output, target)
         self.log("train_loss", loss_train, logger=True)
         self.log("current_time", time.time(), logger=True)
-        # return {"loss": loss_train, "output": output.detach(), "target": target.detach()}
+
         return loss_train
 
     def on_train_epoch_end(self, *arg, **kwargs) -> None:  # type: ignore
@@ -110,12 +98,14 @@ class Model(LightningModule):
         self.log_dict({f"train_{k}": v.mean() for k, v in self.train_metrics.compute().items()}, logger=True)
         self.train_metrics.reset()
 
-    def validation_step(self, batch, batch_idx, dataloader_idx):
+    def validation_step(self, batch: Dict[str, Tensor], batch_idx: int, dataloader_idx: int):
         """Define steps taken during validation mode.
 
         Args:
             batch: input batch
             batch_idx: index of batch
+            dataloader_idx: index of dataloader
+
         Returns:
             validation step outputs
         """
@@ -123,42 +113,27 @@ class Model(LightningModule):
         inputs = batch["input"]
         target = batch["label"]
         output = self(inputs)
-        loss = self.loss_function(output, target)
+        loss = self.loss_fn(output, target)
         self.log(f"{self.prefix}_loss", loss)
         if self.prefix == "val":
             self.eval_metrics(output, target)
         else:
             self.test_metrics(output, target)
 
-        return loss.detach()
+        return loss
 
     def on_validation_epoch_end(self):
         """Define actions after a validation epoch."""
-        
-        # if self.prefix == "val":
+
+        # eval metrics
         eval_metrics = self.eval_metrics.compute()
         self.log_dict({f"val_{k}": v.mean() for k, v in eval_metrics.items()}, logger=True)
         self.eval_metrics.reset()
-        # else:
+
+        # test metrics
         test_metrics = self.test_metrics.compute()
         self.log_dict({f"test_{k}": v.mean() for k, v in test_metrics.items()}, logger=True)
         self.test_metrics.reset()
-
-
-    #     val_outputs = outputs[0]  # 0 == validation, 1 == test
-    #     if self.config["model"].get("log_segmentation_masks", False):
-    #         import wandb
-
-    #         current_element = int(torch.randint(0, val_outputs[0]["input"].shape[0], size=(1,)))
-    #         image = val_outputs[0]["input"][current_element].permute(1, 2, 0).cpu().numpy()
-    #         pred_mask = val_outputs[0]["output"].argmax(1)[current_element].cpu().numpy()
-    #         gt_mask = val_outputs[0]["target"][current_element].cpu().numpy()
-    #         image = wandb.Image(
-    #             image, masks={"predictions": {"mask_data": pred_mask}, "ground_truth": {"mask_data": gt_mask}}
-    #         )
-    #         wandb.log({"segmentation_images": image})
-
-    #     self.test_epoch_end(outputs[1])  # outputs[1] -> test
 
     def test_step(self, batch, batch_idx, dataloader_idx=0):
         """Define steps taken during test mode.
@@ -188,221 +163,92 @@ class Model(LightningModule):
         self.log_dict({f"test_{k}": v.mean() for k, v in test_metrics.items()}, logger=True)
         self.test_metrics.reset()
 
-    def configure_optimizers(self):
-        """Configure optimizers for training."""
-        backbone_parameters = self.backbone.parameters()
-        # backbone_parameters = list(filter(lambda p: p.requires_grad, backbone_parameters))
-        head_parameters = self.head.parameters()
-        # head_parameters = list(filter(lambda p: p.requires_grad, head_parameters))
-        lr_backbone = self.config["model"]["lr_backbone"]
-        lr_head = self.config["model"]["lr_head"]
-        momentum = self.config["model"].get("momentum", 0.9)
-        nesterov = self.config["model"].get("nesterov", True)
-        weight_decay = self.config["model"].get("weight_decay", 1e-4)
-        optimizer_type = self.config["model"].get("optimizer", "sgd").lower()
-        to_optimize = []
-        print(f"lr in configuration: {lr_backbone}, {lr_head}")
-        for params, lr in [(backbone_parameters, lr_backbone), (head_parameters, lr_head)]:
-            if lr > 0:
-                to_optimize.append({"params": params, "lr": lr})
-        if optimizer_type == "sgd":
-            optimizer = torch.optim.SGD(to_optimize, momentum=momentum, nesterov=nesterov, weight_decay=weight_decay)
-        elif optimizer_type == "adam":
-            optimizer = torch.optim.Adam(to_optimize)
-        elif optimizer_type == "adamw":
-            optimizer = torch.optim.AdamW(to_optimize, weight_decay=weight_decay)
+    def configure_optimizers(
+        self,
+    ) -> "lightning.pytorch.utilities.types.OptimizerLRSchedulerConfig":
+        """Initialize the optimizer and learning rate scheduler.
 
-        if self.config["model"].get("scheduler", None) == "step":
-            scheduler = torch.optim.lr_scheduler.MultiStepLR(
-                optimizer, milestones=self.config["model"]["lr_milestones"], gamma=self.config["model"]["lr_gamma"]
-            )
-            return [optimizer], [scheduler]
+        Returns:
+            Optimizer and learning rate scheduler.
+        """
+        optimizer = self.optimizer(self.parameters())
+        if self.lr_scheduler is not None:
+            lr_scheduler = self.lr_scheduler(optimizer)
+            return {
+                "optimizer": optimizer,
+                "lr_scheduler": {"scheduler": lr_scheduler, "monitor": "val_loss"},
+            }
         else:
-            scheduler = None
-            return [optimizer]
+            return {"optimizer": optimizer}
 
 
-class ModelGenerator:
-    """Model Generator.
+class GeoBenchClassifier(GeoBenchBaseModule):
+    def __init__(
+        self,
+        task_specs: TaskSpecifications,
+        model: str = "resnet18",
+        weights: Union[WeightsEnum, str, bool, None] = None,
+        in_channels: int = 3,
+        freeze_backbone: bool = False,
+    ) -> None:
+        super().__init__(task_specs, in_channels, freeze_backbone)
+        self.save_hyperparameters(ignore=["loss_fn", "task_specs"])
 
-    Class implemented by the user. The goal is to specify how to connect the backbone with the head and the loss function.
-    """
+        self.weights = weights
 
-    def __init__(self, model_path=None) -> None:
-        """Initialize a new instance of Model Generator.
-
-        This should not load the model at this point
-
-        Args:
-            model_path: path to model
-
-        """
-        self.model_path = model_path
-
-    def generate_model(self, task_specs: TaskSpecifications, config: Dict[str, Any]):
-        """Generate a Model to train.
-
-        Args:
-            task_specs: an object describing the task to be performed
-            config: config dictionary containing experiment and hyperparameters configurations
-
-        Raises:
-            NotImplementedError
-
-        Example:
-            backbone = MyBackBone(self.model_path, task_specs, hyperparams) # Implemented by the user so that he can wrap his
-            head = head_generator(task_specs, hyperparams) # provided by the toolbox or the user can implement their own
-            loss = train_loss_generator(task_specs, hyperparams) # provided by the toolbox or the user can implement their own
-            return Model(backbone, head, loss, hyperparams) # base model provided by the toolbox
-        """
-        raise NotImplementedError("Necessary to specify this function that returns model.")
-
-    def generate_trainer(self, config: dict, job) -> Trainer:
-        """Configure a pytroch lightning Trainer.
-
-        Args:
-            config: dictionary containing config
-            job: job being executed to let logger know directory
-
-        Returns:
-            lightning Trainer with configurations from config file.
-        """
-        run_id = "".join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(8))
-        config["wandb"]["wandb_run_id"] = run_id
-
-        loggers = [
-            CSVLogger(str(job.dir), name="csv_logs"),
-        ]
-
-        print("IN GENERATE TRAINER")
-        print(config["experiment"])
-        if config["experiment"]["experiment_type"] != "seeded_runs":
-            loggers.append(WandbLogger(
-                save_dir=str(job.dir),
-                project=config["wandb"]["project"],
-                entity=config["wandb"]["entity"],
-                id=run_id,
-                group=config["wandb"].get("wandb_group", None),
-                name=config["wandb"].get("name", None),
-                resume="allow",
-                config=config["model"],
-                mode=config["wandb"].get("mode", "online"),
-            ))
-
-        job.save_config(config, overwrite=True)
-
-        ckpt_dir = os.path.join(job.dir, "checkpoint")
-
-        ds_name = job.task_specs.dataset_name
-
-        if ds_name in [
-            "m-eurosat",
-            "m-brick-kiln",
-            "m-pv4ger",
-            "m-so2sat",
-            "m-forestnet",
-        ]:
-            track_metric = "val_Accuracy"
-            mode = "max"
-        elif ds_name == "m-bigearthnet":
-            track_metric = "val_F1Score"
-            mode = "max"
-        elif ds_name in [
-            "m-pv4ger-seg",
-            "m-nz-cattle",
-            "m-SA-crop-type",
-            "m-seasonet",
-            "m-chesapeake",
-            "m-NeonTree",
-            "m-cashew-plant"
-        ]:
-            track_metric = "val_Jaccard"
-            mode = "max"
-
-        if "early_stopping_metric" in config["model"]:
-            track_metric = config["model"]["early_stopping_metric"]
-            mode = "min"
-
-        checkpoint_callback = ModelCheckpoint(
-            dirpath=ckpt_dir, save_top_k=1, monitor=track_metric, mode=mode, every_n_epochs=1
-        )
-        patience = int((1 / config["pl"]["val_check_interval"]) * (config["pl"]["max_epochs"] / 6))
-        print(f"patience: {patience}")
-        early_stopping_callback = EarlyStopping(
-            monitor=track_metric,
-            mode=mode,
-            patience=patience,
-            min_delta=1e-5,
+    def configure_model(self) -> None:
+        """Configure classification model."""
+        # Create model
+        self.model = timm.create_model(
+            self.hparams["model"],
+            num_classes=self.task_specs.label_type.n_classes,
+            in_chans=self.hparams["in_channels"],
+            pretrained=self.weights is True,
         )
 
-        trainer = Trainer(
-            **config["pl"],
-            default_root_dir=job.dir,
-            callbacks=[
-                early_stopping_callback,
-                checkpoint_callback,
-            ],
-            logger=loggers,
-        )
+        # Load weights
+        if self.weights and self.weights is not True:
+            if isinstance(self.weights, WeightsEnum):
+                state_dict = self.weights.get_state_dict(progress=True)
+            elif os.path.exists(self.weights):
+                _, state_dict = utils.extract_backbone(self.weights)
+            else:
+                state_dict = get_weight(self.weights).get_state_dict(progress=True)
+            self.model = utils.load_state_dict(self.model, state_dict)
 
-        return trainer
-
-    def get_transform(self, task_specs: TaskSpecifications, config: Dict[str, Any], train: bool = True):
-        """Generate the collate functions for stacking the mini-batch.
-
-        Args:
-            task_specs: an object describing the task to be performed
-            hparams: dictionary containing hyperparameters of the experiment
-            config: config file
-            train: whether to return train or evaluation transforms
-
-        Returns:
-            A callable taking an object of type Sample as input. The return will be fed to the collate_fn
-        """
-        raise NotImplementedError("Necessary to define a transform function.")
-
-    def generate_model_name(self, config: Dict[str, Any]) -> str:
-        """Generate a model name that can be used throughout to the pipeline.
-
-        Args:
-            config: config file
-        """
-        raise NotImplementedError("Necessary to define a model name.")
+        # Freeze backbone and unfreeze classifier head
+        if self.hparams["freeze_backbone"]:
+            for param in self.model.parameters():
+                param.requires_grad = False
+            for param in self.model.get_classifier().parameters():
+                param.requires_grad = True
 
 
-def head_generator(task_specs: TaskSpecifications, features_shape: List[Tuple[int, ...]]):
-    """Return an appropriate head based on the task specifications.
+class GeoBenchSegmentation(GeoBenchBaseModule):
+    def __init__(
+        self,
+        task_specs: TaskSpecifications,
+        encoder_type: str = "resnet18",
+        decoder_type: str = "Unet",
+        in_channels: int = 3,
+        freeze_backbone: bool = False,
+    ) -> None:
+        super().__init__(task_specs, in_channels, freeze_backbone)
 
-    We can use task_specs.task_type as follow:
-        classification: 2 layer MLP with softmax activation
-        semantic_segmentation: U-Net decoder.
-    we can also do something special for a specific dataet using task_specs.dataset_name. Hyperparams and input_shape
-    can also be used to adapt the head.
+        self.save_hyperparameters(ignore=["loss_fn", "task_specs"])
 
-    Args:
-        task_specs: providing information on what type of task we are solving
-        features_shape: lists with the shapes of the output features at different depths in the architecture [(ch, h, w), ...]
-        hyperparams: dict of hyperparameters.
-
-    """
-    if isinstance(task_specs.label_type, Classification):
-        in_ch, *other_dims = features_shape[-1]
-        out_ch = task_specs.label_type.n_classes
-        return ClassificationHead(in_ch, out_ch)
-    elif isinstance(task_specs.label_type, MultiLabelClassification):
-        in_ch, *other_dims = features_shape[-1]
-        out_ch = task_specs.label_type.n_classes
-        return ClassificationHead(in_ch, out_ch)
-    else:
-        raise ValueError(f"Unrecognized task: {task_specs.label_type}")
+    def configure_model(self) -> None:
+        """Configure segmentation model."""
+        # Load segmentation backbone from py-segmentation-models
+        self.model = getattr(smp, self.hparams["decoder_type"])(
+            encoder_name=self.hparams["encoder_type"],
+            encoder_weights=self.hparams["encoder_weights"],
+            in_channels=self.hparams["in_channels"],
+            classes=self.task_specs.label_type.n_classes,
+        )  # model output channels (number of cl
 
 
-METRIC_MAP: Dict[str, Any] = {}
-
-
-def eval_metrics_generator(
-    task_specs: TaskSpecifications, config: Dict[str, Any]
-) -> List[torchmetrics.MetricCollection]:
+def eval_metrics_generator(task_specs: TaskSpecifications) -> List[torchmetrics.MetricCollection]:
     """Return the appropriate eval function depending on the task_specs.
 
     Args:
@@ -450,12 +296,11 @@ def _balanced_binary_cross_entropy_with_logits(outputs: Tensor, targets: Tensor)
     return loss
 
 
-def train_loss_generator(task_specs: TaskSpecifications, config: Dict[str, Any]) -> Callable[[Tensor], Tensor]:
+def train_loss_generator(task_specs: TaskSpecifications) -> Callable[[Tensor], Tensor]:
     """Return the appropriate loss function depending on the task_specs.
 
     Args:
         task_specs: an object describing the task to be performed
-        config: dictionary containing hyperparameters of the experiment
 
     Returns:
         available loss functions for training
@@ -467,35 +312,3 @@ def train_loss_generator(task_specs: TaskSpecifications, config: Dict[str, Any])
     }[task_specs.label_type.__class__]
 
     return loss  # type: ignore
-
-
-class BackBone(torch.nn.Module):
-    """Backbone.
-
-    Create a model Backbone to produce feature representations.
-
-    """
-
-    def __init__(self, model_path: str, task_specs: TaskSpecifications, config: Dict[str, Any]) -> None:
-        """Initialize a new instance of Backbone.
-
-        Args:
-            model_path:
-            task_specs: an object describing the task to be performed
-            config: dictionary containing hyperparameters of the experiment
-
-        """
-        super().__init__()
-        self.model_path = model_path
-        self.task_specs = task_specs
-        self.config = config
-
-    def forward(self, x: Tensor) -> Tensor:
-        """Forward input through backbone.
-
-        Args:
-            x: input tensor to backbone
-
-        Returns:
-            the encoded representation or a list of representations for
-        """

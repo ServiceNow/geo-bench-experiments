@@ -1,11 +1,128 @@
 """geobench.dataset Datamodule."""
 
-from pathlib import Path
-from typing import Sequence
 
+from typing import Any, Callable, Dict, Sequence
+
+import kornia.augmentation as K
+import numpy as np
+import torch
+from geobench.dataset import Band, Sample
 from geobench.task import TaskSpecifications
+from kornia.augmentation import ImageSequential
 from lightning import LightningDataModule
 from torch.utils.data import DataLoader
+from torchgeo.transforms import AugmentationSequential
+
+
+def get_classification_transform(
+    task_specs, config: Dict[str, Any], train=True, scale=None, ratio=None
+) -> Callable[[Sample], Dict[str, Any]]:
+    """Define data transformations specific to the models generated.
+
+    Args:
+        task_specs: task specs to retrieve dataset
+        config: config file for dataset specifics
+        train: train mode true or false
+        scale: define image scale
+        ratio: define image ratio range
+
+    Returns:
+        callable function that applies transformations on input data
+    """
+
+    mean, std = task_specs.get_dataset(
+        split="train",
+        format=config["dataset"]["format"],
+        band_names=tuple(config["dataset"]["band_names"]),
+        partition_name=config["experiment"]["partition_name"],
+    ).normalization_stats()
+
+    desired_input_size = config["model"]["default_input_size"][1]
+
+    if train:
+        t = ImageSequential(
+            K.Normalize(mean=torch.Tensor(mean), std=torch.Tensor(std)),
+            K.RandomHorizontalFlip(p=0.5),
+            K.RandomVerticalFlip(p=0.5),
+            K.Resize((desired_input_size, desired_input_size)),
+        )
+    else:
+        t = ImageSequential(
+            K.Normalize(mean=torch.Tensor(mean), std=torch.Tensor(std)),
+            K.Resize((desired_input_size, desired_input_size)),
+        )
+
+    def transform(sample: Sample):
+        x: "np.typing.NDArray[np.float_]" = sample.pack_to_3d(band_names=config["dataset"]["band_names"])[0].astype(
+            "float32"
+        )
+        x = t(torch.from_numpy(x).permute(2, 0, 1)).squeeze(0)
+        return {"input": x, "label": sample.label}
+
+    return transform
+
+
+def get_segmentation_transform(
+    task_specs: TaskSpecifications,
+    config: Dict[str, Any],
+    train=True,
+):
+    """Define data transformations specific to the models generated.
+
+    Args:
+        task_specs: task specs to retrieve dataset
+        hparams: model hyperparameters
+        train: train mode true or false
+
+    Returns:
+        callable function that applies transformations on input data
+    """
+    c, h, w = config["model"]["input_size"]
+    patch_h, patch_w = task_specs.patch_size
+    if h != w or patch_h != patch_w:
+        raise (RuntimeError("Only square patches are supported in this version"))
+    h32 = w32 = int(32 * (h // 32))  # make input res multiple of 32
+
+    mean, std = task_specs.get_dataset(
+        split="train",
+        format=config["dataset"]["format"],
+        band_names=tuple(config["dataset"]["band_names"]),
+        # benchmark_dir=config["experiment"]["benchmark_dir"],
+        partition_name=config["experiment"]["partition_name"],
+    ).rgb_stats()
+    band_names = config["dataset"]["band_names"]
+
+    if train:
+        t = AugmentationSequential(
+            K.Normalize(mean=torch.Tensor(mean), std=torch.Tensor(std)),
+            K.RandomHorizontalFlip(p=0.5),
+            K.RandomVerticalFlip(p=0.5),
+            K.Resize((h32, w32)),
+            data_keys=["image", "mask"],
+        )
+    else:
+        t = AugmentationSequential(
+            K.Normalize(mean=torch.Tensor(mean), std=torch.Tensor(std)),
+            K.Resize((h32, w32)),
+            data_keys=["image", "mask"],
+        )
+
+    def transform(sample: Sample):
+        x = sample.pack_to_3d(band_names=band_names)[0].astype("float32")
+
+        if isinstance(sample.label, Band):
+            # kornia expects channel first and label to have a channel
+            x, y = torch.from_numpy(x).permute(2, 0, 1), torch.from_numpy(
+                sample.label.data.astype("float32")
+            ).unsqueeze(0)
+            transformed = t({"image": x, "mask": y})
+
+        return {
+            "input": transformed["image"].squeeze(0),
+            "label": transformed["mask"].squeeze(0).to(dtype=torch.long),
+        }
+
+    return transform
 
 
 class DataModule(LightningDataModule):

@@ -29,14 +29,19 @@ def train(job_dir: str) -> None:
         config["dataset"]["band_names"] = [band_info.name for band_info in task_specs.bands_info]
 
     # Load the user-specified model generator
+    # TODO should also be done with hydra
     model_gen = get_model_generator(config["model"]["model_generator_module_name"])
 
+    # TODO should also be done with hydra
     model = model_gen.generate_model(task_specs=job.task_specs, config=config)
+
+    # TODO this should be done with hydra
     trainer = model_gen.generate_trainer(config=config, job=job)
 
     # load config new because there might have been additions in generate_trainer function
     config = job.config
 
+    # TODO this should be done with hydra
     datamodule = DataModule(
         task_specs=task_specs,
         benchmark_dir=config["experiment"]["benchmark_dir"],
@@ -57,8 +62,8 @@ def train(job_dir: str) -> None:
     trainer.test(model, datamodule)
 
     # save updated configs in csv_logger one directories are created
+    # TODO this should be done with OmegaConf
     yaml = YAML()
-    metric_path = os.path.join(trainer.loggers[0].save_dir, trainer.loggers[0].name, trainer.loggers[0].version)
     with open(os.path.join(trainer.loggers[0].log_dir, "config.yaml"), "w") as fd:
         yaml.dump(config, fd)
 
