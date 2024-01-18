@@ -18,7 +18,7 @@ $ pip install .
 
 # Create and run Experiments
 
-Running experiments is a two-step process.
+There are two types of configuration files: task specific config files (one for segmentation and one for classification), as well as model specific config files. To get started, you need to set the `benchmark_dir` in the task config files found under `geobench_exp/configs` to the directory where the [GeoBench Data](https://github.com/ServiceNow/geo-bench) has been downloaded two. Then, actually running experiments is a two-step process.
 
 1. In the first step, we create directories that hold the necessary files that are needed to actually run an experiment. This can be achieved with the script command
 
