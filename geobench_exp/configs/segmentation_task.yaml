@@ -1,0 +1,30 @@
+experiment:
+  generate_experiment_dir: /dir/to/save/experiments # specify a directory where you want experiments to be stored
+  experiment_name: 0.01x_train # specify a prefix for the experiment directory name, the date and model will be appended automatically
+  benchmark_name: segmentation_v1.0 # benchmark name
+  partition_name: 0.01x_train # name of the partition you want to exectute an experiment for
+  benchmark_name: segmentation_v1.0 # benchmark name
+  # tasks is a list of tasks that you want to ignore for the experiment dir creation
+  tasks: ["m-nz-cattle", "m-chesapeake", "m-SA-crop-type", "m-nz-cattle", "m-NeonTree"]
+  num_seeds: 1 # for a particular experiment how many seed experiments should be created (each containing its own experiment setup)
+
+datamodule:
+  _target_: geobench_exp.torch_toolbox.dataset.DataModule # specify the datamodule class
+  num_workers: 4 # number of workers for dataloader
+  batch_size: 16 # batch size
+  band_names: ["red", "green", "blue"] # band names to be used for the experiment, alternatively you can also say "all" to use all bands
+  format: hdf5 # dataformat to be used
+
+trainer: # all flags for pytorch lightning Trainer module, see https://pytorch-lightning.readthedocs.io/en/stable/common/trainer.html
+  _target_: lightning.Trainer
+  devices: [0]
+  accelerator: gpu
+  max_epochs: 600
+  max_steps: -1
+  limit_val_batches: 1.0
+  limit_test_batches: 1.0
+  val_check_interval: 0.25
+  deterministic: False
+  log_every_n_steps: 10
+  enable_progress_bar: true
+  precision: 16

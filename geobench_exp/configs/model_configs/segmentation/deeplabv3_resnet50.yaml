@@ -1,0 +1,12 @@
+model:
+  _target_: geobench_exp.torch_toolbox.model.GeoBenchSegmentation
+  encoder_type: resnet50
+  decoder_type: DeepLabV3
+  encoder_weights: imagenet
+  optimizer:
+    _target_: torch.optim.Adam
+    _partial_: true
+    lr: 1e-4
+
+datamodule:
+  batch_size: 32
