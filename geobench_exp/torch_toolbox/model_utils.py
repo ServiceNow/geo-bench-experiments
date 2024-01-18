@@ -6,6 +6,7 @@ from lightning import Trainer
 from lightning.pytorch.callbacks import ModelCheckpoint
 from lightning.pytorch.callbacks.early_stopping import EarlyStopping
 from lightning.pytorch.loggers import CSVLogger, WandbLogger
+from hydra.utils import instantiate
 
 
 def generate_trainer(config: dict, job) -> Trainer:
@@ -19,12 +20,12 @@ def generate_trainer(config: dict, job) -> Trainer:
         lightning Trainer with configurations from config file.
     """
     run_id = "".join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(8))
-    config["wandb"]["wandb_run_id"] = run_id
 
     loggers = [
         CSVLogger(str(job.dir), name="csv_logs"),
     ]
-    if config["experiment"]["experiment_type"] != "seeded_runs":
+    if "wandb" in config:
+        config["wandb"]["wandb_run_id"] = run_id
         loggers.append(
             WandbLogger(
                 save_dir=str(job.dir),
@@ -76,7 +77,7 @@ def generate_trainer(config: dict, job) -> Trainer:
     checkpoint_callback = ModelCheckpoint(
         dirpath=ckpt_dir, save_top_k=1, monitor=track_metric, mode=mode, every_n_epochs=1
     )
-    patience = int((1 / config["pl"]["val_check_interval"]) * (config["pl"]["max_epochs"] / 6))
+    patience = int((1 / config["trainer"]["val_check_interval"]) * (config["trainer"]["max_epochs"] / 6))
 
     early_stopping_callback = EarlyStopping(
         monitor=track_metric,
@@ -85,8 +86,8 @@ def generate_trainer(config: dict, job) -> Trainer:
         min_delta=1e-5,
     )
 
-    trainer = Trainer(
-        **config["pl"],
+    trainer = instantiate(
+        config.trainer,
         default_root_dir=job.dir,
         callbacks=[
             early_stopping_callback,

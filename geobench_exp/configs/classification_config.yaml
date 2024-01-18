@@ -1,6 +1,5 @@
 experiment:
   generate_experiment_dir: /mnt/data/experiments/nils/testing
-  # generate_experiment_dir: /mnt/data/experiments/pau/partition_sweeps_classification
   experiment_name: 0.01x_train # prefix
   experiment_type: sweep # standard, seeded_runs, sweep
   benchmark_dir: /mnt/data/cc_benchmark/classification_v0.9.1

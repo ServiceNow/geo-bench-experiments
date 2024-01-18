@@ -2,8 +2,9 @@
 
 import os
 import time
-from typing import Callable, Dict, List, Union
+from typing import Callable, Dict, List, Union, Optional
 
+import torch
 import lightning
 import segmentation_models_pytorch as smp
 import timm
@@ -17,16 +18,19 @@ from torch import Tensor
 from torchgeo.models import get_weight
 from torchgeo.trainers import utils
 from torchvision.models._api import WeightsEnum
+from lightning.pytorch.cli import LRSchedulerCallable, OptimizerCallable
 
 
 class GeoBenchBaseModule(LightningModule):
-    """"""
+    """GeoBench Base Lightning Module."""
 
     def __init__(
         self,
         task_specs: TaskSpecifications,
-        in_channels: int = 3,
+        in_channels,
         freeze_backbone: bool = False,
+        optimizer: OptimizerCallable = torch.optim.Adam,
+        lr_scheduler: Optional[LRSchedulerCallable] = None,
     ) -> None:
         """Initialize a new ClassificationTask instance.
 
@@ -38,17 +42,19 @@ class GeoBenchBaseModule(LightningModule):
                 representation of a weight enum, True for ImageNet weights, False
                 or None for random weights, or the path to a saved model state dict.
             in_channels: Number of input channels to model.
-            num_classes: Number of prediction classes.
-            loss_fn: loss function module
             freeze_backbone: Freeze the backbone network to linear probe
                 the classifier head.
+            optimizer: Optimizer to use for training
+            lr_scheduler: Learning rate scheduler to use for training
         """
         super().__init__()
         self.task_specs = task_specs
 
-        self.configure_models()
+        self.configure_model()
 
         self.loss_fn = train_loss_generator(task_specs)
+        self.optimizer = optimizer
+        self.lr_scheduler = lr_scheduler
 
         self.train_metrics = eval_metrics_generator(task_specs)
         self.eval_metrics = eval_metrics_generator(task_specs)
@@ -79,8 +85,7 @@ class GeoBenchBaseModule(LightningModule):
         Returns:
             training step outputs
         """
-        inputs = batch["input"]
-        target = batch["label"]
+        inputs, target = batch["input"], batch["label"]
         output = self(inputs)
         loss_train = self.loss_fn(output, target)
         self.train_metrics(output, target)
@@ -110,8 +115,7 @@ class GeoBenchBaseModule(LightningModule):
             validation step outputs
         """
         self.prefix = ["val", "test"][dataloader_idx]
-        inputs = batch["input"]
-        target = batch["label"]
+        inputs, target = batch["input"], batch["label"]
         output = self(inputs)
         loss = self.loss_fn(output, target)
         self.log(f"{self.prefix}_loss", loss)
@@ -145,8 +149,7 @@ class GeoBenchBaseModule(LightningModule):
         Returns:
             test step outputs
         """
-        inputs = batch["input"]
-        target = batch["label"]
+        inputs, target = batch["input"], batch["label"]
         output = self(inputs)
         loss = self.loss_function(output, target)
         self.log("test_loss", loss)
@@ -186,15 +189,18 @@ class GeoBenchClassifier(GeoBenchBaseModule):
     def __init__(
         self,
         task_specs: TaskSpecifications,
-        model: str = "resnet18",
+        model: str,
+        in_channels: int,
         weights: Union[WeightsEnum, str, bool, None] = None,
-        in_channels: int = 3,
         freeze_backbone: bool = False,
+        optimizer: OptimizerCallable = torch.optim.Adam,
+        lr_scheduler: Optional[LRSchedulerCallable] = None,
     ) -> None:
-        super().__init__(task_specs, in_channels, freeze_backbone)
         self.save_hyperparameters(ignore=["loss_fn", "task_specs"])
-
+        self.hparams["model"] = model
         self.weights = weights
+        super().__init__(task_specs, in_channels, freeze_backbone, optimizer, lr_scheduler)
+
 
     def configure_model(self) -> None:
         """Configure classification model."""
@@ -228,14 +234,16 @@ class GeoBenchSegmentation(GeoBenchBaseModule):
     def __init__(
         self,
         task_specs: TaskSpecifications,
-        encoder_type: str = "resnet18",
-        decoder_type: str = "Unet",
+        encoder_type: str,
+        decoder_type: str,
         in_channels: int = 3,
         freeze_backbone: bool = False,
+        optimizer: OptimizerCallable = torch.optim.Adam,
+        lr_scheduler: Optional[LRSchedulerCallable] = None,
     ) -> None:
-        super().__init__(task_specs, in_channels, freeze_backbone)
-
         self.save_hyperparameters(ignore=["loss_fn", "task_specs"])
+        super().__init__(task_specs, in_channels, freeze_backbone, optimizer, lr_scheduler)
+
 
     def configure_model(self) -> None:
         """Configure segmentation model."""

@@ -6,28 +6,27 @@ import json
 import os
 import pickle
 import stat
-import sys
 from functools import cached_property
 from importlib import import_module
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, Union
 
 from geobench.task import TaskSpecifications
-from ruamel.yaml import YAML
+from omegaconf import OmegaConf
 
-from geobench_exp.torch_toolbox.model import ModelGenerator
+# from geobench_exp.torch_toolbox.model import ModelGenerator
 
 
-def get_model_generator(module_name: str) -> ModelGenerator:
-    """Return the model generator module based on name with a set of hyperparameters.
+# def get_model_generator(module_name: str) -> ModelGenerator:
+#     """Return the model generator module based on name with a set of hyperparameters.
 
-    Args:
-        module_name: The module_name of the model generator module.
+#     Args:
+#         module_name: The module_name of the model generator module.
 
-    Returns:
-        a model_generator function loaded from the module with hparams
-    """
-    return import_module(module_name).model_generator()  # type: ignore[no-any-return]
+#     Returns:
+#         a model_generator function loaded from the module with hparams
+#     """
+#     return import_module(module_name).model_generator()  # type: ignore[no-any-return]
 
 
 class Job:
@@ -64,10 +63,7 @@ class Job:
     @cached_property
     def config(self) -> Dict[str, Any]:
         """Return config file."""
-        yaml = YAML()
-        with open(self.dir / "config.yaml", "r") as yamlfile:
-            loaded_yaml: Dict[str, Any] = yaml.load(yamlfile)
-            return loaded_yaml
+        return OmegaConf.load(self.dir / "config.yaml")
 
     def save_config(self, config: Dict[str, Any], overwrite: bool = False) -> None:
         """Save config file in job directory.
@@ -79,10 +75,7 @@ class Job:
         config_path = self.dir / "config.yaml"
         if config_path.exists() and not overwrite:
             raise Exception("config alread exists and overwrite is set to False.")
-        yaml = YAML()
-        with open(config_path, "w") as fd:
-            yaml.dump(config, fd)
-            self.config = config
+        OmegaConf.save(config, self.dir / "config.yaml")
 
     def get_metrics(self) -> Dict[str, Any]:
         """Retrieve the metrics after training from job directory."""
@@ -119,8 +112,7 @@ class Job:
         script_path = self.dir / "run.sh"
         with open(script_path, "w") as fd:
             fd.write("#!/bin/bash\n")
-            fd.write("# Usage: sh run.sh path/to/model_generator.py\n\n")
-            fd.write(f"geobench_exp-trainer --job_dir {job_dir}")
+            fd.write(f"geobench_exp-run_exp --job_dir {job_dir}")
         script_path.chmod(script_path.stat().st_mode | stat.S_IEXEC)
 
     def write_wandb_sweep_cl_script(
@@ -134,9 +126,7 @@ class Job:
             base_sweep_config: path to base sweep config yaml file for wandb
             name: wandb sweep experiment name
         """
-        yaml = YAML()
-        with open(base_sweep_config, "r") as yamlfile:
-            base_yaml = yaml.load(yamlfile)
+        base_yaml = OmegaConf.load(base_sweep_config)
 
         base_yaml["command"] = [  # commands needed to run actual training script
             "${program}",
@@ -148,9 +138,7 @@ class Job:
         base_yaml["name"] = config["model"]["model_name"]
 
         save_path = os.path.join(job_dir, "sweep_config.yaml")
-        yaml.indent(sequence=4, offset=2)
-        with open(save_path, "w") as yamlfile:
-            yaml.dump(base_yaml, yamlfile)
+        OmegaConf.save(base_yaml, save_path)
 
     def get_stderr(self) -> Union[str, None]:
         """Return error output from executing script."""

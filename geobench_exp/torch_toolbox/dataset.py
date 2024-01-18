@@ -16,14 +16,24 @@ from torchgeo.transforms import AugmentationSequential
 
 def get_transform(task_specs, config, train):
     """Decide which transforms to get."""
-
-    if task_specs.task_type == "classification":
+    if "classification" in task_specs.benchmark_name:
         return get_classification_transform(task_specs, config, train)
-    elif task_specs.task_type == "segmentation":
+    elif "segmentation" in task_specs.benchmark_name:
         return get_segmentation_transform(task_specs, config, train)
     else:
         raise NotImplementedError
-
+    
+def get_desired_input_sizes(model_name: str) -> int:
+    """Define input sizes for models."""
+    input_size_dict = {
+        "resnet18": 224,
+        "resnet50": 224,
+        "convnext_base": 224,
+        "vit_tiny_patch16_224": 224,
+        "vit_small_patch16_224": 224,
+        "swinv2_tiny_window16_256": 256,
+    }
+    return input_size_dict[model_name]
 
 def get_classification_transform(task_specs, config: Dict[str, Any], train=True) -> Callable[[Sample], Dict[str, Any]]:
     """Define data transformations specific to the models generated.
@@ -39,12 +49,12 @@ def get_classification_transform(task_specs, config: Dict[str, Any], train=True)
 
     mean, std = task_specs.get_dataset(
         split="train",
-        format=config["dataset"]["format"],
-        band_names=tuple(config["dataset"]["band_names"]),
+        format=config["datamodule"]["format"],
+        band_names=tuple(config["datamodule"]["band_names"]),
         partition_name=config["experiment"]["partition_name"],
     ).normalization_stats()
 
-    desired_input_size = config["model"]["default_input_size"][1]
+    desired_input_size = get_desired_input_sizes(config["model"]["model"])
 
     if train:
         t = ImageSequential(
@@ -60,7 +70,7 @@ def get_classification_transform(task_specs, config: Dict[str, Any], train=True)
         )
 
     def transform(sample: Sample):
-        x: "np.typing.NDArray[np.float_]" = sample.pack_to_3d(band_names=config["dataset"]["band_names"])[0].astype(
+        x: "np.typing.NDArray[np.float_]" = sample.pack_to_3d(band_names=config["datamodule"]["band_names"])[0].astype(
             "float32"
         )
         x = t(torch.from_numpy(x).permute(2, 0, 1)).squeeze(0)

@@ -75,7 +75,6 @@ def train(job_dir: str) -> None:
     with open(os.path.join(trainer.loggers[0].log_dir, "status.txt"), "w") as fd:
         fd.write("Done")
 
-
 def start() -> None:
     """Start training."""
     # Command line arguments
