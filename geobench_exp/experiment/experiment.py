@@ -1,32 +1,14 @@
 """Experiment."""
 
-import csv
-import glob
-import json
 import os
 import pickle
 import stat
 from functools import cached_property
-from importlib import import_module
 from pathlib import Path
 from typing import Any, Dict, Union
 
 from geobench.task import TaskSpecifications
 from omegaconf import OmegaConf
-
-# from geobench_exp.torch_toolbox.model import ModelGenerator
-
-
-# def get_model_generator(module_name: str) -> ModelGenerator:
-#     """Return the model generator module based on name with a set of hyperparameters.
-
-#     Args:
-#         module_name: The module_name of the model generator module.
-
-#     Returns:
-#         a model_generator function loaded from the module with hparams
-#     """
-#     return import_module(module_name).model_generator()  # type: ignore[no-any-return]
 
 
 class Job:
@@ -76,32 +58,6 @@ class Job:
         if config_path.exists() and not overwrite:
             raise Exception("config alread exists and overwrite is set to False.")
         OmegaConf.save(config, self.dir / "config.yaml")
-
-    def get_metrics(self) -> Dict[str, Any]:
-        """Retrieve the metrics after training from job directory."""
-        if "wandb" in self.config["experiment"].get("loggers", ""):
-            import wandb
-
-            wandb.finish()
-            summary = glob.glob(str(self.dir / "wandb" / "latest-run" / "*" / "wandb-summary.json"))
-
-            with open(summary[0], "r") as infile:
-                data: Dict[str, Any] = json.load(infile)
-            return data
-        else:
-            try:
-                with open(self.dir / "csv_logs" / "version_0" / "metrics.csv", "r") as fd:
-                    data: Dict[str, Any] = {}  # type: ignore[no-redef]
-                    # FIXME: This would be more efficient if done backwards
-                    for entry in csv.DictReader(fd):
-                        data.update({k: v for k, v in entry.items() if v != ""})
-                return data
-            except FileNotFoundError as e:
-                stderr = self.get_stderr()
-                if stderr is not None:
-                    raise Exception(stderr)
-                else:
-                    raise e
 
     def write_script(self, job_dir: str) -> None:
         """Write bash scrip that can be executed to run job.
