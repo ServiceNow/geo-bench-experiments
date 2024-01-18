@@ -58,7 +58,6 @@ def train(job_dir: str) -> None:
 
     # save updated configs in csv_logger one directories are created
     yaml = YAML()
-    metric_path = os.path.join(trainer.loggers[0].save_dir, trainer.loggers[0].name, trainer.loggers[0].version)
     with open(os.path.join(trainer.loggers[0].log_dir, "config.yaml"), "w") as fd:
         yaml.dump(config, fd)
 

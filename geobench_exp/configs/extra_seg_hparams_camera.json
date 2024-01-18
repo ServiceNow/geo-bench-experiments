@@ -1,0 +1,142 @@
+{
+    "resnet101_DeepLabV3": {
+        "1.00x_train": {
+            "m-cashew-plant": "/mnt/data/experiments/nils/extra_sweeps/1.00x_train_segmentation_v0.4_10-14-2023_15:42:23resnet101_DeepLabV3/m-cashew-plant/csv_logs/version_23",
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/1.00x_train_segmentation_v0.4_11-22-2023_20:44:33resnet101_DeepLabV3/m-nz-cattle/csv_logs/version_4"
+        },
+        "0.01x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.01x_train_segmentation_v0.4_11-27-2023_13:42:18resnet101_DeepLabV3/m-nz-cattle/csv_logs/version_5"
+        },
+        "0.02x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.02x_train_segmentation_v0.4_11-22-2023_19:53:23resnet101_DeepLabV3/m-nz-cattle/csv_logs/version_10"
+        },
+        "0.05x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.05x_train_segmentation_v0.4_11-22-2023_19:54:41resnet101_DeepLabV3/m-nz-cattle/csv_logs/version_7"
+        },
+        "0.10x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.10x_train_segmentation_v0.4_11-22-2023_19:55:52resnet101_DeepLabV3/m-nz-cattle/csv_logs/version_3"
+        },
+        "0.20x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.20x_train_segmentation_v0.4_11-27-2023_13:44:52resnet101_DeepLabV3/m-nz-cattle/csv_logs/version_9"
+        },
+        "0.50x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.50x_train_segmentation_v0.4_11-27-2023_13:51:57resnet101_DeepLabV3/m-nz-cattle/csv_logs/version_4"
+        }
+    },
+    "resnet101_Unet": {
+        "0.01x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.01x_train_segmentation_v0.4_11-27-2023_13:56:08resnet101_Unet/m-nz-cattle/csv_logs/version_9"
+        },
+        "0.02x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.02x_train_segmentation_v0.4_11-22-2023_19:45:44resnet101_Unet/m-nz-cattle/csv_logs/version_7"
+        },
+        "0.05x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.05x_train_segmentation_v0.4_11-22-2023_19:47:07resnet101_Unet/m-nz-cattle/csv_logs/version_1"
+        },
+        "0.10x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.10x_train_segmentation_v0.4_11-27-2023_13:53:27resnet101_Unet/m-nz-cattle/csv_logs/version_2"
+        },
+        "0.20x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.20x_train_segmentation_v0.4_11-23-2023_12:51:02resnet101_Unet/m-nz-cattle/csv_logs/version_5"
+        },
+        "0.50x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.50x_train_segmentation_v0.4_11-23-2023_12:24:16resnet101_Unet/m-nz-cattle/csv_logs/version_2"
+        },
+        "1.00x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/1.00x_train_segmentation_v0.4_11-23-2023_12:22:08resnet101_Unet/m-nz-cattle/csv_logs/version_3"
+        }
+    },
+    "resnet18_DeepLabV3": {
+        "0.01x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.01x_train_segmentation_v0.4_11-22-2023_20:18:03resnet18_DeepLabV3/m-nz-cattle/csv_logs/version_5"
+        },
+        "0.02x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.02x_train_segmentation_v0.4_11-27-2023_13:37:54resnet18_DeepLabV3/m-nz-cattle/csv_logs/version_2"
+        },
+        "0.05x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.05x_train_segmentation_v0.4_11-27-2023_13:39:24resnet18_DeepLabV3/m-nz-cattle/csv_logs/version_6"
+        },
+        "0.10x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.10x_train_segmentation_v0.4_11-27-2023_13:41:27resnet18_DeepLabV3/m-nz-cattle/csv_logs/version_7"
+        },
+        "0.20x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.20x_train_segmentation_v0.4_11-22-2023_20:23:48resnet18_DeepLabV3/m-nz-cattle/csv_logs/version_4"
+        },
+        "0.50x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.50x_train_segmentation_v0.4_11-22-2023_20:32:54resnet18_DeepLabV3/m-nz-cattle/csv_logs/version_4"
+        },
+        "1.00x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/1.00x_train_segmentation_v0.4_11-22-2023_20:39:56resnet18_DeepLabV3/m-nz-cattle/csv_logs/version_10"
+        }
+    },
+    "resnet18_Unet": {
+        "0.01x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.01x_train_segmentation_v0.4_11-27-2023_13:58:25resnet18_Unet/m-nz-cattle/csv_logs/version_1"
+        },
+        "0.02x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.02x_train_segmentation_v0.4_11-22-2023_19:33:15resnet18_Unet/m-nz-cattle/csv_logs/version_1"
+        },
+        "0.05x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.05x_train_segmentation_v0.4_11-22-2023_19:34:48resnet18_Unet/m-nz-cattle/csv_logs/version_4"
+        },
+        "0.10x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.10x_train_segmentation_v0.4_11-22-2023_19:36:06resnet18_Unet/m-nz-cattle/csv_logs/version_2"
+        },
+        "0.20x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.20x_train_segmentation_v0.4_11-23-2023_12:58:21resnet18_Unet/m-nz-cattle/csv_logs/version_3"
+        },
+        "0.50x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.50x_train_segmentation_v0.4_11-27-2023_13:59:21resnet18_Unet/m-nz-cattle/csv_logs/version_4"
+        },
+        "1.00x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/1.00x_train_segmentation_v0.4_11-23-2023_12:57:18resnet18_Unet/m-nz-cattle/csv_logs/version_4"
+        }
+    },
+    "resnet50_DeepLabV3": {
+        "1.00x_train": {
+            "m-cashew-plant": "/mnt/data/experiments/nils/extra_sweeps/1.00x_train_segmentation_v0.4_10-14-2023_15:39:08resnet50_DeepLabV3/m-cashew-plant/csv_logs/version_27",
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/1.00x_train_segmentation_v0.4_11-22-2023_20:43:59resnet50_DeepLabV3/m-nz-cattle/csv_logs/version_5"
+        },
+        "0.01x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.01x_train_segmentation_v0.4_11-22-2023_20:16:22resnet50_DeepLabV3/m-nz-cattle/csv_logs/version_7"
+        },
+        "0.02x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.02x_train_segmentation_v0.4_11-22-2023_20:13:16resnet50_DeepLabV3/m-nz-cattle/csv_logs/version_1"
+        },
+        "0.05x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.05x_train_segmentation_v0.4_11-22-2023_20:09:08resnet50_DeepLabV3/m-nz-cattle/csv_logs/version_1"
+        },
+        "0.10x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.10x_train_segmentation_v0.4_11-22-2023_20:05:49resnet50_DeepLabV3/m-nz-cattle/csv_logs/version_3"
+        },
+        "0.20x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.20x_train_segmentation_v0.4_11-27-2023_13:35:54resnet50_DeepLabV3/m-nz-cattle/csv_logs/version_0"
+        },
+        "0.50x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.50x_train_segmentation_v0.4_11-27-2023_13:32:15resnet50_DeepLabV3/m-nz-cattle/csv_logs/version_5"
+        }
+    },
+    "resnet50_Unet": {
+        "0.01x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.01x_train_segmentation_v0.4_11-27-2023_13:56:58resnet50_Unet/m-nz-cattle/csv_logs/version_2"
+        },
+        "0.02x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.02x_train_segmentation_v0.4_11-22-2023_19:40:44resnet50_Unet/m-nz-cattle/csv_logs/version_10"
+        },
+        "0.05x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.05x_train_segmentation_v0.4_11-22-2023_19:39:27resnet50_Unet/m-nz-cattle/csv_logs/version_9"
+        },
+        "0.10x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.10x_train_segmentation_v0.4_11-22-2023_19:37:21resnet50_Unet/m-nz-cattle/csv_logs/version_7"
+        },
+        "0.20x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.20x_train_segmentation_v0.4_11-23-2023_12:52:49resnet50_Unet/m-nz-cattle/csv_logs/version_9"
+        },
+        "0.50x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/0.50x_train_segmentation_v0.4_11-27-2023_13:57:34resnet50_Unet/m-nz-cattle/csv_logs/version_2"
+        },
+        "1.00x_train": {
+            "m-nz-cattle": "/mnt/data/experiments/nils/extra_sweeps/1.00x_train_segmentation_v0.4_11-23-2023_12:56:49resnet50_Unet/m-nz-cattle/csv_logs/version_10"
+        }
+    }
+}

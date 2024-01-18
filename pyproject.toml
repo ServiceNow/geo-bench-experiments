@@ -21,8 +21,8 @@ scipy = "^1.11.2"
 geo-benchmark = "^0.0.3"
 fastapi = ">=0.80"
 torchgeo = { git = "https://github.com/microsoft/torchgeo.git", rev = "main"}
-torchvision = "0.13.0"
-torchmetrics = "0.11.1"
+torchvision = ">=0.13.0"
+torchmetrics = ">=0.11.1"
 torch = ">=1.12.0"
 "ruamel.yaml" = "0.17.21"
 h5py = "3.8.0"
@@ -32,6 +32,7 @@ seaborn = "^0.12.2"
 ipyplot = "^1.1.1"
 ipyleaflet = "^0.17.2"
 pytest-xdist = "^3.2.1"
+protobuf = "3.19.6"
 
 
 [tool.poetry.dev-dependencies]

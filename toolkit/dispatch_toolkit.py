@@ -70,7 +70,7 @@ def toolkit_job(script_path: Path, env_vars=()):
     cmd += ["--account", str(TOOLKIT_USER_ACCOUNT)]
 
     cmd += ["--gpu-model-filter", "!A100"]
-    # cmd += ["--gpu-model-filter", "v100-sxm2-32gb"]
+    # cmd += ["--gpu-mem", "16"]
 
     # Mount data objects
     cmd += ["--data", f"{TOOLKIT_DATA}:/mnt/data"]
@@ -108,12 +108,12 @@ def toolkit_dispatcher(exp_dir, prompt=True, env_vars=()) -> None:
                 ds_scripts = [script for script in script_list if ds in str(script)]
                 for s in ds_scripts:
                     print(str(s))
-                ans = input("Ready to proceed? y/n.")
-                if ans != "y":
-                    continue
-                else:
-                    for script_path in ds_scripts:
-                        toolkit_job(script_path, env_vars)
+                # ans = input("Ready to proceed? y/n.")
+                # if ans != "y":
+                #     continue
+                # else:
+                for script_path in ds_scripts:
+                    toolkit_job(script_path, env_vars)
         return
 
     # script list for seeded_runs
@@ -139,7 +139,16 @@ def toolkit_dispatcher(exp_dir, prompt=True, env_vars=()) -> None:
 
             assert "sweep_config_path" in config["wandb"]["sweep"]
 
-            sweep_name = config_path.parents[1].name + "_" + config_path.parents[0].name + "_" + model_name
+            # sweep_name = config_path.parents[1].name + "_" + config_path.parents[0].name + "_" + model_name
+            sweep_name = config["experiment"]["experiment_name"] + "_" + config["experiment"]["benchmark_name"]
+            if "weights" in config["model"]:
+                sweep_name += "_" + config["model"]["weights"]
+            else:
+                try:
+                    sweep_name += "_" + config["model"]["backbone"]
+                except:
+                    sweep_name += "_" + config["model"]["decoder_type"] + "_" + config["model"]["encoder_type"]
+
             sweep_path = config_path.parents[0] / "sweep_config.yaml"
 
             cmd = ["wandb", "sweep", "--name", sweep_name, str(config_path.parents[0] / "sweep_config.yaml")]

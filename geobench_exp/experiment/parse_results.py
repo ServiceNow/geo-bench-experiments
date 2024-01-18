@@ -12,7 +12,6 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import yaml
-
 from geobench.config import GEO_BENCH_DIR
 from geobench.task import load_task_specs
 from matplotlib import pyplot as plt
@@ -22,6 +21,8 @@ from scipy.stats import trim_mean
 from tqdm import tqdm
 
 from geobench_exp.experiment.discriminative_metric import boostrap_pw_entropy
+
+GEO_BENCH_DIR = Path("/mnt/data/ccb")
 
 
 def make_normalizer(data_frame, metrics=("test metric",)):
@@ -481,13 +482,6 @@ def extract_best_point(log_dir, filt_size=5, lower_is_better=False):
         warn(f"Not enough steps in {log_dir}. len(trace_dict['val_metric']) = {len(trace_dict['val_metric'])}.")
         return None
 
-    if "test_metric" not in trace_dict:
-        warn(f"No test metrics found.")
-        return None
-
-    # if val_metric is None:
-    #     val_metric, _ = find_metric_names(trace_dict.keys())
-
     val_trace = smooth_series(trace_dict["val_metric"], filt_size)
 
     if lower_is_better:  # We currently only ue higher is better.
@@ -568,7 +562,10 @@ class ExpResult:
         """Get combined info."""
         task = self.get_task_specs()
         config = self.get_config()
-        best_point = self.get_best_point()
+        try:
+            best_point = self.get_best_point()
+        except:
+            best_point = None
 
         if best_point is None:
             return None
@@ -704,7 +701,10 @@ def make_plot_sweep(filt_size=5, top_k=6, legend=False):
         colors = sns.color_palette("tab10")
         for i, log_dir in enumerate(sorted_log_dirs[:top_k]):
             trace_dict = collect_trace_info(log_dir)
-            val_loss = smooth_series(trace_dict["val_loss/dataloader_idx_0"], filt_size)
+            try:
+                val_loss = smooth_series(trace_dict["val_loss/dataloader_idx_0"], filt_size)
+            except:
+                val_loss = smooth_series(trace_dict["val_loss"], filt_size)
             val_trace = smooth_series(trace_dict["val_metric"], filt_size)
             test_trace = smooth_series(trace_dict["test_metric"], filt_size)
 

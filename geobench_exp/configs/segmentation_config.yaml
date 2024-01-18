@@ -1,22 +1,23 @@
 experiment:
-  generate_experiment_dir: /mnt/data/experiments/nils/last_segmentation_sweeps
-  experiment_name: 0.05x_train # prefix
+  generate_experiment_dir: /mnt/data/experiments/nils/extra_sweeps
+  experiment_name: 0.50x_train # prefix
   experiment_type: sweep # standard, seeded_runs, sweep
-  benchmark_dir: /mnt/data/cc_benchmark/segmentation_v0.2
-  partition_name: 0.05x_train
+  benchmark_dir: /mnt/data/cc_benchmark/segmentation_v0.4
+  benchmark_name: segmentation_v0.4
+  partition_name: 0.50x_train
+  tasks:  
 wandb:
-  project: geobench_exp # wandb project name
+  project: geobench_exp_seg_another_one_seg # wandb project name
   entity: climate-benchmark # user or team entity that hosts a project
   sweep:
-    sweep_config_path: /mnt/home/geo-bench-experiments/geobench_exp/torch_toolbox/wandb/hparams_segmentation_swinv2_tiny.yaml # or maybe define the entire sweep here?
-    num_agents: 1 # how many agents participate in sweep, one agent usually corresponds to one gpu
-    num_trials_per_agent: 1 # how many hparam trials each agent should execute, num_agents x num_trials_per_agent corresponds to total number of trials executed by sweep
+    sweep_config_path: /mnt/home/geo-bench-experiments/geobench_exp/torch_toolbox/wandb/hparams_segmentation_resnet18_unet.yaml # or maybe define the entire sweep here?
+    num_agents: 4 # how many agents participate in sweep, one agent usually corresponds to one gpu
+    num_trials_per_agent: 3 # how many hparam trials each agent should execute, num_agents x num_trials_per_agent corresponds to total number of trials executed by sweep
 model:
-  model_generator_module_name: geobench_exp.torch_toolbox.model_generators.swin_segmentation
-  model: swinv2_tiny
-  # encoder_type: resnet101  # resnet18,
-  # decoder_type: DeepLabV3
-  # encoder_weights: imagenet
+  model_generator_module_name: geobench_exp.torch_toolbox.model_generators.py_segmentation_generator
+  encoder_type: resnet18  # resnet18,
+  decoder_type: Unet # Unet, DeepLabV3
+  encoder_weights: imagenet
   desired_input_size: 224 # desired image input dimension to model
   pretrained: True
   lr_backbone: 1.0e-6

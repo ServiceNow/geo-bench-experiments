@@ -1,32 +1,30 @@
 experiment:
-  generate_experiment_dir: /mnt/data/experiments/nils/testing
-  # generate_experiment_dir: /mnt/data/experiments/pau/partition_sweeps_classification
-  experiment_name: 0.01x_train # prefix
+  generate_experiment_dir: /mnt/data/experiments/nils/camera_class_sweeps
+  experiment_name: 0.50x_train # prefix
   experiment_type: sweep # standard, seeded_runs, sweep
-  benchmark_dir: /mnt/data/cc_benchmark/classification_v0.9.1
-  benchmark_name: classification_v0.9.1
-  partition_name: 0.01x_train
-  tasks: ["so2sat", "brick_kiln_v1.0", "eurosat", "bigearthnet"] #, "pv4ger_classification", "forestnet_v1.0"]
+  benchmark_dir: /mnt/data/cc_benchmark/classification_v0.8.5
+  benchmark_name: classification_v0.8.5
+  partition_name: 0.50x_train
+  tasks: ["m-season"] #, "m-brick-kiln","m-bigearthnet",  "m-eurosat", "m-so2sat"] #, "m-pv4ger", "m-forestnet"] # ["m-so2sat"] #
 wandb:
-  project: geobench_exp # wandb project name
+  project: geobench_exp_cam_vit_2 # wandb project name
   entity: climate-benchmark # user or team entity that hosts a project
   sweep:
     sweep_config_path: /mnt/home/geo-bench-experiments/geobench_exp/torch_toolbox/wandb/hparams_classification_resnet50.yaml # or maybe define the entire sweep here?
-    num_agents: 1 # how many agents participate in sweep, one agent usually corresponds to one gpu
-    num_trials_per_agent: 1 # how many hparam trials each agent should execute, num_agents x num_trials_per_agent corresponds to total number of trials executed by sweep
+    num_agents: 8 # how many agents participate in sweep, one agent usually corresponds to one gpu
+    num_trials_per_agent: 2 # how many hparam trials each agent should execute, num_agents x num_trials_per_agent corresponds to total number of trials executed by sweep
 model:
   model_generator_module_name: geobench_exp.torch_toolbox.model_generators.timm_generator
   loss_type: crossentropy
-  # ssl_method: dino
   backbone: resnet50 # resnet18, convnext_base, vit_tiny_patch16_224, vit_small_patch16_224. swinv2_tiny_window16_256
   desired_input_size: 224
   pretrained: True
-  # weights: ResNet50_Weights.SENTINEL2_RGB_MOCO
+  weights: ResNet50_Weights.SENTINEL2_RGB_SECO
   lr_backbone: 1.0e-6
   lr_head: 1.0e-4
   optimizer: sgd
 dataset:
-  band_names: "all" #["red", "green", "blue"]
+  band_names: ["red", "green", "blue"] # all
   format: hdf5
 dataloader:
   num_workers: 4

@@ -124,7 +124,7 @@ class Model(LightningModule):
         target = batch["label"]
         output = self(inputs)
         loss = self.loss_function(output, target)
-        self.log(f"{self.prefix}_loss", loss)
+        self.log(f"{self.prefix}_loss", loss, add_dataloader_idx=False)
         if self.prefix == "val":
             self.eval_metrics(output, target)
         else:
@@ -134,7 +134,7 @@ class Model(LightningModule):
 
     def on_validation_epoch_end(self):
         """Define actions after a validation epoch."""
-        
+
         # if self.prefix == "val":
         eval_metrics = self.eval_metrics.compute()
         self.log_dict({f"val_{k}": v.mean() for k, v in eval_metrics.items()}, logger=True)
@@ -143,7 +143,6 @@ class Model(LightningModule):
         test_metrics = self.test_metrics.compute()
         self.log_dict({f"test_{k}": v.mean() for k, v in test_metrics.items()}, logger=True)
         self.test_metrics.reset()
-
 
     #     val_outputs = outputs[0]  # 0 == validation, 1 == test
     #     if self.config["model"].get("log_segmentation_masks", False):
@@ -274,20 +273,20 @@ class ModelGenerator:
             CSVLogger(str(job.dir), name="csv_logs"),
         ]
 
-        print("IN GENERATE TRAINER")
-        print(config["experiment"])
         if config["experiment"]["experiment_type"] != "seeded_runs":
-            loggers.append(WandbLogger(
-                save_dir=str(job.dir),
-                project=config["wandb"]["project"],
-                entity=config["wandb"]["entity"],
-                id=run_id,
-                group=config["wandb"].get("wandb_group", None),
-                name=config["wandb"].get("name", None),
-                resume="allow",
-                config=config["model"],
-                mode=config["wandb"].get("mode", "online"),
-            ))
+            loggers.append(
+                WandbLogger(
+                    save_dir=str(job.dir),
+                    project=config["wandb"]["project"],
+                    entity=config["wandb"]["entity"],
+                    id=run_id,
+                    group=config["wandb"].get("wandb_group", None),
+                    name=config["wandb"].get("name", None),
+                    resume="allow",
+                    config=config["model"],
+                    mode=config["wandb"].get("mode", "online"),
+                )
+            )
 
         job.save_config(config, overwrite=True)
 
@@ -314,7 +313,7 @@ class ModelGenerator:
             "m-seasonet",
             "m-chesapeake",
             "m-NeonTree",
-            "m-cashew-plant"
+            "m-cashew-plant",
         ]:
             track_metric = "val_Jaccard"
             mode = "max"

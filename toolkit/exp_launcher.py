@@ -20,7 +20,7 @@ os.environ["GEO_BENCH_DIR"] = "/mnt/data/ccb/"
 
 experiment_dir = experiment_generator(
     # config_filepath=str(Path(__file__).parent.parent / "geobench/configs/classification_config.yaml"),
-    config_filepath="/mnt/home/geo-bench-experiments/geobench_exp/configs/classification_config.yaml"
+    config_filepath="/mnt/home/geo-bench-experiments/geobench_exp/configs/seed_segmentation_config.yaml"
 )
 
 dispatch_toolkit.push_code(Path(__file__).parent.parent)
