@@ -13,6 +13,7 @@ from torch.utils.data.dataloader import default_collate
 
 from geobench_exp.experiment.experiment import Job
 
+
 def train(job_dir: str) -> None:
     """Train a model from the model generator on datamodule.
 
@@ -74,6 +75,7 @@ def train(job_dir: str) -> None:
 
     with open(os.path.join(trainer.loggers[0].log_dir, "status.txt"), "w") as fd:
         fd.write("Done")
+
 
 def start() -> None:
     """Start training."""

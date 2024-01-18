@@ -2,23 +2,23 @@
 
 import os
 import time
-from typing import Callable, Dict, List, Union, Optional
+from typing import Callable, Dict, List, Optional, Union
 
-import torch
 import lightning
 import segmentation_models_pytorch as smp
 import timm
+import torch
 import torch.nn.functional as F
 import torchmetrics
 from geobench.dataset import SegmentationClasses
 from geobench.label import Classification, MultiLabelClassification
 from geobench.task import TaskSpecifications
 from lightning import LightningModule
+from lightning.pytorch.cli import LRSchedulerCallable, OptimizerCallable
 from torch import Tensor
 from torchgeo.models import get_weight
 from torchgeo.trainers import utils
 from torchvision.models._api import WeightsEnum
-from lightning.pytorch.cli import LRSchedulerCallable, OptimizerCallable
 
 
 class GeoBenchBaseModule(LightningModule):
@@ -201,7 +201,6 @@ class GeoBenchClassifier(GeoBenchBaseModule):
         self.weights = weights
         super().__init__(task_specs, in_channels, freeze_backbone, optimizer, lr_scheduler)
 
-
     def configure_the_model(self) -> None:
         """Configure classification model."""
         # Create model
@@ -246,7 +245,6 @@ class GeoBenchSegmentation(GeoBenchBaseModule):
 
         super().__init__(task_specs, in_channels, freeze_backbone, optimizer, lr_scheduler)
 
-
     def configure_the_model(self) -> None:
         """Configure segmentation model."""
         # Load segmentation backbone from py-segmentation-models
@@ -259,6 +257,7 @@ class GeoBenchSegmentation(GeoBenchBaseModule):
             )  # model output channels (number of cl
         except:
             import pdb
+
             pdb.set_trace()
 
             print(0)

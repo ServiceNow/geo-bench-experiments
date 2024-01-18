@@ -2,11 +2,11 @@ import os
 import random
 import string
 
+from hydra.utils import instantiate
 from lightning import Trainer
 from lightning.pytorch.callbacks import ModelCheckpoint
 from lightning.pytorch.callbacks.early_stopping import EarlyStopping
 from lightning.pytorch.loggers import CSVLogger, WandbLogger
-from hydra.utils import instantiate
 
 
 def generate_trainer(config: dict, job) -> Trainer:

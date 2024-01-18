@@ -37,5 +37,3 @@ $ geobench_exp-run_exp --job_dir experiments/0.05x_train_segmentation_v1.0_01-18
 ```
 
 The `geobench_exp-run_exp` command is a shortcut for the `geobench_exp/run_experiment.py` script which executes the training.
-
-

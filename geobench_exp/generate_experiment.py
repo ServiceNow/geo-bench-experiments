@@ -1,18 +1,21 @@
 """Create job directories from which the experiments will be run."""
 
-from typing import Dict, Any
+import argparse
+import copy
 import os
 from datetime import datetime
-import argparse
-from omegaconf import OmegaConf
 from pathlib import Path
-import copy
+from typing import Any, Dict
+
 from geobench.task import task_iterator
+from omegaconf import OmegaConf
+
 from geobench_exp.experiment.experiment import Job
+
 
 def generate_experiment_name(config: dict) -> str:
     """Generate the name of the directory for the experiment.
-    
+
     Args:
         config: dictionary containing config
 
@@ -36,9 +39,10 @@ def generate_experiment_name(config: dict) -> str:
 
     return experiment_dir
 
+
 def get_band_names(config: Dict[str, Any], task_specs) -> Dict[str, Any]:
     """Get the appropriate band names for experiments.
-    
+
     Args:
         config: dictionary containing config
         task_specs: task specifications
@@ -54,9 +58,10 @@ def get_band_names(config: Dict[str, Any], task_specs) -> Dict[str, Any]:
 
     return config
 
+
 def experiment_generator(task_config_path: str, model_config_path: str) -> None:
     """Generate job directories for experiments.
-    
+
     Args:
         task_config_path: path to task config file
         model_config_path: path to model config file

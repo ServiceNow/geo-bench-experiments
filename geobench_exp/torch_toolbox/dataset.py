@@ -22,7 +22,8 @@ def get_transform(task_specs, config, train):
         return get_segmentation_transform(task_specs, config, train)
     else:
         raise NotImplementedError
-    
+
+
 def get_desired_input_sizes(model_name: str) -> int:
     """Define input sizes for models."""
     input_size_dict = {
@@ -32,9 +33,9 @@ def get_desired_input_sizes(model_name: str) -> int:
         "vit_tiny_patch16_224": 224,
         "vit_small_patch16_224": 224,
         "swinv2_tiny_window16_256": 256,
-
     }
     return input_size_dict[model_name]
+
 
 def get_classification_transform(task_specs, config: Dict[str, Any], train=True) -> Callable[[Sample], Dict[str, Any]]:
     """Define data transformations specific to the models generated.

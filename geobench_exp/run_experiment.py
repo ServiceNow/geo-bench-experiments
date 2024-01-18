@@ -1,20 +1,19 @@
 import argparse
-
 import os
 
-from geobench_exp.torch_toolbox.dataset import get_transform
 from hydra.utils import instantiate
 from lightning.pytorch import seed_everything
-from geobench_exp.torch_toolbox.model_utils import generate_trainer
+from omegaconf import OmegaConf
 from torch.utils.data.dataloader import default_collate
 
 from geobench_exp.experiment.experiment import Job
-from omegaconf import OmegaConf
+from geobench_exp.torch_toolbox.dataset import get_transform
+from geobench_exp.torch_toolbox.model_utils import generate_trainer
 
 
 def run(job_dir: str) -> None:
     """Run the experiment.
-    
+
     Args:
         job_dir: job directory that contains task_specs
     """
@@ -63,7 +62,8 @@ def start() -> None:
     """Start training."""
     # Command line arguments
     parser = argparse.ArgumentParser(
-        prog="run_experiment.py", description="Trains the model using job information contained in the specified directory."
+        prog="run_experiment.py",
+        description="Trains the model using job information contained in the specified directory.",
     )
 
     parser.add_argument("--job_dir", help="Path to the job.", required=True)
