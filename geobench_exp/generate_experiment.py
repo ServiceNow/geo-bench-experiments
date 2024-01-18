@@ -46,8 +46,6 @@ def get_band_names(config: Dict[str, Any], task_specs) -> Dict[str, Any]:
     Returns:
         config: dictionary containing config
     """
-    import pdb
-    pdb.set_trace()
     if config["datamodule"]["band_names"] == "all":
         config["model"]["in_channels"] = len(task_specs.bands_info)
         config["datamodule"]["band_names"] = [band_info.name for band_info in task_specs.bands_info]

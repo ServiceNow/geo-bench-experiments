@@ -50,8 +50,6 @@ class GeoBenchBaseModule(LightningModule):
         super().__init__()
         self.task_specs = task_specs
 
-        self.configure_model()
-
         self.loss_fn = train_loss_generator(task_specs)
         self.optimizer = optimizer
         self.lr_scheduler = lr_scheduler
@@ -59,6 +57,8 @@ class GeoBenchBaseModule(LightningModule):
         self.train_metrics = eval_metrics_generator(task_specs)
         self.eval_metrics = eval_metrics_generator(task_specs)
         self.test_metrics = eval_metrics_generator(task_specs)
+
+        self.configure_the_model()
 
     def forward(self, x: Tensor) -> Tensor:
         """Forward pass.
@@ -71,7 +71,7 @@ class GeoBenchBaseModule(LightningModule):
         """
         return self.model(x)
 
-    def configure_model(self) -> None:
+    def configure_the_model(self) -> None:
         """Initialize the model."""
         raise NotImplementedError("Necessary to define a model.")
 
@@ -202,7 +202,7 @@ class GeoBenchClassifier(GeoBenchBaseModule):
         super().__init__(task_specs, in_channels, freeze_backbone, optimizer, lr_scheduler)
 
 
-    def configure_model(self) -> None:
+    def configure_the_model(self) -> None:
         """Configure classification model."""
         # Create model
         self.model = timm.create_model(
@@ -236,24 +236,32 @@ class GeoBenchSegmentation(GeoBenchBaseModule):
         task_specs: TaskSpecifications,
         encoder_type: str,
         decoder_type: str,
-        in_channels: int = 3,
+        in_channels: int,
+        encoder_weights: Union[WeightsEnum, str, bool, None] = None,
         freeze_backbone: bool = False,
         optimizer: OptimizerCallable = torch.optim.Adam,
         lr_scheduler: Optional[LRSchedulerCallable] = None,
     ) -> None:
         self.save_hyperparameters(ignore=["loss_fn", "task_specs"])
+
         super().__init__(task_specs, in_channels, freeze_backbone, optimizer, lr_scheduler)
 
 
-    def configure_model(self) -> None:
+    def configure_the_model(self) -> None:
         """Configure segmentation model."""
         # Load segmentation backbone from py-segmentation-models
-        self.model = getattr(smp, self.hparams["decoder_type"])(
-            encoder_name=self.hparams["encoder_type"],
-            encoder_weights=self.hparams["encoder_weights"],
-            in_channels=self.hparams["in_channels"],
-            classes=self.task_specs.label_type.n_classes,
-        )  # model output channels (number of cl
+        try:
+            self.model = getattr(smp, self.hparams["decoder_type"])(
+                encoder_name=self.hparams["encoder_type"],
+                encoder_weights=self.hparams["encoder_weights"],
+                in_channels=self.hparams["in_channels"],
+                classes=self.task_specs.label_type.n_classes,
+            )  # model output channels (number of cl
+        except:
+            import pdb
+            pdb.set_trace()
+
+            print(0)
 
 
 def eval_metrics_generator(task_specs: TaskSpecifications) -> List[torchmetrics.MetricCollection]:

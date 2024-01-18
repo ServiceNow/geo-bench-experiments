@@ -32,6 +32,7 @@ def get_desired_input_sizes(model_name: str) -> int:
         "vit_tiny_patch16_224": 224,
         "vit_small_patch16_224": 224,
         "swinv2_tiny_window16_256": 256,
+
     }
     return input_size_dict[model_name]
 
@@ -94,7 +95,7 @@ def get_segmentation_transform(
     Returns:
         callable function that applies transformations on input data
     """
-    c, h, w = config["model"]["input_size"]
+    h, w = 224, 224
     patch_h, patch_w = task_specs.patch_size
     if h != w or patch_h != patch_w:
         raise (RuntimeError("Only square patches are supported in this version"))
@@ -102,12 +103,12 @@ def get_segmentation_transform(
 
     mean, std = task_specs.get_dataset(
         split="train",
-        format=config["dataset"]["format"],
-        band_names=tuple(config["dataset"]["band_names"]),
+        format=config["datamodule"]["format"],
+        band_names=tuple(config["datamodule"]["band_names"]),
         # benchmark_dir=config["experiment"]["benchmark_dir"],
         partition_name=config["experiment"]["partition_name"],
     ).rgb_stats()
-    band_names = config["dataset"]["band_names"]
+    band_names = config["datamodule"]["band_names"]
 
     if train:
         t = AugmentationSequential(
@@ -200,7 +201,6 @@ class DataModule(LightningDataModule):
                 transform=self.train_transform,
                 band_names=self.band_names,
                 format=self.format,
-                # benchmark_dir=self.benchmark_dir,
             ),
             batch_size=self.batch_size,
             shuffle=True,
@@ -218,7 +218,6 @@ class DataModule(LightningDataModule):
                     transform=self.eval_transform,
                     band_names=self.band_names,
                     format=self.format,
-                    # benchmark_dir=Path(self.benchmark_dir),
                 ),
                 batch_size=self.val_batch_size,
                 shuffle=False,
@@ -232,7 +231,6 @@ class DataModule(LightningDataModule):
                     transform=self.eval_transform,
                     band_names=self.band_names,
                     format=self.format,
-                    # benchmark_dir=Path(self.benchmark_dir),
                 ),
                 batch_size=self.val_batch_size,
                 shuffle=False,
@@ -250,7 +248,6 @@ class DataModule(LightningDataModule):
                 transform=self.eval_transform,
                 band_names=self.band_names,
                 format=self.format,
-                # benchmark_dir=self.benchmark_dir,
             ),
             batch_size=self.val_batch_size,
             shuffle=False,
