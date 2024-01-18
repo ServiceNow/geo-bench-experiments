@@ -1,8 +1,8 @@
 experiment:
-  generate_experiment_dir: /mnt/SSD2/nils/geo_bench_stuff/experiments # specify a directory where you want experiments to be stored
+  generate_experiment_dir: /dir/to/save/experiments # specify a directory where you want experiments to be stored
   experiment_name: 0.01x_train # specify a prefix for the experiment directory name, the date and model will be appended automatically
-  benchmark_dir: /mnt/SSD2/nils/geo_bench_stuff/classification_v1.0  # where the Geo-Bench benchmark data is stored
-  benchmark_name: classification_v0.9.1 # benchmark name
+  benchmark_dir: /path/to/geo-bench/data/with/benchmark/name # where the Geo-Bench benchmark data is stored
+  benchmark_name: classification_v1.0 # benchmark name
   partition_name: 0.01x_train # name of the partition you want to exectute an experiment for
   # tasks is a list of tasks that you want to ignore for the experiment
   # ignore_tasks: ["m-brick-kiln","m-bigearthnet",  "m-eurosat", "m-so2sat", "m-pv4ger", "m-forestnet"]
