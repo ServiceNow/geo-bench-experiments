@@ -248,19 +248,12 @@ class GeoBenchSegmentation(GeoBenchBaseModule):
     def configure_the_model(self) -> None:
         """Configure segmentation model."""
         # Load segmentation backbone from py-segmentation-models
-        try:
-            self.model = getattr(smp, self.hparams["decoder_type"])(
-                encoder_name=self.hparams["encoder_type"],
-                encoder_weights=self.hparams["encoder_weights"],
-                in_channels=self.hparams["in_channels"],
-                classes=self.task_specs.label_type.n_classes,
-            )  # model output channels (number of cl
-        except:
-            import pdb
-
-            pdb.set_trace()
-
-            print(0)
+        self.model = getattr(smp, self.hparams["decoder_type"])(
+            encoder_name=self.hparams["encoder_type"],
+            encoder_weights=self.hparams["encoder_weights"],
+            in_channels=self.hparams["in_channels"],
+            classes=self.task_specs.label_type.n_classes,
+        )  # model output channels (number of cl
 
 
 def eval_metrics_generator(task_specs: TaskSpecifications) -> List[torchmetrics.MetricCollection]:

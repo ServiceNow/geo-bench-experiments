@@ -79,7 +79,7 @@ def experiment_generator(task_config_path: str, model_config_path: str) -> None:
     for task_specs in task_iterator(
         benchmark_name=config["experiment"]["benchmark_name"],
         benchmark_dir=benchmark_dir,
-        ignore_task=config["experiment"].get("tasks", None),
+        ignore_task=config["experiment"].get("ignore_tasks", None),
     ):
         print(task_specs.dataset_name)
         task_config = copy.deepcopy(config)

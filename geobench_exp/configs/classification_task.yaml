@@ -5,7 +5,7 @@ experiment:
   benchmark_name: classification_v0.9.1 # benchmark name
   partition_name: 0.01x_train # name of the partition you want to exectute an experiment for
   # tasks is a list of tasks that you want to ignore for the experiment
-  # tasks: # ["so2sat", "brick_kiln_v1.0", "eurosat", "bigearthnet", "pv4ger_classification", "forestnet_v1.0"]
+  # ignore_tasks: ["m-brick-kiln","m-bigearthnet",  "m-eurosat", "m-so2sat", "m-pv4ger", "m-forestnet"]
   num_seeds: 1 # for a particular experiment how many seed experiments should be created (each containing its own experiment setup)
 
 datamodule:

@@ -1,7 +1,7 @@
 model:
   _target_: torch_toolbox.model.GeoBenchClassifier
   model: "resnet50"
-  weights: ResNet50_Weights.SENTINEL2_RGB_MOCO
+  weights: ResNet50_Weights.SENTINEL2_RGB_MOCO # ResNet50_Weights.SENTINEL2_RGB_SECO, True or imagenet, False for random initialization
   optimizer:
     _target_: torch.optim.Adam
     lr: 1e-4

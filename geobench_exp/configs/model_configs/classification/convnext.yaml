@@ -1,0 +1,11 @@
+model:
+  _target_: geobench_exp.torch_toolbox.model.GeoBenchClassifier
+  model: convnext_base
+  weights: True # True or imagenet, False for random initialization
+  optimizer:
+    _target_: torch.optim.Adam
+    _partial_: true
+    lr: 1e-4
+
+datamodule:
+  batch_size: 64
