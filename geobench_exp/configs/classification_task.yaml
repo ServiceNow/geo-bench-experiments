@@ -1,18 +1,17 @@
 experiment:
-  generate_experiment_dir: /mnt/SSD2/nils/geo_bench_stuff/experiments
-  # TODO experimnet name and partition name are redundant
-  # same with benchmark name and benchmark dir
-  experiment_name: 0.01x_train # prefix
-  benchmark_dir: /mnt/SSD2/nils/geo_bench_stuff/classification_v1.0
-  benchmark_name: classification_v0.9.1
-  partition_name: 0.01x_train
+  generate_experiment_dir: /mnt/SSD2/nils/geo_bench_stuff/experiments # specify a directory where you want experiments to be stored
+  experiment_name: 0.01x_train # specify a prefix for the experiment directory name, the date and model will be appended automatically
+  benchmark_dir: /mnt/SSD2/nils/geo_bench_stuff/classification_v1.0  # where the Geo-Bench benchmark data is stored
+  benchmark_name: classification_v0.9.1 # benchmark name
+  partition_name: 0.01x_train # name of the partition you want to exectute an experiment for
+  # tasks is a list of tasks that you want to ignore for the experiment
   # tasks: # ["so2sat", "brick_kiln_v1.0", "eurosat", "bigearthnet", "pv4ger_classification", "forestnet_v1.0"]
-  num_seeds: 1
+  num_seeds: 1 # for a particular experiment how many seed experiments should be created (each containing its own experiment setup)
 
 datamodule:
   _target_: geobench_exp.torch_toolbox.dataset.DataModule
-  num_workers: 4
-  batch_size: 256
+  num_workers: 4 # number of workers for dataloader
+  batch_size: 256 # batch size
   band_names: "all" #["red", "green", "blue"]
   format: hdf5
 

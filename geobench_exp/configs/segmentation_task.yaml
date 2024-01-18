@@ -1,17 +1,17 @@
 experiment:
-  generate_experiment_dir: /mnt/SSD2/nils/geo_bench_stuff/experiments
-  experiment_name: 0.05x_train # prefix
-  benchmark_dir: /mnt/SSD2/nils/geo_bench_stuff/segmentation_v1.0
-  partition_name: 0.05x_train
-  benchmark_name: segmentation_v1.0
-  num_seeds: 1
+  generate_experiment_dir: /mnt/SSD2/nils/geo_bench_stuff/experiments # specify a directory where you want experiments to be stored
+  experiment_name: 0.05x_train # specify a prefix for the experiment directory name, the date and model will be appended automatically
+  benchmark_dir: /mnt/SSD2/nils/geo_bench_stuff/segmentation_v1.0 # where the Geo-Bench benchmark data is stored
+  partition_name: 0.05x_train # name of the partition you want to exectute an experiment for
+  benchmark_name: segmentation_v1.0 # benchmark name
+  num_seeds: 1 # for a particular experiment how many seed experiments should be created (each containing its own experiment setup)
 
 datamodule:
-  _target_: geobench_exp.torch_toolbox.dataset.DataModule
-  num_workers: 4
-  batch_size: 16
-  band_names: ["red", "green", "blue"]
-  format: hdf5
+  _target_: geobench_exp.torch_toolbox.dataset.DataModule # specify the datamodule class
+  num_workers: 4 # number of workers for dataloader
+  batch_size: 16 # batch size
+  band_names: ["red", "green", "blue"] # band names to be used for the experiment, alternatively you can also say "all" to use all bands
+  format: hdf5 # dataformat to be used
 
 trainer: # all flags for pytorch lightning Trainer module, see https://pytorch-lightning.readthedocs.io/en/stable/common/trainer.html
   _target_: lightning.Trainer
