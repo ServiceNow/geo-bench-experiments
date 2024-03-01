@@ -10,10 +10,10 @@ GEO-Bench is a General Earth Observation benchmark for evaluating the performanc
 # Installation
 
 
-```console
-$ https://github.com/ServiceNow/geo-bench-experiments.git
-$ cd geo-bench-experiments
-$ pip install .
+```bash
+git clone https://github.com/ServiceNow/geo-bench-experiments.git
+cd geo-bench-experiments
+pip install .
 ```
 
 # Create and run Experiments
