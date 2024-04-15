@@ -18,7 +18,7 @@
 ```bash
 git clone https://github.com/ServiceNow/geo-bench-experiments.git
 cd geo-bench-experiments
-pip install .
+pip install -e .
 ```
 
 # Create and run Experiments
