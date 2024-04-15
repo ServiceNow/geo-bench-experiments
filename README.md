@@ -1,11 +1,16 @@
 # GEO-Bench: Toward Foundation Models for Earth Monitoring
 
-GEO-Bench is a [ServiceNow Research](https://www.servicenow.com/research) project. 
+[GEO-Bench](https://github.com/ServiceNow/geo-bench) is a [ServiceNow Research](https://www.servicenow.com/research) project. 
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Language: Python](https://img.shields.io/badge/language-Python%203.9%2B-green?logo=python&logoColor=green)](https://www.python.org)
 
-GEO-Bench is a General Earth Observation benchmark for evaluating the performances of large pre-trained models on geospatial data. Read the [full paper](https://arxiv.org/abs/2306.03831) for usage details and evaluation of existing pre-trained vision models. This repo contains code to exectute the experiments reported in the paper.
+<strong> <em>
+⚠️ Note: This repo is solely for reproducing the experiments of the paper or to use as a starting point for your experiments. 
+
+⚠️ For the official repo of [GEO-Bench, go here](https://github.com/ServiceNow/geo-bench).
+</em></strong>
+
 
 # Installation
 
