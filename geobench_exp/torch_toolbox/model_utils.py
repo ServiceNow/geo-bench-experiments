@@ -65,7 +65,7 @@ def generate_trainer(config: dict, job) -> Trainer:
         "m-seasonet",
         "m-chesapeake",
         "m-NeonTree",
-        "m-cashew-plant",
+        "m-cashew-plantation",
     ]:
         track_metric = "val_Jaccard"
         mode = "max"

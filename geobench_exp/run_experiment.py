@@ -8,6 +8,7 @@ from torch.utils.data.dataloader import default_collate
 
 from geobench_exp.torch_toolbox.dataset import get_transform
 from geobench_exp.torch_toolbox.model_utils import generate_trainer
+from .job import Job
 
 
 def run(job_dir: str) -> None:
