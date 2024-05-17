@@ -63,7 +63,7 @@ def generate_trainer(config: dict, job) -> Trainer:
         "m-nz-cattle",
         "m-SA-crop-type",
         "m-seasonet",
-        "m-chesapeake",
+        "m-chesapeake-landcover",
         "m-NeonTree",
         "m-cashew-plantation",
     ]:
@@ -78,7 +78,6 @@ def generate_trainer(config: dict, job) -> Trainer:
         dirpath=ckpt_dir, save_top_k=1, monitor=track_metric, mode=mode, every_n_epochs=1
     )
     patience = int((1 / config["trainer"]["val_check_interval"]) * (config["trainer"]["max_epochs"] / 6))
-
     early_stopping_callback = EarlyStopping(
         monitor=track_metric,
         mode=mode,
