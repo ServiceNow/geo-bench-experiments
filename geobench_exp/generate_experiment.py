@@ -10,7 +10,6 @@ from typing import Any, Dict
 from geobench.task import task_iterator
 from omegaconf import OmegaConf
 
-from geobench_exp.experiment.experiment import Job
 
 
 def generate_experiment_name(config: dict) -> str:

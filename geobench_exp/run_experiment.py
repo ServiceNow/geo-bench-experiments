@@ -6,7 +6,6 @@ from lightning.pytorch import seed_everything
 from omegaconf import OmegaConf
 from torch.utils.data.dataloader import default_collate
 
-from geobench_exp.experiment.experiment import Job
 from geobench_exp.torch_toolbox.dataset import get_transform
 from geobench_exp.torch_toolbox.model_utils import generate_trainer
 
