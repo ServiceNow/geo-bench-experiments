@@ -5,7 +5,7 @@ experiment:
   benchmark_name: segmentation_v1.0 # benchmark name
   partition_name: 0.01x_train # name of the partition you want to exectute an experiment for
   # tasks is a list of tasks that you want to ignore for the experiment dir creation
-  tasks: ["m-nz-cattle", "m-chesapeake", "m-SA-crop-type", "m-nz-cattle", "m-NeonTree"]
+  tasks: ["m-nz-cattle", "m-chesapeake", "m-SA-crop-type", "m-NeonTree"]
   num_seeds: 1 # for a particular experiment how many seed experiments should be created (each containing its own experiment setup)
 
 datamodule:
