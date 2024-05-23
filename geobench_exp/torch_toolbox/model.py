@@ -219,7 +219,8 @@ class GeoBenchClassifier(GeoBenchBaseModule):
                 _, state_dict = utils.extract_backbone(self.weights)
             else:
                 state_dict = get_weight(self.weights).get_state_dict(progress=True)
-            self.model = utils.load_state_dict(self.model, state_dict)
+
+            utils.load_state_dict(self.model, state_dict)
 
         # Freeze backbone and unfreeze classifier head
         if self.hparams["freeze_backbone"]:
