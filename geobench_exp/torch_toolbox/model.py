@@ -151,7 +151,7 @@ class GeoBenchBaseModule(LightningModule):
         """
         inputs, target = batch["input"], batch["label"]
         output = self(inputs)
-        loss = self.loss_function(output, target)
+        loss = self.loss_fn(output, target)
         self.log("test_loss", loss)
         self.test_metrics(output, target)
         return loss
